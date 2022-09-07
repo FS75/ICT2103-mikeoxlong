@@ -1,10 +1,66 @@
 <template>
-  <div class="overviewContainer">
-    <h3>hello</h3>
+  <div class="columnContainer overviewContainer">
+    <div class="rowContainer">
+      <ItemContainerWithDropdown givenId="busServiceContainer" 
+        text="Bus Service"></ItemContainerWithDropdown>
+      <ItemContainerWithDropdown givenId="busDirectionContainer" 
+        text="Direction"></ItemContainerWithDropdown>
+    </div>
+
+    <div class="rowContainer">
+      <ItemContainerWithDropdown givenId="busStartingContainer" 
+        text="Starting Bus Stop"></ItemContainerWithDropdown>
+      <ItemContainerWithDropdown givenId="busDestinationContainer" 
+        text="Destination Bus Stop"></ItemContainerWithDropdown>
+    </div>
+    
+    <hr>
+
+    <div class="columnContainer resultContainer">
+      <div class="rowContainer importantInfoContainer">
+        <ResultContainer headerText="Distance from Start to Destination" value="0 km"></ResultContainer>
+      </div>
+
+      <div class="rowContainer importantInfoContainer">
+        <ResultContainer headerText="AM Peak Frequency" value="1 - 3 min"></ResultContainer>
+        <ResultContainer headerText="AM Offpeak Frequency" value="1 - 5 min"></ResultContainer>
+      </div>
+
+      <div class="rowContainer importantInfoContainer">
+        <ResultContainer headerText="PM Peak Frequency" value="1 - 3 min"></ResultContainer>
+        <ResultContainer headerText="PM Offpeak Frequency" value="1 - 5 min"></ResultContainer>
+      </div>
+
+      <hr>
+      
+      <div class="columnContainer busTimingContainer">
+        <div class="rowContainer">
+          <ResultContainer headerText="Weekday First Bus Timing" value="05:00"></ResultContainer>
+          <ResultContainer headerText="Weekday Last Bus Timing" value="23:00"></ResultContainer>
+        </div>
+
+        <div class="rowContainer">
+          <ResultContainer headerText="Saturday First Bus Timing" value="05:00"></ResultContainer>
+        <ResultContainer headerText="Saturday Last Bus Timing" value="23:00"></ResultContainer>
+        </div>
+
+        <div class="rowContainer">
+          <ResultContainer headerText="Sunday First Bus Timing" value="05:00"></ResultContainer>
+          <ResultContainer headerText="Sunday Last Bus Timing" value="23:00"></ResultContainer>
+        </div>
+      </div>
+
+      <hr>
+
+    </div>
   </div>
+
+  <br>
 </template>
 
 <script>
+  import ItemContainerWithDropdown from "../components/ItemContainerWithDropdown.vue"
+  import ResultContainer from "../components/ResultContainer.vue"
 
   export default {
     name: "HomeView",
@@ -12,11 +68,12 @@
 
     },
     components: {
-
+      ItemContainerWithDropdown,
+      ResultContainer,
     },
     data() {
         return {
-
+          width: "250px",
         }
     }
   }
@@ -24,12 +81,20 @@
 
 <style scoped>
   .overviewContainer {
-    max-width: 1200px;
     margin: auto;
-    margin-bottom: 50px;
+    max-width: 1000px;
     min-height: 1000px;
-    text-align: center;
     background-color: white;
+    border-radius: 2%;
+  }
+
+  .busTimingContainer{
+    flex-wrap: wrap;
+  }
+
+  hr{
+    width: 800px;
+    margin: 20px;
   }
 </style>
 

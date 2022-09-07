@@ -35,4 +35,22 @@
   nav a.router-link-exact-active {
     color: #42b983;
   }
+
+  header {
+        margin: 10px;
+    }
+
+  .rowContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .columnContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 </style>
