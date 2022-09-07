@@ -1,37 +1,35 @@
 <template>
-    <div class="overviewContainer">
-        
-    </div>
+  <div class="overviewContainer">
+    <h3>hello</h3>
+  </div>
 </template>
 
 <script>
 
-export default {
-    name: "Overview",
+  export default {
+    name: "HomeView",
     props: {
 
     },
     components: {
+
     },
     data() {
         return {
+
         }
     }
-}
+  }
 </script>
 
 <style scoped>
-
-.overviewContainer {
+  .overviewContainer {
     max-width: 1200px;
     margin: auto;
     margin-bottom: 50px;
     min-height: 1000px;
-    padding: 15px;
-    border-radius: 25px;
     text-align: center;
     background-color: white;
-}
-
+  }
 </style>
 

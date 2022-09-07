@@ -1,57 +1,38 @@
 <template>
-    <Header headerMain="ICT 2103 - Information Management" headerSub="done by Group mikeoxlong"></Header>
-    <Overview></Overview>
-    <Footer githubLink="https://github.com/FS75/ICT2103-mikeoxlong"></Footer>
+  <nav>
+    <router-link to="/">Home</router-link> |
+    <router-link to="/login">Login</router-link>
+  </nav>
+  <router-view/>
 </template>
 
-<script>
-  import Header from "./components/Header.vue"
-  import Overview from "./components/Overview.vue"
-  import Footer from "./components/Footer.vue"
-
-  export default {
-    name: 'Main',
-    components: {
-      Header,
-      Overview,
-      Footer,
-    },
-    data() {
-      return {
-
-      }
-    },
-    methods: {
-
-    },
-    
-  }
-</script>
-
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&display=swap');
-  * {
-    box-sizing: border-box;
-    margin: 0;
+
+  body {
     padding: 0;
+    margin: 0;
   }
 
-#app {
-  font-family: 'Helvetica';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #022B3A;
-  background-color: #E5E5E5;
-  height: 100%;
-}
-.app-container {
-  text-align: center;
-}
-body #app .p-button {
-  margin-left: .2em;
-}
-form {
-  margin-top: 2em;
-}
-</style>
+  #app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    background-color: #E5E5E5;
+    height: 100%;
+  }
 
+  nav {
+    padding: 10px;
+  }
+
+  nav a {
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  nav a.router-link-exact-active {
+    color: #42b983;
+  }
+</style>
