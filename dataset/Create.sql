@@ -3,7 +3,7 @@ BusStopCode INT NOT NULL PRIMARY KEY,
 RoadName VARCHAR (50) NOT NULL,
 Description VARCHAR (50) NOT NULL,
 Latitude DOUBLE NOT NULL,
-Longtitude DOUBLE NOT NULL
+Longitude DOUBLE NOT NULL
 );
 
 CREATE TABLE Bus_Services(
