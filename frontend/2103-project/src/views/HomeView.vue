@@ -1,6 +1,15 @@
 <template>
   <div class="columnContainer overviewContainer">
     <div class="rowContainer">
+      <button @click="sendData">
+        send data
+      </button>
+      <button v-if="buttonWasClicked">
+        {{ store.query }}
+      </button>
+    </div>
+
+    <div class="rowContainer">
       <ItemContainerWithDropdown givenId="busServiceContainer" 
         text="Bus Service"></ItemContainerWithDropdown>
       <ItemContainerWithDropdown givenId="busDirectionContainer" 
@@ -59,6 +68,8 @@
 </template>
 
 <script>
+  import axios from "axios"
+  import { store } from "../main.js"
   import ItemContainerWithDropdown from "../components/ItemContainerWithDropdown.vue"
   import ResultContainer from "../components/ResultContainer.vue"
 
@@ -74,7 +85,27 @@
     data() {
         return {
           width: "250px",
+          data: {},
+          store,
+          buttonWasClicked: false,
         }
+    },
+    methods: {
+      // method to get data from backend
+      getData() {
+        // this.data = await axios.get("http://localhost:3000/");
+        // store.query = this.data.data.message;
+      },
+      // method to send data to backend
+      sendData() {
+        this.buttonWasClicked = true;
+
+        axios.post("http://localhost:3000/", { 
+          query: "SELECT BusStopCode,RoadName,Description FROM bus_stop WHERE RoadName LIKE '%%' OR Description LIKE '%%'"
+        }).then(response => {
+          console.log(response);
+        })
+      },
     }
   }
 </script>

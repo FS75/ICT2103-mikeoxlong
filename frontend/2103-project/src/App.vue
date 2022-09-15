@@ -6,6 +6,21 @@
   <router-view/>
 </template>
 
+<script>
+  import { store } from "./main.js"
+  export default {
+    name: "App",
+    methods: {
+      
+    },
+    data() {
+      return {
+        store,
+      }
+    }
+  }
+</script>
+
 <style>
 
   body {
