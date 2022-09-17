@@ -5,10 +5,30 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-var connection = require("./database");
+let { connection, getBusServices, getBusServicesNo } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+    var busServices = []
+    let query = 'SELECT * FROM Bus_Services;'
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        busServices = JSON.parse(JSON.stringify(rows));
+        res.send(busServices)
+    })
+})
+
+app.get('/api/bus-services', (req, res) => {
+    getBusServices(res)
+})
+
+app.get('/api/bus-services-no', (req, res) => {
+    getBusServicesNo(res)
+})
+
 
 // this is to send data to frontend
 // app.get('/', (req, res) => {
@@ -33,9 +53,7 @@ app.listen(PORT, (error) =>{
             if (err) throw err;
             console.log("DB Connected!!!");
         });
-    }
-    
-    // cant listen to port for some reason
+    } // cant listen to port for some reason
     else
         console.log("Error occurred, server can't start", error);
     }
