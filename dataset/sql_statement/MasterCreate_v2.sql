@@ -32178,7 +32178,7 @@ UPDATE Taxi_Stand SET StnCode = "DT26" WHERE TaxiCode = "I35";
 UPDATE Taxi_Stand SET StnCode = "DT20" WHERE TaxiCode = "C28";
 UPDATE Taxi_Stand SET StnCode = "CC19" WHERE TaxiCode = "F57";
 UPDATE Taxi_Stand SET StnCode = "EW20" WHERE TaxiCode = "F41" or TaxiCode = "F42";
-UPDATE Taxi_Stand SET StnCode = "EW19" WHERE TaxiCode = "F44" or "F43";
+UPDATE Taxi_Stand SET StnCode = "EW19" WHERE TaxiCode = "F44" or TaxiCode = "F43";
 UPDATE Taxi_Stand SET StnCode = "EW23" WHERE TaxiCode = "J07";
 UPDATE Taxi_Stand SET StnCode = "EW22" WHERE TaxiCode = "J05";
 UPDATE Taxi_Stand SET StnCode = "EW22" WHERE TaxiCode = "J06";
