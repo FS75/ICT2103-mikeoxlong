@@ -5,36 +5,30 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-let { connection, getBusServices, getBusServicesNo } = require("./database");
+let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
 
-// app.get('/', (req, res) => {
-//     var busServices = []
-//     let query = 'SELECT * FROM Bus_Services;'
-//     connection.query(query, (err, rows, fields) => {
-//         if (err) throw err
-
-//         busServices = JSON.parse(JSON.stringify(rows));
-//         res.send(busServices)
-//     })
-// })
-
+// GET: Bus Services with details
 app.get('/api/bus-services', (req, res) => {
     getBusServices(res)
 })
 
+// GET: Bus Services Number only
 app.get('/api/bus-services-no', (req, res) => {
     getBusServicesNo(res)
 })
 
-
-// this is to send data to frontend
-// app.get('/', (req, res) => {
-//     res.json({ message: "hello"});
-    
-// });
+/*  
+    GET: Direction of bus service
+    Params: Bus Service Number (get from the dropdown menu)
+    Eg: [api/bus-direction?busService=10]
+*/
+app.get('/api/bus-direction', (req, res) => {
+    const { busService } = req.query
+    getBusStopNameInOneDirection(busService, res)
+})
 
 app.listen(PORT, (error) =>{
 
