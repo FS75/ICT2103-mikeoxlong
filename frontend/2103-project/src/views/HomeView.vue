@@ -11,7 +11,7 @@
 
     <div class="rowContainer">
       <ItemContainerWithDropdown givenId="busServiceContainer" 
-        text="Bus Service"></ItemContainerWithDropdown>
+        text="Bus Service" :busServicesToBeReceived=busServicesToBeSent></ItemContainerWithDropdown>
       <ItemContainerWithDropdown givenId="busDirectionContainer" 
         text="Direction"></ItemContainerWithDropdown>
     </div>
@@ -85,10 +85,19 @@
     data() {
         return {
           width: "250px",
-          data: {},
+          busServicesToBeSent: {},
           store,
           buttonWasClicked: false,
         }
+    },
+    async mounted() {
+      this.busServicesToBeSent = await axios.get("http://localhost:3000/api/bus-services");
+      console.log("home mounted");
+      //console.log(this.busServicesToBeSent);
+
+      // for(let i = 0; i < this.data.busServices.data.length; i++){
+      //   console.log(this.data.busServices.data[i].ServiceNo);
+      // }
     },
     methods: {
       // method to get data from backend
@@ -96,17 +105,16 @@
         // this.data = await axios.get("http://localhost:3000/");
         // store.query = this.data.data.message;
       },
+
       // method to send data to backend
-      sendData() {
+      async sendData() {
         this.buttonWasClicked = true;
 
-        axios.post("http://localhost:3000/", { 
-          query: "SELECT BusStopCode,RoadName,Description FROM bus_stop WHERE RoadName LIKE '%%' OR Description LIKE '%%'"
-        }).then(response => {
-          console.log(response);
-        })
+        const response = await axios.get("http://localhost:3000/api/bus-services");
+        this.data = await response;
+        // console.log(this.data);
       },
-    }
+    },
   }
 </script>
 

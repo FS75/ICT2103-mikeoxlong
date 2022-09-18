@@ -3,12 +3,21 @@
 const { response } = require('express');
 var mysql = require('mysql')
 
+// var connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'Juleus',
+//     password: 'somepassword',
+//     database: 'projectdb',
+// });
+
+// kc
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'Asdfgh568!',
     database: 'ICT2103_Project',
 });
+
 
 const getBusServices = (res) => {
     var data = []

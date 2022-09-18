@@ -1,8 +1,12 @@
 <template>
-    <div class="itemContainerWithDropdown" :style="{width: givenWidth}">
+    <div class="itemContainerWithDropdown" :style="{width: givenWidth}" :busServicesArray="busServicesToBeReceived">
         <header>{{text}}</header>
         <select :id=givenId>
-            <option selected disabled>Choose a {{text}}</option>
+            <option selected disabled>Choose a {{this.text}}</option>
+            <option v-if="this.givenId == 'busServiceContainer'" 
+                    v-for="bus in this.busServicesArray.data">
+                    {{ bus.ServiceNo }}
+            </option>
         </select>
     </div>
 </template>
@@ -17,6 +21,21 @@
             text: String,
             givenId: String,
             givenWidth: String,
+            busServicesToBeReceived: Object,
+        },
+        data() {
+            return {
+                busServicesArray: {
+                    data: [],
+                },
+            }
+        },
+        watch: {
+            busServicesToBeReceived() {
+                console.log("bus services received in child");
+                this.busServicesArray = this.busServicesToBeReceived;
+                console.log(this.busServicesArray);
+            }
         }
     }
 </script>

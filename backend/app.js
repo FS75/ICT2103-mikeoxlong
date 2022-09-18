@@ -10,16 +10,16 @@ let { connection, getBusServices, getBusServicesNo } = require("./database");
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-    var busServices = []
-    let query = 'SELECT * FROM Bus_Services;'
-    connection.query(query, (err, rows, fields) => {
-        if (err) throw err
+// app.get('/', (req, res) => {
+//     var busServices = []
+//     let query = 'SELECT * FROM Bus_Services;'
+//     connection.query(query, (err, rows, fields) => {
+//         if (err) throw err
 
-        busServices = JSON.parse(JSON.stringify(rows));
-        res.send(busServices)
-    })
-})
+//         busServices = JSON.parse(JSON.stringify(rows));
+//         res.send(busServices)
+//     })
+// })
 
 app.get('/api/bus-services', (req, res) => {
     getBusServices(res)
@@ -35,13 +35,6 @@ app.get('/api/bus-services-no', (req, res) => {
 //     res.json({ message: "hello"});
     
 // });
-
-// receive query from frontend 
-// following that, we should send query to sql
-app.post('/', (req, res) => {
-    var query = req.body;
-    console.log(query);
-});
 
 app.listen(PORT, (error) =>{
 
