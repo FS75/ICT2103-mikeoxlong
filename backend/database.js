@@ -11,6 +11,13 @@ var mysql = require('mysql')
 //     database: 'projectdb',
 // });
 
+var connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'Asdfgh568!',
+    database: 'ICT2103_Project',
+});
+
 
 // Bus services with details
 const getBusServices = (res) => {
@@ -58,4 +65,4 @@ const getBusStopNameInOneDirection = (busService, res) => {
     })
 }
 
-module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection};
+module.exports = { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection };

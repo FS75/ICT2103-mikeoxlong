@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "dev": "concurrently \"cd ../../backend && node app.js\" \"npm run serve\""
+    "update-fe": "npm install && npm update",
+    "update-be": "cd ../../backend && npm install && npm update",
+    "dev": "npm run update-fe && npm run update-be && concurrently \"cd ../../backend && npx nodemon app.js\" \"npm run serve\""
   },
   "dependencies": {
     "axios": "^0.27.2",
