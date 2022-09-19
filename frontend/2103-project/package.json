@@ -7,7 +7,8 @@
     "build": "vue-cli-service build",
     "update-fe": "npm install && npm update",
     "update-be": "cd ../../backend && npm install && npm update",
-    "dev": "npm run update-fe && npm run update-be && concurrently \"cd ../../backend && npx nodemon app.js\" \"npm run serve\""
+    "update-all": "npm run update-fe && npm run update-be",
+    "dev": "concurrently \"cd ../../backend && npx nodemon app.js\" \"npm run serve\""
   },
   "dependencies": {
     "axios": "^0.27.2",
