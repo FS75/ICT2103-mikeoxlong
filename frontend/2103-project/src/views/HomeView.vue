@@ -20,7 +20,7 @@
       <ItemContainerWithDropdown givenId="busStartingContainer" givenWidth="400px"
         text="Starting Bus Stop" :busRoutes=this.data.busRoutes.data></ItemContainerWithDropdown>
       <ItemContainerWithDropdown givenId="busDestinationContainer" givenWidth="400px"
-        text="Destination Bus Stop" :busRoutes=this.data.busRoutes.data></ItemContainerWithDropdown>
+        text="Destination Bus Stop" :busRoutes2=this.data.busRoutes2.data></ItemContainerWithDropdown>
     </div>
     
     <hr>
@@ -88,6 +88,7 @@
           data: {
             busServices: {},
             busRoutes: {},
+            busRoutes2: {},
           },
           store,
           buttonWasClicked: false,
@@ -102,6 +103,9 @@
     },
     watch: {
       busRoutes() {
+
+      },
+      busRoutes2() {
 
       }
     }

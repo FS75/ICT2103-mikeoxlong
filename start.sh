@@ -5,3 +5,4 @@ npm run dev &
 (sleep 10
 echo "Opening browser"
 start http://localhost:8080/ & open http://localhost:8080/)
+pause
