@@ -1,2 +1,2 @@
-start backend.sh
-start frontend.sh
+cd frontend/2103-project
+npm run dev
