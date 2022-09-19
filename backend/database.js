@@ -50,7 +50,6 @@ const getBusStopNameInOneDirection = (busService, res) => {
         if (err) throw err
 
         rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        // console.log(rawData)
         for(let row of rawData){
             data.push(row.Description); 
         }
@@ -58,4 +57,20 @@ const getBusStopNameInOneDirection = (busService, res) => {
     })
 }
 
-module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection};
+const getBusStopsOfServiceNo = (busService, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT *
+                    FROM bus_route BR JOIN bus_stop BS
+                    ON BR.BusStopCode = BS.BusStopCode
+                    WHERE BR.ServiceNo = '${busService}'
+                    ORDER BY BR.ServiceNo, BR.Direction, BR.StopSequence; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })                
+}
+
+module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo};
