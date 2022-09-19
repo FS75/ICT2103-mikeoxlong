@@ -5,13 +5,13 @@
         send data
       </button>
       <button v-if="buttonWasClicked">
-        {{ store.query }}
+        <!-- {{ store.query }} -->
       </button>
     </div>
 
     <div class="rowContainer">
       <ItemContainerWithDropdown givenId="busServiceContainer" 
-        text="Bus Service" :busServicesToBeReceived=busServicesToBeSent></ItemContainerWithDropdown>
+        text="Bus Service" :buses=this.data.busServicesToBeSent.data property="ServiceNo"></ItemContainerWithDropdown>
       <ItemContainerWithDropdown givenId="busDirectionContainer" 
         text="Direction"></ItemContainerWithDropdown>
     </div>
@@ -85,19 +85,18 @@
     data() {
         return {
           width: "250px",
-          busServicesToBeSent: {},
+          data: {
+            busServicesToBeSent: {},
+            busStartingStopsToBeSent: {},
+          },
           store,
           buttonWasClicked: false,
         }
     },
     async mounted() {
-      this.busServicesToBeSent = await axios.get("http://localhost:3000/api/bus-services");
+      this.data.busServicesToBeSent = await axios.get("http://localhost:3000/api/bus-services");
       console.log("home mounted");
-      //console.log(this.busServicesToBeSent);
-
-      // for(let i = 0; i < this.data.busServices.data.length; i++){
-      //   console.log(this.data.busServices.data[i].ServiceNo);
-      // }
+      // console.log(this.busServicesToBeSent.data);
     },
     methods: {
       // method to get data from backend

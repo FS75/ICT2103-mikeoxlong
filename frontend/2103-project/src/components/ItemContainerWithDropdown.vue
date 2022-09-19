@@ -1,11 +1,10 @@
 <template>
-    <div class="itemContainerWithDropdown" :style="{width: givenWidth}" :busServicesArray="busServicesToBeReceived">
-        <header>{{text}}</header>
-        <select :id=givenId>
-            <option selected disabled>Choose a {{this.text}}</option>
-            <option v-if="this.givenId == 'busServiceContainer'" 
-                    v-for="bus in this.busServicesArray.data">
-                    {{ bus.ServiceNo }}
+    <div class="itemContainerWithDropdown" :style="{ width: givenWidth }">
+        <header>{{ text }}</header>
+        <select :id=givenId @change="onChange($event)">
+            <option selected disabled>Choose a {{ this.text }}</option>
+            <option v-for="bus in this.buses">
+                {{ bus[property] }}
             </option>
         </select>
     </div>
@@ -21,20 +20,20 @@
             text: String,
             givenId: String,
             givenWidth: String,
-            busServicesToBeReceived: Object,
+            buses: Object,
+            busStartingStops: Object,
+            property: String,
         },
-        data() {
-            return {
-                busServicesArray: {
-                    data: [],
-                },
-            }
-        },
-        watch: {
-            busServicesToBeReceived() {
-                console.log("bus services received in child");
-                this.busServicesArray = this.busServicesToBeReceived;
-                console.log(this.busServicesArray);
+        methods: {
+            async onChange(event) {
+                if (this.property == "ServiceNo")
+                    console.log("User selected bus service: " + event.target.value);
+
+                // for later use - starting bus stops
+                //this.$parent.data.busStartingStops = await axios.get("http://localhost:3000/api/bus-starting-stops");
+
+                // for later use - destination bus stops
+                //this.$parent.data.busStartingStops = await axios.get("http://localhost:3000/api/bus-destination-stops");
             }
         }
     }
