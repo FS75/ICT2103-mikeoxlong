@@ -4,19 +4,19 @@ const { response } = require('express');
 var mysql = require('mysql')
 
 //----------------------- USE YOUR OWN CONNECTION HERE -----------------------
-// var connection = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'Juleus',
-//     password: 'somepassword',
-//     database: 'projectdb',
-// });
-
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'Asdfgh568!',
-    database: 'ICT2103_Project',
+    user: 'Juleus',
+    password: 'somepassword',
+    database: 'projectdb',
 });
+
+// var connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'Asdfgh568!',
+//     database: 'ICT2103_Project',
+// });
 
 
 // Bus services with details

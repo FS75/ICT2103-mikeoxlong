@@ -37,6 +37,7 @@ app.get('/api/bus-direction', (req, res) => {
 */
 app.get('/api/bus-stops', (req, res) => {
     const { busService } = req.query
+    console.log(busService)
     getBusStopsOfServiceNo(busService, res)
 })
 

@@ -10,17 +10,17 @@
     </div>
 
     <div class="rowContainer">
-      <ItemContainerWithDropdown givenId="busServiceContainer" 
-        text="Bus Service" :buses=this.data.busServicesToBeSent.data property="ServiceNo"></ItemContainerWithDropdown>
-      <ItemContainerWithDropdown givenId="busDirectionContainer" 
-        text="Direction"></ItemContainerWithDropdown>
+      <ItemContainerWithDropdown givenId="busServiceContainer"
+        text="Bus Service" :busServices=this.data.busServices.data></ItemContainerWithDropdown>
+      <!-- <ItemContainerWithDropdown givenId="busDirectionContainer" 
+        text="Direction"></ItemContainerWithDropdown> -->
     </div>
 
     <div class="rowContainer">
-      <ItemContainerWithDropdown givenId="busStartingContainer" 
-        text="Starting Bus Stop"></ItemContainerWithDropdown>
-      <ItemContainerWithDropdown givenId="busDestinationContainer" 
-        text="Destination Bus Stop"></ItemContainerWithDropdown>
+      <ItemContainerWithDropdown givenId="busStartingContainer" givenWidth="400px"
+        text="Starting Bus Stop" :busRoutes=this.data.busRoutes.data></ItemContainerWithDropdown>
+      <ItemContainerWithDropdown givenId="busDestinationContainer" givenWidth="400px"
+        text="Destination Bus Stop" :busRoutes=this.data.busRoutes.data></ItemContainerWithDropdown>
     </div>
     
     <hr>
@@ -50,7 +50,7 @@
 
         <div class="rowContainer">
           <ResultContainer headerText="Saturday First Bus Timing" value="05:00"></ResultContainer>
-        <ResultContainer headerText="Saturday Last Bus Timing" value="23:00"></ResultContainer>
+          <ResultContainer headerText="Saturday Last Bus Timing" value="23:00"></ResultContainer>
         </div>
 
         <div class="rowContainer">
@@ -86,34 +86,25 @@
         return {
           width: "250px",
           data: {
-            busServicesToBeSent: {},
-            busStartingStopsToBeSent: {},
+            busServices: {},
+            busRoutes: {},
           },
           store,
           buttonWasClicked: false,
         }
     },
     async mounted() {
-      this.data.busServicesToBeSent = await axios.get("http://localhost:3000/api/bus-services");
+      this.data.busServices = await axios.get(store.BACKEND_API_URL + "bus-services");
       console.log("home mounted");
-      // console.log(this.busServicesToBeSent.data);
+      // console.log(this.data.data);
     },
     methods: {
-      // method to get data from backend
-      getData() {
-        // this.data = await axios.get("http://localhost:3000/");
-        // store.query = this.data.data.message;
-      },
-
-      // method to send data to backend
-      async sendData() {
-        this.buttonWasClicked = true;
-
-        const response = await axios.get("http://localhost:3000/api/bus-services");
-        this.data = await response;
-        // console.log(this.data);
-      },
     },
+    watch: {
+      busRoutes() {
+
+      }
+    }
   }
 </script>
 
