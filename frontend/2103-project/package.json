@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "dev": "concurrently \"cd ../../backend && ls\" \"npm run serve\""
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "concurrently": "^7.4.0",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
