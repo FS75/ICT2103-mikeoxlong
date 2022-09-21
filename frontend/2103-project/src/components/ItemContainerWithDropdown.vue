@@ -24,15 +24,8 @@
             <!-- destination bus stops -->
             <!-- if only 1 direction, show all -->
             <option v-if="text == 'Destination Bus Stop'"
-                    v-for="route in busRoutes"
-                    :key="forceKey">
-                <h3 v-if="this.startingDirection == 1 && route.Direction == 1">
-                    {{ route.Description + " - " + route.RoadName + " (" + route.BusStopCode + ")" }}
-                </h3>
-
-                <h3 v-else-if="this.startingDirection == 2 && route.Direction == 2">
-                    {{ route.Description + " - " + route.RoadName + " (" + route.BusStopCode + ")" }}
-                </h3>
+                    v-for="route in busRoutes">
+                {{ route.Description + " - " + route.RoadName + " (" + route.BusStopCode + ")" }}
             </option> 
         </select>
     </div>
@@ -62,7 +55,7 @@
                 destinationDistance: 0,
                 startingDirection: 0,
                 destinationDirection: 0,
-                forceKey: 0,
+                length: 0
             }
         },
         methods: {
@@ -82,6 +75,8 @@
                     this.$parent.data.busRoutes = await axios.get(store.BACKEND_API_URL + 
                         "bus-stops?busService="+busService+"");
 
+                    this.$parent.resetStartDestBusStop();
+
                     console.log(this.$parent.data.busRoutes);
                 }
 
@@ -99,9 +94,7 @@
                     for (let i = -6; i < -1; i++)
                         startingBusStopCode = startingBusStopCode.concat(event.target.value[event.target.value.length + i]);
 
-                    //console.log(busStopCode);
-                    // console.log("hello " + this.$parent.data.busRoutes)
-
+                    // find starting bus stop direction
                     for (let i = 0; i < this.busRoutes.length; i++) {
                         if (this.busRoutes[i].BusStopCode == startingBusStopCode) {
                             this.startingDistance = parseFloat(this.busRoutes[i].Distance);
@@ -109,13 +102,30 @@
                             break;
                         }
                     }
+                    // to get length/amount of bus stops for the direction selected
+                    for (let i = 0; i < this.busRoutes.length; i++) {
+                        if (this.busRoutes[i].Direction == 2) {
+                            this.length = i
+                            break;
+                        }
+                        else {
+                            this.length = this.busRoutes.length
+                        }
+                    }
+                    console.log(this.length)
+                    console.log(this.busRoutes)
 
-                    console.log("Start dist: " + this.startingDistance);
+                    //slice array in accordance to only direction 1 or 2, pass to parent to update v-for looping array
+                    if (this.startingDirection == 1)
+                        this.$parent.data.busDest = this.busRoutes.slice(0, this.length);
+                    else if (this.startingDirection == 2)
+                        this.$parent.data.busDest = this.busRoutes.slice(this.length, -1);
+                        
+                    console.log(this.$parent.data.busDest);
                     console.log("Start dir: " + this.startingDirection);
 
-                    this.forceRender();
                 }
-
+                // i think here is put after user selected their dest, display appropiate info or call relevant stuff
                 if (this.text == "Destination Bus Stop") {
                     // pull distance from destination bus stop
 
@@ -137,11 +147,6 @@
                     console.log("Dest dir: " + this.destinationDirection);
                 }
             },
-            forceRender() {
-                this.forceKey += 1;
-                this.$forceUpdate();
-                console.log("Force rendered");
-            }
         },
     }
 </script>

@@ -20,7 +20,7 @@
       <ItemContainerWithDropdown givenId="busStartingContainer" givenWidth="400px"
         text="Starting Bus Stop" :busRoutes=this.data.busRoutes.data></ItemContainerWithDropdown>
       <ItemContainerWithDropdown givenId="busDestinationContainer" givenWidth="400px"
-        text="Destination Bus Stop" :busRoutes=this.data.busRoutes.data></ItemContainerWithDropdown>
+        text="Destination Bus Stop" :busRoutes=this.data.busDest></ItemContainerWithDropdown>
     </div>
     
     <hr>
@@ -88,6 +88,7 @@
           data: {
             busServices: {},
             busRoutes: {},
+            busDest: {},
           },
           store,
           buttonWasClicked: false,
@@ -99,6 +100,13 @@
       // console.log(this.data.data);
     },
     methods: {
+      resetStartDestBusStop() {
+        var StartdropDown = document.getElementById("busStartingContainer");
+        StartdropDown.selectedIndex = 0;
+        var DestdropDown = document.getElementById("busDestinationContainer");
+        DestdropDown.selectedIndex = 0;
+        this.data.busDest = 0;
+            }
     },
     watch: {
       busRoutes() {
