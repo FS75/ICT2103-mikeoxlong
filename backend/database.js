@@ -5,10 +5,10 @@ var mysql = require('mysql')
 
 //----------------------- USE YOUR OWN CONNECTION HERE -----------------------
 var connection = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '',
-    database: 'project',
+    host: 'localhost',
+    user: 'Juleus',
+    password: 'somepassword',
+    database: 'projectdb',
 });
 
 // var connection = mysql.createConnection({

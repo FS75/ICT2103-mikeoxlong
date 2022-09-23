@@ -55,8 +55,7 @@
                 destinationDistance: 0,
                 startingDirection: 0,
                 destinationDirection: 0,
-                length: 0,
-                distanceDiff: 0
+                length: 0
             }
         },
         methods: {
@@ -113,6 +112,7 @@
                             this.length = this.busRoutes.length
                         }
                     }
+                    console.log(this.length)
                     console.log(this.busRoutes)
 
                     //slice array in accordance to only direction 1 or 2, pass to parent to update v-for looping array
@@ -121,17 +121,14 @@
                     else if (this.startingDirection == 2)
                         this.$parent.data.busDest = this.busRoutes.slice(this.length, -1);
                         
-                    this.$parent.data.startingDistance = this.startingDistance;
                     console.log(this.$parent.data.busDest);
-                    console.log("Start dist: " + this.startingDistance);
+                    console.log("Start dir: " + this.startingDirection);
 
                 }
                 // i think here is put after user selected their dest, display appropiate info or call relevant stuff
                 if (this.text == "Destination Bus Stop") {
-                    // reset concat string
-                    this.$parent.data.distanceDiff = ""
-
                     // pull distance from destination bus stop
+
                     var destinationBusStopCode = ""
 
                     // because JS dosent have negative indexing lol
@@ -145,13 +142,9 @@
                             break;
                         }
                     }
-                    // have to pass to parent cause startingDistance in child gets reset to 0 when Destination dropdown value get change(/get selected value)
-                    this.$parent.data.destinationDistance = this.destinationDistance;
-                    this.$parent.getDistanceDiff();
-                    
+
                     console.log("Dest dist: " + this.destinationDistance);
-                    console.log("Dest diff: " + this.distanceDiff);
-                    console.log("Start dist: " + this.startingDistance);
+                    console.log("Dest dir: " + this.destinationDirection);
                 }
             },
         },
