@@ -27,7 +27,7 @@
 
     <div class="columnContainer resultContainer">
       <div class="rowContainer importantInfoContainer">
-        <ResultContainer headerText="Distance from Start to Destination" value="0 km"></ResultContainer>
+        <ResultContainer headerText="Distance from Start to Destination" :value=this.data.distanceDiff></ResultContainer>
       </div>
 
       <div class="rowContainer importantInfoContainer">
@@ -89,6 +89,9 @@
             busServices: {},
             busRoutes: {},
             busDest: {},
+            distanceDiff: "",
+            startingDistance: 0,
+            destinationDistance: 0
           },
           store,
           buttonWasClicked: false,
@@ -105,8 +108,14 @@
         StartdropDown.selectedIndex = 0;
         var DestdropDown = document.getElementById("busDestinationContainer");
         DestdropDown.selectedIndex = 0;
-        this.data.busDest = 0;
-            }
+        this.data.busDest = {};
+        },
+        getDistanceDiff() {
+            var Difference = this.data.destinationDistance - this.data.startingDistance;
+            let Difference2DP = Difference.toFixed(2);
+            this.data.distanceDiff = this.data.distanceDiff.concat(Difference2DP + " km");
+            console.log("Concat Diff: " + this.data.distanceDiff);
+      }
     },
     watch: {
       busRoutes() {
