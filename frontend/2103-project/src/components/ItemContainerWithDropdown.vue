@@ -51,6 +51,7 @@
         },
         data() {
             return {
+                selection: 0,
                 startingDistance: 0,
                 destinationDistance: 0,
                 startingDirection: 0,
@@ -95,9 +96,13 @@
                     for (let i = -6; i < -1; i++)
                         startingBusStopCode = startingBusStopCode.concat(event.target.value[event.target.value.length + i]);
 
+                    if (startingBusStopCode[0] == "(") {
+                        startingBusStopCode = startingBusStopCode.slice(1)
+                    }
                     // find starting bus stop direction
                     for (let i = 0; i < this.busRoutes.length; i++) {
                         if (this.busRoutes[i].BusStopCode == startingBusStopCode) {
+                            this.selection = i + 1;
                             this.startingDistance = parseFloat(this.busRoutes[i].Distance);
                             this.startingDirection = parseFloat(this.busRoutes[i].Direction);
                             break;
@@ -114,12 +119,14 @@
                         }
                     }
                     console.log(this.busRoutes)
+                    console.log(this.selection)
+                    console.log(startingBusStopCode[0])
 
                     //slice array in accordance to only direction 1 or 2, pass to parent to update v-for looping array
                     if (this.startingDirection == 1)
-                        this.$parent.data.busDest = this.busRoutes.slice(0, this.length);
+                        this.$parent.data.busDest = this.busRoutes.slice(this.selection, this.length);
                     else if (this.startingDirection == 2)
-                        this.$parent.data.busDest = this.busRoutes.slice(this.length, -1);
+                        this.$parent.data.busDest = this.busRoutes.slice(this.selection, this.busRoutes.length);
                         
                     this.$parent.data.startingDistance = this.startingDistance;
                     console.log(this.$parent.data.busDest);
