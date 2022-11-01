@@ -7,7 +7,7 @@
             <!-- bus services -->
             <option v-if="text == 'Bus Service'" 
                     v-for="bus in busServices">
-                {{ bus.ServiceNo + " [address] "}}
+                {{ bus.ServiceNo }}
             </option>
 
             <!-- starting / destination bus stops -->
@@ -18,7 +18,6 @@
             <option v-if="text == 'Starting Bus Stop'"
                     v-for="route in busRoutes">
                     <h3>{{ route.Description + " - " + route.RoadName + " (" + route.BusStopCode + ")"}}</h3>
-                
             </option>
 
             <!-- destination bus stops -->
@@ -63,23 +62,19 @@
         methods: {
             async onChange(event) {
                 if (this.text == "Bus Service") {
-                    var busServiceIndex = event.target.value.indexOf("[");
 
-                    var busService = "";
-
-                    for (let i = 0; i < busServiceIndex; i++)
-                        busService = busService.concat(event.target.value[i]);
+                    var busService = event.target.value;
                     
                     //console.log(busService)
 
-                    // console.log("User selected bus service: " + event.target.value);
+                    console.log("User selected bus service: " + event.target.value);
 
-                    this.$parent.data.busRoutes = await axios.get(store.BACKEND_API_URL + 
+                    this.$parent.busRoutes = await axios.get(store.BACKEND_API_URL + 
                         "bus-stops?busService="+busService+"");
 
                     this.$parent.resetStartDestBusStop();
 
-                    console.log(this.$parent.data.busRoutes);
+                    console.log(this.$parent.busRoutes);
                 }
 
                 if (this.text == "Starting Bus Stop") {
@@ -118,25 +113,27 @@
                             this.length = this.busRoutes.length
                         }
                     }
-                    console.log(this.busRoutes)
-                    console.log(this.selection)
-                    console.log(startingBusStopCode[0])
+                    // console.log(this.busRoutes)
+                    // console.log(this.selection)
+                    // console.log(startingBusStopCode[0])
 
                     //slice array in accordance to only direction 1 or 2, pass to parent to update v-for looping array
                     if (this.startingDirection == 1)
-                        this.$parent.data.busDest = this.busRoutes.slice(this.selection, this.length);
+                        this.$parent.busDest = this.busRoutes.slice(this.selection, this.length);
                     else if (this.startingDirection == 2)
-                        this.$parent.data.busDest = this.busRoutes.slice(this.selection, this.busRoutes.length);
+                        this.$parent.busDest = this.busRoutes.slice(this.selection, this.busRoutes.length);
                         
-                    this.$parent.data.startingDistance = this.startingDistance;
-                    console.log(this.$parent.data.busDest);
-                    console.log("Start dist: " + this.startingDistance);
+                    this.$parent.startingDistance = this.startingDistance;
+                    // console.log(this.$parent.busDest);
+                    // console.log("Start dist: " + this.startingDistance);
+
+                    console.log("starting bus stop code: " + startingBusStopCode);
 
                 }
                 // i think here is put after user selected their dest, display appropiate info or call relevant stuff
                 if (this.text == "Destination Bus Stop") {
                     // reset concat string
-                    this.$parent.data.distanceDiff = ""
+                    this.$parent.distanceDiff = ""
 
                     // pull distance from destination bus stop
                     var destinationBusStopCode = ""
@@ -145,6 +142,10 @@
                     for (let i = -6; i < -1; i++)
                         destinationBusStopCode = destinationBusStopCode.concat(event.target.value[event.target.value.length + i]);
 
+                    if (destinationBusStopCode[0] == "(") 
+                        destinationBusStopCode = destinationBusStopCode.slice(1);
+
+                    console.log("destination bus stop code: " + destinationBusStopCode);
                     for (let i = 0; i < this.busRoutes.length; i++) {
                         if (this.busRoutes[i].BusStopCode == destinationBusStopCode) {
                             this.destinationDistance = parseFloat(this.busRoutes[i].Distance);
@@ -153,12 +154,12 @@
                         }
                     }
                     // have to pass to parent cause startingDistance in child gets reset to 0 when Destination dropdown value get change(/get selected value)
-                    this.$parent.data.destinationDistance = this.destinationDistance;
+                    this.$parent.destinationDistance = this.destinationDistance;
                     this.$parent.getDistanceDiff();
                     
-                    console.log("Dest dist: " + this.destinationDistance);
-                    console.log("Dest diff: " + this.distanceDiff);
-                    console.log("Start dist: " + this.startingDistance);
+                    // console.log("Dest dist: " + this.destinationDistance);
+                    // console.log("Dest diff: " + this.distanceDiff);
+                    // console.log("Start dist: " + this.startingDistance);
                 }
             },
         },

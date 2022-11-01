@@ -11,25 +11,25 @@
 
     <div class="rowContainer">
       <ItemContainerWithDropdown givenId="busServiceContainer"
-        text="Bus Service" :busServices=this.data.busServices.data></ItemContainerWithDropdown>
+        text="Bus Service" :busServices=this.busServices.data></ItemContainerWithDropdown>
       <!-- <ItemContainerWithDropdown givenId="busDirectionContainer" 
         text="Direction"></ItemContainerWithDropdown> -->
     </div>
 
     <div class="rowContainer">
       <ItemContainerWithDropdown givenId="busStartingContainer" givenWidth="400px"
-        text="Starting Bus Stop" :busRoutes=this.data.busRoutes.data></ItemContainerWithDropdown>
+        text="Starting Bus Stop" :busRoutes=this.busRoutes.data></ItemContainerWithDropdown>
       <ItemContainerWithDropdown givenId="busDestinationContainer" givenWidth="400px"
-        text="Destination Bus Stop" :busRoutes=this.data.busDest></ItemContainerWithDropdown>
+        text="Destination Bus Stop" :busRoutes=this.busDest></ItemContainerWithDropdown>
     </div>
     
     <hr>
 
     <div class="columnContainer resultContainer">
       <div class="rowContainer importantInfoContainer">
-        <ResultContainer headerText="Distance from Start to Destination" :value=this.data.distanceDiff></ResultContainer>
+        <ResultContainer headerText="Distance from Start to Destination" :value=this.distanceDiff></ResultContainer>
       </div>
-
+<!-- 
       <div class="rowContainer importantInfoContainer">
         <ResultContainer headerText="AM Peak Frequency" value="1 - 3 min"></ResultContainer>
         <ResultContainer headerText="AM Offpeak Frequency" value="1 - 5 min"></ResultContainer>
@@ -38,7 +38,7 @@
       <div class="rowContainer importantInfoContainer">
         <ResultContainer headerText="PM Peak Frequency" value="1 - 3 min"></ResultContainer>
         <ResultContainer headerText="PM Offpeak Frequency" value="1 - 5 min"></ResultContainer>
-      </div>
+      </div> -->
 
       <hr>
       
@@ -85,20 +85,19 @@
     data() {
         return {
           width: "250px",
-          data: {
-            busServices: {},
-            busRoutes: {},
-            busDest: {},
-            distanceDiff: "",
-            startingDistance: 0,
-            destinationDistance: 0
-          },
+          busServices: {},
+          busRoutes: {},
+          busDest: {},
+          distanceDiff: "",
+          startingDistance: 0,
+          destinationDistance: 0,
           store,
           buttonWasClicked: false,
         }
     },
     async mounted() {
-      this.data.busServices = await axios.get(store.BACKEND_API_URL + "bus-services");
+      this.busServices = await axios.get(store.BACKEND_API_URL + "bus-services");
+      console.log(this.busServices);
       console.log("home mounted");
       // console.log(this.data.data);
     },
@@ -108,13 +107,13 @@
         StartdropDown.selectedIndex = 0;
         var DestdropDown = document.getElementById("busDestinationContainer");
         DestdropDown.selectedIndex = 0;
-        this.data.busDest = {};
+        this.busDest = {};
         },
         getDistanceDiff() {
-            var Difference = this.data.destinationDistance - this.data.startingDistance;
+            var Difference = this.destinationDistance - this.startingDistance;
             let Difference2DP = Difference.toFixed(2);
-            this.data.distanceDiff = this.data.distanceDiff.concat(Difference2DP + " km");
-            console.log("Concat Diff: " + this.data.distanceDiff);
+            this.distanceDiff = this.distanceDiff.concat(Difference2DP + " km");
+            console.log("Concat Diff: " + this.distanceDiff);
       }
     },
     watch: {
@@ -126,14 +125,6 @@
 </script>
 
 <style scoped>
-  .overviewContainer {
-    margin: auto;
-    max-width: 1000px;
-    min-height: 1000px;
-    background-color: white;
-    border-radius: 2%;
-  }
-
   .busTimingContainer{
     flex-wrap: wrap;
   }

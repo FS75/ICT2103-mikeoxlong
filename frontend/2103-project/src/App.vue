@@ -1,7 +1,7 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
-    <router-link to="/login">Login</router-link>
+    <router-link to="/admin">Admin</router-link>
   </nav>
   <router-view/>
 </template>
@@ -67,5 +67,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+
+  .overviewContainer {
+    margin: auto;
+    max-width: 1000px;
+    min-height: 1000px;
+    background-color: white;
+    border-radius: 2%;
   }
 </style>

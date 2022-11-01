@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "bootstrap": "^5.2.2",
+    "bootstrap-vue": "^2.23.1",
     "concurrently": "^7.4.0",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13",
+    "vue": "^3.2.41",
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
