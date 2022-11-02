@@ -1,3 +1,15 @@
+--VERSION 3--
+
+STEP 1: MasterCreate_v2.sql
+STEP 2: createIndex.sql
+
+--VERSION 2--
+
+STEP 1: MasterCreate_v1.sql
+STEP 2: updateMRTStation.sql
+STEP 3: updateTaxiStand.sql
+STEP 4: createIndex.sql
+
 --VERSION 1--
 
 STEP 1: CreateTable.sql
@@ -12,14 +24,5 @@ STEP 4: insertTaxiStand.sql
 STEP 5: insertMRTStation.sql
 STEP 6: updateMRTStation.sql
 STEP 7: updateTaxiStand.sql
+STEP 8: createIndex.sql
 
---VERSION 2--
-
-STEP 1: MasterCreate_v1.sql
-STEP 2: updateMRTStation.sql
-STEP 2: updateTaxiStand.sql
-
-
---VERSION 3--
-
-STEP 1: MasterCreate_v2.sql
