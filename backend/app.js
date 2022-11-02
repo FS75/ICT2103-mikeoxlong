@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo } = require("./database");
+let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, updateBusService } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -41,8 +41,27 @@ app.get('/api/bus-stops', (req, res) => {
     getBusStopsOfServiceNo(busService, res)
 })
 
-app.listen(PORT, (error) =>{
+/* ---------- UPDATE END POINTS ----------*/ 
+/* 
+    UPDATE: One single bus service
+    Two ways to do this:
+        1. Send only the updated whole bus stop object as a json in the body of the request
+        2. Send only the value we want to update as a key, value json in body
+    Here, I am doing the second method
+*/
+app.put('/api/bus-services/', (req, res) => {
+    const { busService } = req.query
+    const newData = req.body
+    const key = Object.keys(newData)[0]
+    const value = Object.values(newData)[0]
+    console.log(busService)
+    updateBusService(busService, key, value, res)
+})
 
+
+
+/* Start listening to port to connect to DB */
+app.listen(PORT, (error) =>{
     // listening to port just fine
     if(!error) {
         console.log("Server is Successfully Running, App is listening on port "+ PORT)
