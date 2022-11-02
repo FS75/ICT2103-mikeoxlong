@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo } = require("./database");
+let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getMRTStationName, getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -38,6 +38,23 @@ app.get('/api/bus-direction', (req, res) => {
 app.get('/api/bus-stops', (req, res) => {
     const { busService } = req.query
     getBusStopsOfServiceNo(busService, res)
+})
+
+// GET: All MRT Station in database
+app.get('/api/MRTStation', (req, res) => {
+    getMRTStationName(res)
+})
+
+//GET: MRT Station from bus service picked
+app.get('/api/MRTStation-ServiceNo', (req, res) => {
+    const { busService } = req.query
+    getMRTStationNameFromServiceNo(busService, res)
+})
+
+//GET: Taxi Stand from bus service picked
+app.get('/api/TaxiStand-ServiceNo', (req, res) => {
+    const { busService } = req.query
+    getTaxiStandFromServiceNo(busService, res)
 })
 
 app.listen(PORT, (error) =>{

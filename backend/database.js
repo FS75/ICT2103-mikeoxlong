@@ -14,8 +14,8 @@ var mysql = require('mysql')
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Asdfgh568!',
-    database: 'ICT2103_Project',
+    password: 'password',
+    database: 'ict2103',
 });
 
 
@@ -81,4 +81,57 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })                
 }
 
-module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo};
+//Get all MRT stations in DB
+const getMRTStationName = (res) => {
+    var rawData = []
+    var data = []
+    const query = 'SELECT MRTStation FROM mrt_station;'
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        //console.log(rawData)
+        for(let row of rawData){
+            data.push(row.MRTStation); 
+        }
+        res.send(data)
+    })
+}
+
+//Get MRT Station from ServiceNo chosen
+const getMRTStationNameFromServiceNo = (busService, res) => {
+    var rawData = []
+    var data = []
+    const query = `SELECT DISTINCT mrt.MRTStation
+        FROM MRT_Station mrt
+        LEFT JOIN bus_route br ON mrt.busStopCode = br.busStopCode
+        WHERE ServiceNo = '${busService}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+//Get Taxi Stand from ServiceNo chosen
+const getTaxiStandFromServiceNo = (busService, res) => {
+    var rawData = []
+    var data = []
+    const query = `SELECT Name FROM Taxi_Stand taxi
+        WHERE taxi.StnCode IN (
+        SELECT DISTINCT mrt.StnCode
+        FROM MRT_Station mrt
+        LEFT JOIN bus_route br ON mrt.busStopCode = br.busStopCode
+        WHERE ServiceNo = '${busService}');`
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
+    getMRTStationName,getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo
+};
