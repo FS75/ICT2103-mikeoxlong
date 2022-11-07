@@ -1,0 +1,44 @@
+{
+    "otherTransportation": [
+        {
+            "busStopCode": 65009,
+            "MRT": [
+                {
+                    "stnCode": "NE17",
+                    "MRTStation": "Punggol",
+                    "MRTLine": "North East Line"
+                },
+                {
+                    "stnCode": "PTC",
+                    "MRTStation": "Punggol",
+                    "MRTLine": "Punggol LRT"
+                }
+            ],
+            "TaxiStand": [
+                {
+                    "taxiCode": "G20",
+                    "Latitude": "1.404867351",
+                    "Longitude": "103.90266",
+                    "Bfa": 1,
+                    "Ownership": "LTA",
+                    "Type": "Stand",
+                    "Name": "Punggol Ctrl outside Punggol NEL Station (Ent C) (outside Punggol Bus Interchange)",
+                    "stnCode": "NE17"
+                }
+            ]
+        },
+        {
+            "busStopCode": ,
+            "MRT": [
+                {
+
+                }
+            ],
+            "TaxiStand": [
+                {
+
+                }
+            ]
+        }
+    ]
+}
