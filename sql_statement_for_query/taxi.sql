@@ -6,7 +6,8 @@ SELECT TaxiCode, IF(Bfa = 1, 'YES', 'No') as "Barrier Free", Type, Name, StnCode
 FROM Taxi_Stand WHERE Name LIKE '%%';
 
 /*
-Find Taxi Stand for the MRT Station selected by user
+Find all Taxi Stand at MRT that the Bus Service pass through
+Can include direction
 Example:WHERE ServiceNo = '98';
 */
 SELECT Name

@@ -9,11 +9,10 @@ SELECT * FROM MRT_Station WHERE MRTStation LIKE '%%';
 Find MRT Station for the Service No selected by user
 Example:WHERE ServiceNo = '98';
 */
-SELECT DISTINCT mrt.MRTStation
+SELECT DISTINCT mrt.StnCode, mrt.MRTStation, mrt.MRTLine
 FROM MRT_Station mrt
 LEFT JOIN bus_route br ON mrt.busStopCode = br.busStopCode
 WHERE ServiceNo = '';
-
 
 
  /*
