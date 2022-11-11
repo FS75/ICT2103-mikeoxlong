@@ -1,6 +1,6 @@
 import json
 
-f = open('bus_routes copy.json')
+f = open('bus_routes.json')
 # returns JSON object as
 # a dictionary
 data = json.load(f)
@@ -9,7 +9,7 @@ list1 = []
 # list
 print(type(data['value']))
 for i in data['value']:
-    if i['ServiceNo'] == '116' and i['Direction'] == 1:
+    if i['ServiceNo'] == '145A' and i['Direction'] == 1:
         list1.append(i)
 
 with open('myfile.txt', 'w') as convert_file:
