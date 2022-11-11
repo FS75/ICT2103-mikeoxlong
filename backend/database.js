@@ -9,6 +9,7 @@ var connection = mysql.createConnection({
     user: 'Juleus',
     password: 'somepassword',
     database: 'projectdb',
+    multipleStatements: true
 });
 
 // var connection = mysql.createConnection({
@@ -81,4 +82,44 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })                
 }
 
-module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo};
+// topics are ServiceNo (FK - cannot update), Operator, Category
+const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
+    var rawData = []
+    var data = []
+    const query = ` UPDATE bus_services 
+                    SET ${topicValue} = '${updateValue}' 
+                    WHERE ServiceNo = '${selectedServiceNo}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        // res.send(rawData)
+        res.send("Updated Bus Service " + selectedServiceNo + " to " + topicValue)
+    })
+}
+
+const deleteBusRouteAndUpdateSequences = (selectedServiceNo, stopSequence, direction, res) => {
+    var rawData = []
+    var data = []
+    var query = ""
+    query += ` DELETE FROM bus_route 
+               WHERE ServiceNo = '${selectedServiceNo}' 
+               AND StopSequence = '${stopSequence}'; `
+
+    query += ` UPDATE bus_route 
+               SET StopSequence = StopSequence - 1 
+               WHERE ServiceNo = '${selectedServiceNo}' 
+               AND Direction = '${direction}'
+               AND StopSequence > ${stopSequence}; `
+
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        // res.send(rawData)
+        res.send("Deleted bus route for " + selectedServiceNo + " and updated other routes' stop sequences")
+    })
+}
+
+module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
+    getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences};

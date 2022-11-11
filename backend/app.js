@@ -5,7 +5,8 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, updateBusService } = require("./database");
+let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
+    updateBusService, deleteBusRouteAndUpdateSequences} = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -50,14 +51,27 @@ app.get('/api/bus-stops', (req, res) => {
     Here, I am doing the second method
 */
 app.put('/api/bus-services/', (req, res) => {
-    const { busService } = req.query
+    // const { busService } = req.query
     const newData = req.body
-    const key = Object.keys(newData)[0]
-    const value = Object.values(newData)[0]
-    console.log(busService)
-    updateBusService(busService, key, value, res)
+    const topicValue = Object.values(newData)[0]
+    const selectedServiceNo = Object.values(newData)[1]
+    const updateValue = Object.values(newData)[2]
+
+    updateBusService(topicValue, selectedServiceNo, updateValue, res)
 })
 
+/* ---------- DELETE END POINTS ----------*/ 
+/* 
+    DELETE: One single bus route
+*/
+app.delete('/api/bus-routes/', (req, res) => {
+    const newData = req.body
+    const selectedServiceNo = Object.values(newData)[0]
+    const stopSequence = Object.values(newData)[1]
+    const direction = Object.values(newData)[2]
+
+    deleteBusRouteAndUpdateSequences(selectedServiceNo, stopSequence, direction, res)
+})
 
 
 /* Start listening to port to connect to DB */
