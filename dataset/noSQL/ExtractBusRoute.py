@@ -9,7 +9,7 @@ list1 = []
 # list
 print(type(data['value']))
 for i in data['value']:
-    if i['ServiceNo'] == '193' and i['Direction'] == 1:
+    if i['ServiceNo'] == '47' and i['Direction'] == 1:
         list1.append(i)
 
 with open('myfile.txt', 'w') as convert_file:
