@@ -51,6 +51,17 @@ export const store = reactive({
             name: "CITY_LINK"
         }
     ],
+    day: [
+        {
+            name: "Weekday"
+        },
+        {
+            name: "Saturday"
+        },
+        {
+            name: "Sunday"
+        },
+    ],
     BACKEND_API_URL: "http://localhost:3000/api/",
 })
 

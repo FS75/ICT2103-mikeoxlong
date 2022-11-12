@@ -53,7 +53,12 @@ const getBusServicesNo = (res) => {
 const getBusStopNameInOneDirection = (busService, res) => {
     var rawData = []
     var data = []
-    const query = `SELECT Description FROM Bus_Stop WHERE BusStopCode IN (SELECT DestinationCode FROM Bus_Direction WHERE serviceNo = '${busService}');`
+    const query = `SELECT Description 
+                   FROM Bus_Stop 
+                   WHERE BusStopCode IN 
+                   (SELECT DestinationCode 
+                    FROM Bus_Direction 
+                    WHERE serviceNo = '${busService}');`
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
@@ -82,6 +87,20 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })                
 }
 
+const getRoutesOfBusStopCode = (busStopCode, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT *
+                    FROM bus_route
+                    WHERE BusStopCode = '${busStopCode}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })    
+}
+
 // topics are ServiceNo (FK - cannot update), Operator, Category
 const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     var rawData = []
@@ -98,28 +117,30 @@ const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     })
 }
 
-const deleteBusRouteAndUpdateSequences = (selectedServiceNo, stopSequence, direction, res) => {
+const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
     var rawData = []
     var data = []
     var query = ""
-    query += ` DELETE FROM bus_route 
-               WHERE ServiceNo = '${selectedServiceNo}' 
-               AND StopSequence = '${stopSequence}'; `
 
-    query += ` UPDATE bus_route 
-               SET StopSequence = StopSequence - 1 
-               WHERE ServiceNo = '${selectedServiceNo}' 
-               AND Direction = '${direction}'
-               AND StopSequence > ${stopSequence}; `
+    query += ` DELETE FROM bus_route
+               WHERE BusStopCode = '${busStopCode}'; `
 
+    for (let i = 0; i < routes.length; i++) {
+        query += ` UPDATE bus_route 
+                   SET StopSequence = StopSequence - 1 
+                   WHERE ServiceNo = '${routes[i].ServiceNo}' 
+                   AND Direction = '${routes[i].Direction}'
+                   AND StopSequence > ${routes[i].StopSequence}; `
+    }
+    
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
         // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
         // res.send(rawData)
-        res.send("Deleted bus route for " + selectedServiceNo + " and updated other routes' stop sequences")
+        res.send("Deleted bus route for all affected bus services and updated stop sequences")
     })
 }
 
 module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
-    getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences};
+    getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode};

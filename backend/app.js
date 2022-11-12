@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
-    updateBusService, deleteBusRouteAndUpdateSequences} = require("./database");
+    updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode} = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -42,6 +42,16 @@ app.get('/api/bus-stops', (req, res) => {
     getBusStopsOfServiceNo(busService, res)
 })
 
+/*  
+    GET: All routes of bus services from a bus stop code
+    Params: Bus Service Number (get from the dropdown menu)
+    Eg: [api/bus-stops?busService=10]
+*/
+app.get('/api/bus-routes', (req, res) => {
+    const { busStopCode } = req.query
+    getRoutesOfBusStopCode(busStopCode, res)
+})
+
 /* ---------- UPDATE END POINTS ----------*/ 
 /* 
     UPDATE: One single bus service
@@ -66,11 +76,11 @@ app.put('/api/bus-services/', (req, res) => {
 */
 app.delete('/api/bus-routes/', (req, res) => {
     const newData = req.body
-    const selectedServiceNo = Object.values(newData)[0]
-    const stopSequence = Object.values(newData)[1]
-    const direction = Object.values(newData)[2]
+    const routes = Object.values(Object.values(newData)[0])[0]
+    const busStopCode = Object.values(newData)[1]
+    // const direction = Object.values(newData)[2]
 
-    deleteBusRouteAndUpdateSequences(selectedServiceNo, stopSequence, direction, res)
+    deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
 })
 
 
