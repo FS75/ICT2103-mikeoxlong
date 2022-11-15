@@ -1,15 +1,6 @@
 <template>
   <div class="columnContainer overviewContainer">
     <div class="rowContainer">
-      <button @click="sendData">
-        send data
-      </button>
-      <button v-if="buttonWasClicked">
-        <!-- {{ store.query }} -->
-      </button>
-    </div>
-
-    <div class="rowContainer">
       <ItemContainerWithDropdown givenId="busServiceContainer"
         text="Bus Service" :busServices=this.busServices.data></ItemContainerWithDropdown>
       <!-- <ItemContainerWithDropdown givenId="busDirectionContainer" 
@@ -97,9 +88,6 @@
     },
     async mounted() {
       this.busServices = await axios.get(store.BACKEND_API_URL + "bus-services");
-      console.log(this.busServices);
-      console.log("home mounted");
-      // console.log(this.data.data);
     },
     methods: {
       resetStartDestBusStop() {

@@ -9,11 +9,14 @@ var connection = mysql.createConnection({
     user: 'root',
     password: 'password',
     database: 'ict2103',
-    // user: 'Juleus',
-    // password: 'somepassword',
-    // database: 'projectdb',
-    // multipleStatements: true
 });
+
+// var connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'Juleus',
+//     password: 'somepassword',
+//     database: 'projectdb',
+// });
 
 // var connection = mysql.createConnection({
 //     host: 'localhost',

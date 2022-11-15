@@ -5,9 +5,9 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getMRTStationName, getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo } = require("./database");
 let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
-    updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode} = require("./database");
+    updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode, getMRTStationName, 
+    getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
