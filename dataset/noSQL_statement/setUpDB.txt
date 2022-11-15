@@ -1,0 +1,13 @@
+open 1 cmd enter: (dbpath -> where you store the mongodb bin\data\db)
+mongod --dbpath=C:\mongodb-win32-x86_64-windows-5.0.13\bin\data\db
+
+open 2nd cmd enter:
+mongo
+
+Switch DB:
+use ICT2103
+
+
+Create Collections:
+db.createCollection("bus_directory")
+db.createCollection("other_transportation")
