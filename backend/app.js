@@ -6,8 +6,8 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
-    updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode, getMRTStationName, 
-    getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo } = require("./database");
+    updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode, getMRTStationName, getMRTLines,
+    getMRTStationNameFromServiceNo, getMRTStationsFromLine, getTaxiStandFromServiceNo } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -46,6 +46,17 @@ app.get('/api/bus-stops', (req, res) => {
 // GET: All MRT Station in database
 app.get('/api/MRTStation', (req, res) => {
     getMRTStationName(res)
+})
+
+// GET: All MRT Lines in database
+app.get('/api/MRTLines', (req, res) => {
+    getMRTLines(res)
+})
+
+// GET: All MRT Stations from MRT Line picked in database
+app.get('/api/MRTStation-Line', (req, res) => {
+    const { mrtLine } = req.query
+    getMRTStationsFromLine(mrtLine, res)
 })
 
 //GET: MRT Station from bus service picked

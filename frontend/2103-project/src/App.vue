@@ -1,6 +1,7 @@
 <template>
   <nav>
-    <router-link to="/">User</router-link> |
+    <router-link to="/">User (Bus)</router-link> |
+    <router-link to="/taximrt">User (MRT / Taxi)</router-link> |
     <router-link to="/admin">Admin</router-link>
   </nav>
   <router-view/>

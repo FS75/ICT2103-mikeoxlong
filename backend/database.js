@@ -4,19 +4,19 @@ const { response } = require('express');
 var mysql = require('mysql')
 
 //----------------------- USE YOUR OWN CONNECTION HERE -----------------------
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'ict2103',
-});
-
 // var connection = mysql.createConnection({
 //     host: 'localhost',
-//     user: 'Juleus',
-//     password: 'somepassword',
-//     database: 'projectdb',
+//     user: 'root',
+//     password: 'password',
+//     database: 'ict2103',
 // });
+
+var connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'Juleus',
+    password: 'somepassword',
+    database: 'projectdb',
+});
 
 // var connection = mysql.createConnection({
 //     host: 'localhost',
@@ -93,20 +93,6 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })                
 }
 
-
-//Get all MRT stations in DB
-const getMRTStationName = (res) => {
-    var rawData = []
-    var data = []
-    const query = 'SELECT MRTStation FROM mrt_station;'
-    connection.query(query, (err, rows, fields) => {
-        if (err) throw err
-    
-        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        res.send(rawData)
-    })  
-}
-
 const getRoutesOfBusStopCode = (busStopCode, res) => {
     var rawData = []
     var data = []
@@ -159,10 +145,6 @@ const getTaxiStandFromServiceNo = (busService, res) => {
     })  
 }
 
-module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
-    getMRTStationName,getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo
-};
-
 // topics are ServiceNo (FK - cannot update), Operator, Category
 const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     var rawData = []
@@ -204,5 +186,47 @@ const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
     })
 }
 
+//Get all MRT stations in DB
+const getMRTStationName = (res) => {
+    var rawData = []
+    var data = []
+    const query = 'SELECT MRTStation FROM mrt_station;'
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+//Get all MRT stations in DB
+const getMRTLines = (res) => {
+    var rawData = []
+    var data = []
+    const query = 'SELECT DISTINCT MRTLine FROM mrt_station;'
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+// Get all MRT Stations from MRT line in DB
+const getMRTStationsFromLine = (mrtLine, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT MRTStation 
+                    FROM mrt_station
+                    WHERE MRTLine = '${mrtLine}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
 module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
-    getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode}
+    getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode,
+    getMRTStationName,getMRTStationNameFromServiceNo, getMRTLines, getMRTStationsFromLine, getTaxiStandFromServiceNo}
