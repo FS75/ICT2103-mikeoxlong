@@ -15,7 +15,7 @@
       <b-col cols="4">
         <div class="mb-3"><u>Select Starting Route</u></div>
         <Header text="Select Service No:"></Header>
-        <b-form-select v-model="selectedStartingRoute">
+        <b-form-select :disabled="startingRouteDisabled" v-model="selectedStartingRoute">
           <option v-for="busRoute in store.busRoutes.data" :key="busRoute.id" :value="busRoute">
             {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
           </option>
@@ -24,7 +24,7 @@
       <b-col cols="4">
         <div class="mb-3"><u>Select Starting Route</u></div>
         <Header text="Select Service No:"></Header>
-        <b-form-select v-model="selectedDestinationRoute">
+        <b-form-select :disabled="destinationRouteDisabled" v-model="selectedDestinationRoute">
           <option v-for="busRoute in store.destinationBusRoutes" :key="busRoute.id" :value="busRoute">
             {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
           </option></b-form-select>
@@ -133,6 +133,8 @@
           selectedStartingRoute: "",
           selectedDestinationRoute: "",
           distance: 0,
+          startingRouteDisabled: true,
+          destinationRouteDisabled: true,
         }
     },
     async mounted() {
@@ -204,12 +206,16 @@
     },
     watch: {
       async selectedServiceNo() {
+        this.startingRouteDisabled = false
+        this.destinationRouteDisabled = true
         store.busRoutes = []
         store.destinationBusRoutes = []
         store.busRoutes = await axios.get(store.BACKEND_API_URL + "bus-stops?busService="+ this.selectedServiceNo)
+        
         console.log(store.busRoutes)
       },
       selectedStartingRoute() {
+        this.destinationRouteDisabled = false
         for (let i = 0; i < store.busRoutes.data.length; i++) {
           if ((store.busRoutes.data[i]).Direction == this.selectedStartingRoute.Direction
             && (store.busRoutes.data[i]).StopSequence > this.selectedStartingRoute.StopSequence) {
