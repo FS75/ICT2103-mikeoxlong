@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getMRTStationName, getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo } = require("./database");
+let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
+    updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode} = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -37,6 +39,7 @@ app.get('/api/bus-direction', (req, res) => {
 */
 app.get('/api/bus-stops', (req, res) => {
     const { busService } = req.query
+    console.log(busService)
     getBusStopsOfServiceNo(busService, res)
 })
 
@@ -57,8 +60,50 @@ app.get('/api/TaxiStand-ServiceNo', (req, res) => {
     getTaxiStandFromServiceNo(busService, res)
 })
 
-app.listen(PORT, (error) =>{
+/*  
+    GET: All routes of bus services from a bus stop code
+    Params: Bus Service Number (get from the dropdown menu)
+    Eg: [api/bus-stops?busService=10]
+*/
+app.get('/api/bus-routes', (req, res) => {
+    const { busStopCode } = req.query
+    getRoutesOfBusStopCode(busStopCode, res)
+})
 
+/* ---------- UPDATE END POINTS ----------*/ 
+/* 
+    UPDATE: One single bus service
+    Two ways to do this:
+        1. Send only the updated whole bus stop object as a json in the body of the request
+        2. Send only the value we want to update as a key, value json in body
+    Here, I am doing the second method
+*/
+app.put('/api/bus-services/', (req, res) => {
+    // const { busService } = req.query
+    const newData = req.body
+    const topicValue = Object.values(newData)[0]
+    const selectedServiceNo = Object.values(newData)[1]
+    const updateValue = Object.values(newData)[2]
+
+    updateBusService(topicValue, selectedServiceNo, updateValue, res)
+})
+
+/* ---------- DELETE END POINTS ----------*/ 
+/* 
+    DELETE: One single bus route
+*/
+app.delete('/api/bus-routes/', (req, res) => {
+    const newData = req.body
+    const routes = Object.values(Object.values(newData)[0])[0]
+    const busStopCode = Object.values(newData)[1]
+    // const direction = Object.values(newData)[2]
+
+    deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
+})
+
+
+/* Start listening to port to connect to DB */
+app.listen(PORT, (error) =>{
     // listening to port just fine
     if(!error) {
         console.log("Server is Successfully Running, App is listening on port "+ PORT)
@@ -70,5 +115,5 @@ app.listen(PORT, (error) =>{
     } // cant listen to port for some reason
     else
         console.log("Error occurred, server can't start", error);
-    }
-);
+
+})

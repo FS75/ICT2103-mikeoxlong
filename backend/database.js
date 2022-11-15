@@ -4,19 +4,23 @@ const { response } = require('express');
 var mysql = require('mysql')
 
 //----------------------- USE YOUR OWN CONNECTION HERE -----------------------
-// var connection = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'Juleus',
-//     password: 'somepassword',
-//     database: 'projectdb',
-// });
-
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'password',
     database: 'ict2103',
+    // user: 'Juleus',
+    // password: 'somepassword',
+    // database: 'projectdb',
+    // multipleStatements: true
 });
+
+// var connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'Asdfgh568!',
+//     database: 'ICT2103_Project',
+// });
 
 
 // Bus services with details
@@ -52,7 +56,12 @@ const getBusServicesNo = (res) => {
 const getBusStopNameInOneDirection = (busService, res) => {
     var rawData = []
     var data = []
-    const query = `SELECT Description FROM Bus_Stop WHERE BusStopCode IN (SELECT DestinationCode FROM Bus_Direction WHERE serviceNo = '${busService}');`
+    const query = `SELECT Description 
+                   FROM Bus_Stop 
+                   WHERE BusStopCode IN 
+                   (SELECT DestinationCode 
+                    FROM Bus_Direction 
+                    WHERE serviceNo = '${busService}');`
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
@@ -81,11 +90,26 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })                
 }
 
+
 //Get all MRT stations in DB
 const getMRTStationName = (res) => {
     var rawData = []
     var data = []
     const query = 'SELECT MRTStation FROM mrt_station;'
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+const getRoutesOfBusStopCode = (busStopCode, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT *
+                    FROM bus_route
+                    WHERE BusStopCode = '${busStopCode}'; `
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
@@ -135,3 +159,47 @@ const getTaxiStandFromServiceNo = (busService, res) => {
 module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
     getMRTStationName,getMRTStationNameFromServiceNo, getTaxiStandFromServiceNo
 };
+
+// topics are ServiceNo (FK - cannot update), Operator, Category
+const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
+    var rawData = []
+    var data = []
+    const query = ` UPDATE bus_services 
+                    SET ${topicValue} = '${updateValue}' 
+                    WHERE ServiceNo = '${selectedServiceNo}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        // res.send(rawData)
+        res.send("Updated Bus Service " + selectedServiceNo + " to " + topicValue)
+    })
+}
+
+const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
+    var rawData = []
+    var data = []
+    var query = ""
+
+    query += ` DELETE FROM bus_route
+               WHERE BusStopCode = '${busStopCode}'; `
+
+    for (let i = 0; i < routes.length; i++) {
+        query += ` UPDATE bus_route 
+                   SET StopSequence = StopSequence - 1 
+                   WHERE ServiceNo = '${routes[i].ServiceNo}' 
+                   AND Direction = '${routes[i].Direction}'
+                   AND StopSequence > ${routes[i].StopSequence}; `
+    }
+    
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        // res.send(rawData)
+        res.send("Deleted bus route for all affected bus services and updated stop sequences")
+    })
+}
+
+module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
+    getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode}

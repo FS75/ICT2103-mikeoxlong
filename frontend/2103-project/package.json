@@ -11,10 +11,13 @@
     "dev": "concurrently \"cd ../../backend && npx nodemon app.js\" \"npm run serve\""
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.6",
     "axios": "^0.27.2",
+    "bootstrap": "^5.2.2",
+    "bootstrap-vue-3": "^0.4.6",
     "concurrently": "^7.4.0",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13",
+    "vue": "^3.2.42",
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
