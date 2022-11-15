@@ -1,10 +1,75 @@
 <template>
+  <b-container class="bv-example-row">
+    <b-row class="mt-5">
+      <b-col></b-col>
+      <b-col>
+        <div class="mb-3"><u>Choose Bus Service</u></div>
+        <Header text="Select Service No:"></Header>
+        <b-form-select v-model="selectedServiceNo" :options="store.busServices.data" text-field="ServiceNo"></b-form-select>
+      </b-col>
+      <b-col></b-col>
+    </b-row>
+
+    <b-row class="mt-5">
+      <b-col></b-col>
+      <b-col cols="4">
+        <div class="mb-3"><u>Select Starting Route</u></div>
+        <Header text="Select Service No:"></Header>
+        <b-form-select v-model="selectedStartingRoute">
+          <option v-for="busRoute in store.busRoutes.data" :key="busRoute.id" :value="busRoute">
+            {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
+          </option>
+        </b-form-select>
+      </b-col>
+      <b-col cols="4">
+        <div class="mb-3"><u>Select Starting Route</u></div>
+        <Header text="Select Service No:"></Header>
+        <b-form-select v-model="selectedDestinationRoute">
+          <option v-for="busRoute in store.destinationBusRoutes" :key="busRoute.id" :value="busRoute">
+            {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
+          </option></b-form-select>
+      </b-col>
+      <b-col></b-col>
+    </b-row>
+
+    <b-row class="mt-5">
+      <b-col></b-col>
+      <b-col cols="4">
+        Distance: {{distance}} KM
+      </b-col>
+      <b-col></b-col>
+    </b-row>
+
+    <b-row class="mt-5">
+      <b-col>
+        <div class="mb-3"><u>Weekday</u></div>
+        <b-row>
+          <b-col>First Bus: {{this.selectedStartingRoute.WDFirstBus}}</b-col>
+          <b-col>Last Bus: {{this.selectedStartingRoute.WDLastBus}}</b-col>
+        </b-row> 
+      </b-col>
+      <b-col>
+        <div class="mb-3"><u>Saturday</u></div>
+        <b-row>
+          <b-col>First Bus: {{this.selectedStartingRoute.SATFirstBus}}</b-col>
+          <b-col>Last Bus: {{this.selectedStartingRoute.SATLastBus}}</b-col>
+        </b-row> 
+      </b-col>
+      <b-col>
+        <div class="mb-3"><u>Sunday</u></div>
+        <b-row>
+          <b-col>First Bus: {{this.selectedStartingRoute.SUNFirstBus}}</b-col>
+          <b-col>Last Bus: {{this.selectedStartingRoute.SUNLastBus}}</b-col>
+        </b-row> 
+      </b-col>
+    </b-row>
+  </b-container>
+
+<!-- 
   <div class="columnContainer overviewContainer">
     <div class="rowContainer">
       <ItemContainerWithDropdown givenId="busServiceContainer"
         text="Bus Service" :busServices=this.busServices.data></ItemContainerWithDropdown>
-      <!-- <ItemContainerWithDropdown givenId="busDirectionContainer" 
-        text="Direction"></ItemContainerWithDropdown> -->
     </div>
 
     <div class="rowContainer">
@@ -20,16 +85,6 @@
       <div class="rowContainer importantInfoContainer">
         <ResultContainer headerText="Distance from Start to Destination" :value=this.distanceDiff></ResultContainer>
       </div>
-<!-- 
-      <div class="rowContainer importantInfoContainer">
-        <ResultContainer headerText="AM Peak Frequency" value="1 - 3 min"></ResultContainer>
-        <ResultContainer headerText="AM Offpeak Frequency" value="1 - 5 min"></ResultContainer>
-      </div>
-
-      <div class="rowContainer importantInfoContainer">
-        <ResultContainer headerText="PM Peak Frequency" value="1 - 3 min"></ResultContainer>
-        <ResultContainer headerText="PM Offpeak Frequency" value="1 - 5 min"></ResultContainer>
-      </div> -->
 
       <hr>
       
@@ -55,14 +110,13 @@
     </div>
   </div>
 
-  <br>
+  <br> -->
 </template>
 
 <script>
   import axios from "axios"
   import { store } from "../main.js"
-  import ItemContainerWithDropdown from "../components/ItemContainerWithDropdown.vue"
-  import ResultContainer from "../components/ResultContainer.vue"
+  import Header from "../components/Header.vue"
 
   export default {
     name: "HomeView",
@@ -70,56 +124,107 @@
 
     },
     components: {
-      ItemContainerWithDropdown,
-      ResultContainer,
+      Header
     },
     data() {
         return {
-          width: "250px",
-          busServices: {},
-          busRoutes: {},
-          busDest: {},
-          distanceDiff: "",
-          startingDistance: 0,
-          destinationDistance: 0,
           store,
-          buttonWasClicked: false,
+          selectedServiceNo: "",
+          selectedStartingRoute: "",
+          selectedDestinationRoute: "",
+          distance: 0,
         }
     },
     async mounted() {
-      this.busServices = await axios.get(store.BACKEND_API_URL + "bus-services");
+      this.selectedServiceNo = ""
+      this.selectedStartingRoute = ""
+      this.selectedDestinationRoute = ""
+      store.busServices = await axios.get(store.BACKEND_API_URL + "bus-services")
     },
-    methods: {
-      resetStartDestBusStop() {
-        var StartdropDown = document.getElementById("busStartingContainer");
-        StartdropDown.selectedIndex = 0;
-        var DestdropDown = document.getElementById("busDestinationContainer");
-        DestdropDown.selectedIndex = 0;
-        this.busDest = {};
-        },
-        getDistanceDiff() {
-            var Difference = this.destinationDistance - this.startingDistance;
-            let Difference2DP = Difference.toFixed(2);
-            this.distanceDiff = this.distanceDiff.concat(Difference2DP + " km");
-            console.log("Concat Diff: " + this.distanceDiff);
+    computed: {
+      parseTime(t) {
+        if (t.length == 3)
+          t = "0" + t
+        return t
       }
     },
-    watch: {
-      busRoutes() {
+    methods: {
+      parseTimes() {
+        this.selectedStartingRoute.WDFirstBus = this.selectedStartingRoute.WDFirstBus.toString()
+        this.selectedStartingRoute.WDLastBus = this.selectedStartingRoute.WDLastBus.toString()
+        this.selectedStartingRoute.SATFirstBus = this.selectedStartingRoute.SATFirstBus.toString()
+        this.selectedStartingRoute.SATLastBus = this.selectedStartingRoute.SATLastBus.toString()
+        this.selectedStartingRoute.SUNFirstBus = this.selectedStartingRoute.SUNFirstBus.toString()
+        this.selectedStartingRoute.SUNLastBus = this.selectedStartingRoute.SUNLastBus.toString()
 
+        // hardcoded this bit because i cant use computed method to time then return to data
+        // javascript no pointers :(
+        if (this.selectedStartingRoute.WDFirstBus.length == 3)
+          this.selectedStartingRoute.WDFirstBus = "0" + this.selectedStartingRoute.WDFirstBus
+        else if (this.selectedStartingRoute.WDFirstBus.length == 2)
+          this.selectedStartingRoute.WDFirstBus = "00" + this.selectedStartingRoute.WDFirstBus
+        else if (this.selectedStartingRoute.WDFirstBus.length == 1)
+          this.selectedStartingRoute.WDFirstBus = "000" + this.selectedStartingRoute.WDFirstBus
+
+        if (this.selectedStartingRoute.WDLastBus.length == 3)
+          this.selectedStartingRoute.WDLastBus = "0" + this.selectedStartingRoute.WDLastBus
+        else if (this.selectedStartingRoute.WDLastBus.length == 2)
+          this.selectedStartingRoute.WDLastBus = "00" + this.selectedStartingRoute.WDLastBus
+        else if (this.selectedStartingRoute.WDLastBus.length == 1)
+          this.selectedStartingRoute.WDLastBus = "000" + this.selectedStartingRoute.WDLastBus
+
+        if (this.selectedStartingRoute.SATFirstBus.length == 3)
+          this.selectedStartingRoute.SATFirstBus = "0" + this.selectedStartingRoute.SATFirstBus
+        else if (this.selectedStartingRoute.SATFirstBus.length == 2)
+          this.selectedStartingRoute.SATFirstBus = "00" + this.selectedStartingRoute.SATFirstBus
+        else if (this.selectedStartingRoute.SATFirstBus.length == 1)
+          this.selectedStartingRoute.SATFirstBus = "000" + this.selectedStartingRoute.SATFirstBus
+
+        if (this.selectedStartingRoute.SATLastBus.length == 3)
+          this.selectedStartingRoute.SATLastBus = "0" + this.selectedStartingRoute.SATLastBus
+        else if (this.selectedStartingRoute.SATLastBus.length == 2)
+          this.selectedStartingRoute.SATLastBus = "00" + this.selectedStartingRoute.SATLastBus
+        else if (this.selectedStartingRoute.SATLastBus.length == 1)
+          this.selectedStartingRoute.SATLastBus = "000" + this.selectedStartingRoute.SATLastBus
+
+        if (this.selectedStartingRoute.SUNFirstBus.length == 3)
+          this.selectedStartingRoute.SUNFirstBus = "0" + this.selectedStartingRoute.SUNFirstBus
+        else if (this.selectedStartingRoute.SUNFirstBus.length == 2)
+          this.selectedStartingRoute.SUNFirstBus = "00" + this.selectedStartingRoute.SUNFirstBus
+        else if (this.selectedStartingRoute.SUNFirstBus.length == 1)
+          this.selectedStartingRoute.SUNFirstBus = "000" + this.selectedStartingRoute.SUNFirstBus
+
+        if (this.selectedStartingRoute.SUNLastBus.length == 3)
+          this.selectedStartingRoute.SUNLastBus = "0" + this.selectedStartingRoute.SUNLastBus
+        else if (this.selectedStartingRoute.SUNLastBus.length == 2)
+          this.selectedStartingRoute.SUNLastBus = "00" + this.selectedStartingRoute.SUNLastBus
+        else if (this.selectedStartingRoute.SUNLastBus.length == 1)
+          this.selectedStartingRoute.SUNLastBus = "000" + this.selectedStartingRoute.SUNLastBus
+      },
+    },
+    watch: {
+      async selectedServiceNo() {
+        store.busRoutes = []
+        store.destinationBusRoutes = []
+        store.busRoutes = await axios.get(store.BACKEND_API_URL + "bus-stops?busService="+ this.selectedServiceNo)
+        console.log(store.busRoutes)
+      },
+      selectedStartingRoute() {
+        for (let i = 0; i < store.busRoutes.data.length; i++) {
+          if ((store.busRoutes.data[i]).Direction == this.selectedStartingRoute.Direction
+            && (store.busRoutes.data[i]).StopSequence > this.selectedStartingRoute.StopSequence) {
+            store.destinationBusRoutes.push(store.busRoutes.data[i])
+          }
+        }
+        this.parseTimes()
+      },
+      selectedDestinationRoute() {
+        this.distance = (Math.round((this.selectedDestinationRoute.Distance - this.selectedStartingRoute.Distance) * 100) / 100).toFixed(2);
       }
     }
   }
 </script>
 
 <style scoped>
-  .busTimingContainer{
-    flex-wrap: wrap;
-  }
-
-  hr{
-    width: 800px;
-    margin: 20px;
-  }
 </style>
 

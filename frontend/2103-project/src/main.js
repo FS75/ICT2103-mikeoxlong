@@ -20,6 +20,7 @@ export const store = reactive({
     query: String,
     busServices: [],
     busRoutes: [],
+    destinationBusRoutes: [],
     operators: [
         {
             name: "SBST"

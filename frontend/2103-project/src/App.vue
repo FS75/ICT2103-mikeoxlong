@@ -36,6 +36,7 @@
     color: #2c3e50;
     background-color: #E5E5E5;
     height: 100%;
+    padding-bottom: 15%;
   }
 
   nav {
