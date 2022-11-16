@@ -1,8 +1,12 @@
+--VERSION 4--
+STEP 1: MasterCreate_v3.sql
+
 --VERSION 3--
 
 STEP 1: MasterCreate_v2.sql
 STEP 2: createIndex.sql
 STEP 3: createView.sql
+STEP 4: updateMRTLatLong.sql
 
 --VERSION 2--
 
@@ -11,6 +15,7 @@ STEP 2: updateMRTStation.sql
 STEP 3: updateTaxiStand.sql
 STEP 4: createIndex.sql
 STEP 5: createView.sql
+STEP 6: updateMRTLatLong.sql
 
 --VERSION 1--
 
@@ -28,4 +33,5 @@ STEP 6: updateMRTStation.sql
 STEP 7: updateTaxiStand.sql
 STEP 8: createIndex.sql
 STEP 9: createView.sql
+STEP 10: updateMRTLatLong.sql
 
