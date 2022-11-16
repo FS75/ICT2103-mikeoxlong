@@ -15,6 +15,7 @@ export const store = reactive({
 
     query: String,
     busServices: [],
+    taxiStandNearby: [],
     busRoutes: [],
     destinationBusRoutes: [],
     mrtLines: [],

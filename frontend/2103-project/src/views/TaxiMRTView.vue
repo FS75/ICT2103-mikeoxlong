@@ -1,23 +1,40 @@
 <template>
     <b-container class="bv-example-row">
         <b-row class="mt-5">
-            <b-col>
-                <Header text="Select Line:"></Header>
-                <b-form-select v-model="selectedLine" :options="store.mrtLines.data" text-field="MRTLine"></b-form-select>
-                <Header text="Select Station:"></Header>
-                <b-form-select v-model="selectedStation" :options="store.mrtStations.data" text-field="MRTStation"></b-form-select>
-            </b-col>
-            <b-col></b-col>
-            <b-col></b-col>
+            <b-row></b-row>
+            <b-row>
+                <b-col></b-col>
+                <b-col cols="4">
+                    <Header text="Select Line:"></Header>
+                    <b-form-select v-model="selectedLine" :options="store.mrtLines.data" text-field="MRTLine"></b-form-select>
+                    <Header text="Select Station:"></Header>
+                    <b-form-select v-model="selectedStation" :options="store.mrtStations.data" text-field="MRTStation"></b-form-select>
+                </b-col>
+                <b-col cols="4">
+
+                </b-col>
+                <b-col></b-col>
+            </b-row>
+            <b-row></b-row>
         </b-row>
 
-        <GMapMap class="mt-5s"
-            :center="center"
-            :zoom="mapZoom"
-            map-type-id="terrain"
-            style="width: 50vw; height: 500px"
-        >
-        </GMapMap>
+        <b-row class="mt-5">
+            <b-col></b-col>
+            <b-col>
+                <GMapMap
+                :center="center"
+                :zoom="mapZoom" 
+                map-type-id="terrain"
+                style="width: 40vw; height: 400px"
+                >
+                <GMapMarker v-for="(m, index) in markers" 
+                    :key="index"
+                    :position="m.position" 
+                    :visible="m.visibility" />
+                </GMapMap>
+            </b-col>
+            <b-col></b-col>
+        </b-row>
     </b-container>
 </template>
 
@@ -37,7 +54,20 @@ export default {
             selectedLine: "",
             selectedStation: "",
             mapZoom: 11.3,
-            center: {lat: 1.3521, lng: 103.8198},
+            center: 
+            {
+                lat: 1.3521, 
+                lng: 103.8198
+            },
+            markers: [
+                {
+                    position: 
+                    {
+                        lat: 0,
+                        lng: 0
+                    },
+                }
+            ]
         }
     },
     async mounted() {
@@ -61,7 +91,9 @@ export default {
 
             this.center.lat = store.mrtLocation.data[0].Latitude
             this.center.lng = store.mrtLocation.data[0].Longitude
-            this.mapZoom = 15
+            this.markers[0].position.lat = store.mrtLocation.data[0].Latitude
+            this.markers[0].position.lng = store.mrtLocation.data[0].Longitude
+            this.mapZoom = 18
         }
     }
 }

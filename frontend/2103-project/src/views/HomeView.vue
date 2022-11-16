@@ -2,12 +2,32 @@
   <b-container class="bv-example-row">
     <b-row class="mt-5">
       <b-col></b-col>
-      <b-col>
+      <b-col cols="4">
         <div class="mb-3"><u>Choose Bus Service</u></div>
         <Header text="Select Service No:"></Header>
         <b-form-select v-model="selectedServiceNo" :options="store.busServices.data" text-field="ServiceNo"></b-form-select>
       </b-col>
-      <b-col></b-col>
+      <b-col>
+        <Header v-if="checkTaxiStandNearby()" text="Taxis Available Near You!" :style="{ 'justify-content': 'center' }"></Header>
+        <GMapMap
+          v-if="checkTaxiStandNearby()"
+          :center="center"
+          :zoom="mapZoom" 
+          map-type-id="terrain"
+          style="width: 30vw; height: 200px"
+          >
+          <GMapMarker v-for="(m, index) in markers" 
+              :key="index"
+              :position="m.position" 
+              :visible="m.visibility"
+              :icon='
+              {
+                url: "https://cdn-icons-png.flaticon.com/512/67/67907.png",
+                scaledSize: {width: 30, height: 30},
+                labelOrigin: {x: 16, y: -10}
+              }' />
+        </GMapMap>
+      </b-col>
     </b-row>
 
     <b-row class="mt-5">
@@ -64,53 +84,6 @@
       </b-col>
     </b-row>
   </b-container>
-
-<!-- 
-  <div class="columnContainer overviewContainer">
-    <div class="rowContainer">
-      <ItemContainerWithDropdown givenId="busServiceContainer"
-        text="Bus Service" :busServices=this.busServices.data></ItemContainerWithDropdown>
-    </div>
-
-    <div class="rowContainer">
-      <ItemContainerWithDropdown givenId="busStartingContainer" givenWidth="400px"
-        text="Starting Bus Stop" :busRoutes=this.busRoutes.data></ItemContainerWithDropdown>
-      <ItemContainerWithDropdown givenId="busDestinationContainer" givenWidth="400px"
-        text="Destination Bus Stop" :busRoutes=this.busDest></ItemContainerWithDropdown>
-    </div>
-    
-    <hr>
-
-    <div class="columnContainer resultContainer">
-      <div class="rowContainer importantInfoContainer">
-        <ResultContainer headerText="Distance from Start to Destination" :value=this.distanceDiff></ResultContainer>
-      </div>
-
-      <hr>
-      
-      <div class="columnContainer busTimingContainer">
-        <div class="rowContainer">
-          <ResultContainer headerText="Weekday First Bus Timing" value="05:00"></ResultContainer>
-          <ResultContainer headerText="Weekday Last Bus Timing" value="23:00"></ResultContainer>
-        </div>
-
-        <div class="rowContainer">
-          <ResultContainer headerText="Saturday First Bus Timing" value="05:00"></ResultContainer>
-          <ResultContainer headerText="Saturday Last Bus Timing" value="23:00"></ResultContainer>
-        </div>
-
-        <div class="rowContainer">
-          <ResultContainer headerText="Sunday First Bus Timing" value="05:00"></ResultContainer>
-          <ResultContainer headerText="Sunday Last Bus Timing" value="23:00"></ResultContainer>
-        </div>
-      </div>
-
-      <hr>
-
-    </div>
-  </div>
-
-  <br> -->
 </template>
 
 <script>
@@ -135,6 +108,21 @@
           distance: 0,
           startingRouteDisabled: true,
           destinationRouteDisabled: true,
+          mapZoom: 11.3,
+            center: 
+            {
+                lat: 1.3521, 
+                lng: 103.8198
+            },
+            markers: [
+                {
+                    position: 
+                    {
+                        lat: 0,
+                        lng: 0
+                    },
+                },
+            ]
         }
     },
     async mounted() {
@@ -142,13 +130,6 @@
       this.selectedStartingRoute = ""
       this.selectedDestinationRoute = ""
       store.busServices = await axios.get(store.BACKEND_API_URL + "bus-services")
-    },
-    computed: {
-      parseTime(t) {
-        if (t.length == 3)
-          t = "0" + t
-        return t
-      }
     },
     methods: {
       parseTimes() {
@@ -203,6 +184,28 @@
         else if (this.selectedStartingRoute.SUNLastBus.length == 1)
           this.selectedStartingRoute.SUNLastBus = "000" + this.selectedStartingRoute.SUNLastBus
       },
+
+      checkTaxiStandNearby() {
+        if (store.taxiStandNearby.length != 0) {
+          // populate markers
+          for (let i = 0; i < store.taxiStandNearby.length; i++) {
+            this.markers.push(
+              {
+                position: 
+                {
+                  lat: store.taxiStandNearby[i].Latitude,
+                  lng: store.taxiStandNearby[i].Longitude,
+                }
+              }
+            )
+            this.center.lat = store.taxiStandNearby[0].Latitude
+            this.center.lng = store.taxiStandNearby[0].Longitude
+            this.mapZoom = 16
+          }
+          return true
+        }
+        return false
+      }
     },
     watch: {
       async selectedServiceNo() {
@@ -211,8 +214,19 @@
         store.busRoutes = []
         store.destinationBusRoutes = []
         store.busRoutes = await axios.get(store.BACKEND_API_URL + "bus-stops?busService="+ this.selectedServiceNo)
+        const res = await axios.get(store.BACKEND_API_URL + "TaxiStand-ServiceNo?busService="+ this.selectedServiceNo).then(
+          res => {
+            if (res.data.length != 0) {
+              // console.log(res.data)
+              store.taxiStandNearby = res.data
+            }
+            else
+              store.taxiStandNearby = []
+          }
+        )
         
-        console.log(store.busRoutes)
+        // console.log(store.taxiStandNearby)
+        // console.log(store.busRoutes)
       },
       selectedStartingRoute() {
         this.destinationRouteDisabled = false

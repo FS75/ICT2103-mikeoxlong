@@ -127,16 +127,18 @@ const getMRTStationNameFromServiceNo = (busService, res) => {
     })  
 }
 
-//Get Taxi Stand from ServiceNo chosen
-const getTaxiStandFromServiceNo = (busService, res) => {
+// Get Taxi Stand Location from ServiceNo chosen
+const getTaxiStandLocationFromServiceNo = (busService, res) => {
     var rawData = []
     var data = []
-    const query = `SELECT Name FROM Taxi_Stand taxi
-        WHERE taxi.StnCode IN (
-        SELECT DISTINCT mrt.StnCode
-        FROM MRT_Station mrt
-        LEFT JOIN bus_route br ON mrt.busStopCode = br.busStopCode
-        WHERE ServiceNo = '${busService}');`
+    const query = `SELECT Latitude, Longitude
+                   FROM Taxi_Stand taxi 
+                   WHERE taxi.StnCode IN 
+                   (SELECT DISTINCT mrt.StnCode 
+                    FROM MRT_Station mrt 
+                    LEFT JOIN bus_route br 
+                    ON mrt.busStopCode = br.busStopCode 
+                    WHERE ServiceNo = '${busService}');`
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
     
@@ -258,4 +260,4 @@ const getLocationFromMRTStation = (station, res) => {
 module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
     getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode,
     getMRTStationName,getMRTStationNameFromServiceNo, getMRTLines, getMRTStnCodes, getMRTStationsFromLine, 
-    getLocationFromMRTStation, getTaxiStandFromServiceNo}
+    getLocationFromMRTStation, getTaxiStandLocationFromServiceNo}
