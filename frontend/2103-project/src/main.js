@@ -11,11 +11,6 @@ import VueGoogleMaps from '@fawmi/vue-google-maps'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 
-// // Make BootstrapVue available throughout your project
-// Vue.use(BootstrapVue)
-// // Optionally install the BootstrapVue icon components plugin
-// Vue.use(IconsPlugin)
-
 export const store = reactive({
 
     query: String,
@@ -75,7 +70,7 @@ app.use(router)
 app.use(BootstrapVue3)
 app.use(VueGoogleMaps, {
     load: {
-        key: "AIzaSyCFyopypcoUI3V5nUrveK6BpaJ41v1Zo0A",
+        key: process.env.VUE_APP_MAPS_API_KEY,
         // language: 'de',
     },
 })
