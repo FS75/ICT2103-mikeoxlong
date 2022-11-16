@@ -1,4 +1,4 @@
-db.other_transportation.insertMany([
+[
   {
     "StnCode": "BP1",
     "MRTStation": "Choa Chu Kang",
@@ -1383,4 +1383,4 @@ db.other_transportation.insertMany([
     "Latitude": 1.3374,
     "Longitude": 103.8398
   }
-])
+]
