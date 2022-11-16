@@ -11,3 +11,4 @@ use ICT2103
 Create Collections:
 db.createCollection("bus_directory")
 db.createCollection("other_transportation")
+db.createCollection("bus_stops")

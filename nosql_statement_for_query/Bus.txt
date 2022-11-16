@@ -1,0 +1,65 @@
+/*
+SELECT statement in noSQL
+Return only BusStopCode and Roadname fields
+Example: {"BusStopCode": 1, "RoadName": 1, _id: 0}
+*/
+
+/*
+Use to find bus stop based on roadname or description
+Example:{$or: [ {"Roadname": /.*Bedok.*/}, {"Description": /.*Bedok.*/}]}
+*/
+
+db.bus_stops.find({$or:[{"Roadname": /.*Bedok.*/}, {"Description": /.*Bedok.*/}]}, {"BusStopCode": 1, "RoadName": 1, "Description": 1, _id: 0})
+
+
+/*
+Use to find bus stop based on bus stop code
+Example:WHERE BusStopCode = '46499';
+*/
+
+db.bus_stops.find({"BusStopCode": "46499"}, {"BusStopCode": 1, "RoadName": 1, "Description": 1, _id: 0})
+
+
+/* 
+Find bus services with their to and from
+Example: WHERE BD.ServiceNo LIKE '%168%';
+*/
+SELECT BD.ServiceNo, 
+BD.Direction,BD.OriginCode, CONCAT(BS2.RoadName,', ',BS2.Description) AS OriginName,
+BD.DestinationCode, CONCAT(BS.RoadName,', ',BS.Description) AS DestName
+FROM  bus_direction BD JOIN bus_stop BS ON BD.DestinationCode = BS.BusStopCode JOIN
+bus_stop BS2 ON BD.OriginCode = BS2.BusStopCode
+WHERE BD.ServiceNo LIKE '%%';
+
+
+db.bus_directory.find({$and:[{"ServiceNo": "10"}, {"Route": {$elemMatch: {"stopSequence": 1}}}]})
+
+
+Join func in mongo
+
+
+db.bus_directory.aggregate([{
+$lookup: {
+from: "bus_stops",
+localField: "busStopCode",
+foreignField: "DestinationCode",
+
+
+User.aggregate([{
+$lookup: {
+ from: 'Orders',
+ let: {ID: '$ID'},
+ pipeline: [{$match: {
+  $expr: {
+   $eq: [
+    '$User_ID', '$$ID'
+   ],
+   $gt: [
+    '$quantity', 5
+   ]
+  }}}]
+  as: 'OrdersData'
+}}]);
+
+
+
