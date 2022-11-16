@@ -32312,11 +32312,9 @@ UPDATE Taxi_Stand SET StnCode = "TE5" WHERE TaxiCode = "F77";
 UPDATE Taxi_Stand SET StnCode = "NS14" WHERE TaxiCode = "H07";
 UPDATE Taxi_Stand SET StnCode = "NS13" WHERE TaxiCode = "H08";
 
-ALTER TABLE MRT_Station ADD COLUMN 
-Latitude DOUBLE AFTER BusStopCode;
-
-ALTER TABLE MRT_Station ADD COLUMN 
-Longitude DOUBLE AFTER Latitude;
+ALTER TABLE MRT_Station 
+ADD COLUMN Latitude DOUBLE AFTER BusStopCode,
+ADD COLUMN Longitude DOUBLE AFTER Latitude;
 
 UPDATE MRT_Station SET Latitude = 1.3845, Longitude = 103.7709 WHERE StnCode = 'BP10'; 
 UPDATE MRT_Station SET Latitude = 1.3877, Longitude = 103.7696 WHERE StnCode = 'BP11'; 
