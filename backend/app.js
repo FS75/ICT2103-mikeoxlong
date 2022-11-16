@@ -7,7 +7,8 @@ const app = express();
 const PORT = 3000;
 let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
     updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode, getMRTStationName, getMRTLines,
-    getMRTStationNameFromServiceNo, getMRTStationsFromLine, getMRTStnCodes, getTaxiStandFromServiceNo } = require("./database");
+    getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
+    getMRTStnCodes, getTaxiStandFromServiceNo } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -68,6 +69,12 @@ app.get('/api/MRTStation-Line', (req, res) => {
 app.get('/api/MRTStation-ServiceNo', (req, res) => {
     const { busService } = req.query
     getMRTStationNameFromServiceNo(busService, res)
+})
+
+//GET: Location from MRT Station picked
+app.get('/api/Location-MRTStation', (req, res) => {
+    const { station } = req.query
+    getLocationFromMRTStation(station, res)
 })
 
 //GET: Taxi Stand from bus service picked

@@ -20,6 +20,7 @@ export const store = reactive({
     mrtLines: [],
     mrtStations: [],
     mrtStnCodes: [],
+    mrtLocation: [],
     operators: [
         {
             name: "SBST"

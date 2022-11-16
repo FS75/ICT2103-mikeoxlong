@@ -11,9 +11,9 @@
             <b-col></b-col>
         </b-row>
 
-        <GMapMap
+        <GMapMap class="mt-5s"
             :center="center"
-            :zoom="15"
+            :zoom="mapZoom"
             map-type-id="terrain"
             style="width: 50vw; height: 500px"
         >
@@ -36,7 +36,8 @@ export default {
             store,
             selectedLine: "",
             selectedStation: "",
-            center: {lat: 1.3721, lng: 103.9474},
+            mapZoom: 11.3,
+            center: {lat: 1.3521, lng: 103.8198},
         }
     },
     async mounted() {
@@ -47,13 +48,20 @@ export default {
     watch: {
         async selectedLine() {
             store.mrtStations = await axios.get(store.BACKEND_API_URL + `MRTStation-Line?mrtLine=${this.selectedLine}`)
-
             // console.log(store.mrtStations.data)
 
-            for (let i = 0; i < store.mrtStnCodes.data.length; i++) {
-                console.log(`UPDATE MRT_Station SET Latitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
-                console.log(`UPDATE MRT_Station SET Longitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
-            }
+            // for (let i = 0; i < store.mrtStnCodes.data.length; i++) {
+            //     console.log(`UPDATE MRT_Station SET Latitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
+            //     console.log(`UPDATE MRT_Station SET Longitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
+            // }
+        },
+
+        async selectedStation() {
+            store.mrtLocation = await axios.get(store.BACKEND_API_URL + `Location-MRTStation?station=${this.selectedStation}`)
+
+            this.center.lat = store.mrtLocation.data[0].Latitude
+            this.center.lng = store.mrtLocation.data[0].Longitude
+            this.mapZoom = 15
         }
     }
 }

@@ -240,6 +240,22 @@ const getMRTStationsFromLine = (mrtLine, res) => {
     })  
 }
 
+//Get MRT Station from ServiceNo chosen
+const getLocationFromMRTStation = (station, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT Latitude, Longitude 
+                    FROM mrt_station 
+                    WHERE MRTStation='${station}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
 module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
     getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode,
-    getMRTStationName,getMRTStationNameFromServiceNo, getMRTLines, getMRTStnCodes, getMRTStationsFromLine, getTaxiStandFromServiceNo}
+    getMRTStationName,getMRTStationNameFromServiceNo, getMRTLines, getMRTStnCodes, getMRTStationsFromLine, 
+    getLocationFromMRTStation, getTaxiStandFromServiceNo}
