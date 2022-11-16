@@ -5,6 +5,7 @@ import router from './router'
 import  { reactive } from 'vue'
 
 import { BootstrapVue3 } from 'bootstrap-vue-3'
+import VueGoogleMaps from '@fawmi/vue-google-maps'
 
 // // Import Bootstrap and BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
@@ -23,6 +24,7 @@ export const store = reactive({
     destinationBusRoutes: [],
     mrtLines: [],
     mrtStations: [],
+    mrtStnCodes: [],
     operators: [
         {
             name: "SBST"
@@ -71,5 +73,12 @@ export const store = reactive({
 const app = createApp(App)
 app.use(router)
 app.use(BootstrapVue3)
+app.use(VueGoogleMaps, {
+    load: {
+        key: "AIzaSyCFyopypcoUI3V5nUrveK6BpaJ41v1Zo0A",
+        // language: 'de',
+    },
+})
+
 
 app.mount('#app')

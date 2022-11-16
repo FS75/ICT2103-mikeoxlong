@@ -212,6 +212,19 @@ const getMRTLines = (res) => {
     })  
 }
 
+//Get all MRT stations in DB
+const getMRTStnCodes = (res) => {
+    var rawData = []
+    var data = []
+    const query = 'SELECT StnCode FROM mrt_station;'
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
 // Get all MRT Stations from MRT line in DB
 const getMRTStationsFromLine = (mrtLine, res) => {
     var rawData = []
@@ -229,4 +242,4 @@ const getMRTStationsFromLine = (mrtLine, res) => {
 
 module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
     getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode,
-    getMRTStationName,getMRTStationNameFromServiceNo, getMRTLines, getMRTStationsFromLine, getTaxiStandFromServiceNo}
+    getMRTStationName,getMRTStationNameFromServiceNo, getMRTLines, getMRTStnCodes, getMRTStationsFromLine, getTaxiStandFromServiceNo}

@@ -10,6 +10,14 @@
             <b-col></b-col>
             <b-col></b-col>
         </b-row>
+
+        <GMapMap
+            :center="center"
+            :zoom="15"
+            map-type-id="terrain"
+            style="width: 50vw; height: 500px"
+        >
+        </GMapMap>
     </b-container>
 </template>
 
@@ -28,15 +36,24 @@ export default {
             store,
             selectedLine: "",
             selectedStation: "",
+            center: {lat: 1.3721, lng: 103.9474},
         }
     },
     async mounted() {
         store.mrtLines = await axios.get(store.BACKEND_API_URL + "MRTLines")
+        store.mrtStnCodes = await axios.get(store.BACKEND_API_URL + "MRTStnCodes")
         // console.log(store.mrtLines)
     },
     watch: {
         async selectedLine() {
             store.mrtStations = await axios.get(store.BACKEND_API_URL + `MRTStation-Line?mrtLine=${this.selectedLine}`)
+
+            // console.log(store.mrtStations.data)
+
+            for (let i = 0; i < store.mrtStnCodes.data.length; i++) {
+                console.log(`UPDATE MRT_Station SET Latitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
+                console.log(`UPDATE MRT_Station SET Longitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
+            }
         }
     }
 }
