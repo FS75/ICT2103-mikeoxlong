@@ -11,7 +11,7 @@
                     <b-form-select v-model="selectedStation" :options="store.mrtStations.data" text-field="MRTStation"></b-form-select>
                 </b-col>
                 <b-col cols="4">
-
+                    
                 </b-col>
                 <b-col></b-col>
             </b-row>
@@ -73,17 +73,10 @@ export default {
     async mounted() {
         store.mrtLines = await axios.get(store.BACKEND_API_URL + "MRTLines")
         store.mrtStnCodes = await axios.get(store.BACKEND_API_URL + "MRTStnCodes")
-        // console.log(store.mrtLines)
     },
     watch: {
         async selectedLine() {
             store.mrtStations = await axios.get(store.BACKEND_API_URL + `MRTStation-Line?mrtLine=${this.selectedLine}`)
-            // console.log(store.mrtStations.data)
-
-            // for (let i = 0; i < store.mrtStnCodes.data.length; i++) {
-            //     console.log(`UPDATE MRT_Station SET Latitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
-            //     console.log(`UPDATE MRT_Station SET Longitude = '' WHERE StnCode = '${store.mrtStnCodes.data[i].StnCode}';`)
-            // }
         },
 
         async selectedStation() {

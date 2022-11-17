@@ -25,8 +25,43 @@ var connection = mysql.createConnection({
 //     database: 'ICT2103_Project',
 // });
 
+// Create bus service
+const createBusService = (busService, operator, category, res) => {
+    var data = []
+    const query = ` INSERT INTO bus_services VALUES ('${busService}', '${operator}', '${category}'); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
 
-// Bus services with details
+        data = JSON.parse(JSON.stringify(rows));
+        res.send(data)
+    })
+}
+
+// Create bus service
+const createBusStop = (busStopCode, roadName, description, latitude, longitude, res) => {
+    var data = []
+    const query = ` INSERT INTO bus_stop VALUES ('${busStopCode}', '${roadName}', '${description}', '${latitude}', '${longitude}'); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        data = JSON.parse(JSON.stringify(rows));
+        res.send(data)
+    })
+}
+
+// Create MRT Station
+const createMRTStation = (stnCode, mrtStation, mrtLine, latitude, longitude, res) => {
+    var data = []
+    const query = ` INSERT INTO mrt_station VALUES ('${stnCode}', '${mrtStation}', '${mrtLine}', NULL, '${latitude}', '${longitude}'); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        data = JSON.parse(JSON.stringify(rows));
+        res.send(data)
+    })
+}
+
+// Get All Bus Service details
 const getBusServices = (res) => {
     var data = []
     const query = 'SELECT * FROM Bus_Services;'
@@ -38,7 +73,7 @@ const getBusServices = (res) => {
     })
 }
 
-// Bus services number only
+// Get All Bus Services No.
 const getBusServicesNo = (res) => {
     var rawData = []
     var data = []
@@ -55,7 +90,38 @@ const getBusServicesNo = (res) => {
     })
 }
 
-// Bus stop name in one direction
+// Check if Bus Service No. exists in DB
+const checkBusServiceNo = (busService, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT ServiceNo 
+                    FROM Bus_Services
+                    WHERE ServiceNo='${busService}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })
+}
+
+// Check if MRT Station Code exists in DB
+const checkStnCode = (stnCode, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT StnCode 
+                    FROM mrt_station
+                    WHERE StnCode='${stnCode}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })
+}
+
+
+// Get All Bus Stop names in one direction
 const getBusStopNameInOneDirection = (busService, res) => {
     var rawData = []
     var data = []
@@ -77,6 +143,7 @@ const getBusStopNameInOneDirection = (busService, res) => {
     })
 }
 
+// Get all Bus Stops from Bus Service No.
 const getBusStopsOfServiceNo = (busService, res) => {
     var rawData = []
     var data = []
@@ -93,6 +160,22 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })                
 }
 
+// Check if Bus Stop Code exists in DB
+const checkBusStopCode = (busStopCode, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT BusStopCode 
+                    FROM bus_stop 
+                    WHERE BusStopCode='${busStopCode}' `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })                
+}
+
+// Get all Bus Routes from Bus Stop Code
 const getRoutesOfBusStopCode = (busStopCode, res) => {
     var rawData = []
     var data = []
@@ -111,7 +194,7 @@ const getRoutesOfBusStopCode = (busStopCode, res) => {
     })
 }
 
-//Get MRT Station from ServiceNo chosen
+//Get MRT Station Name from Bus Service No.
 const getMRTStationNameFromServiceNo = (busService, res) => {
     var rawData = []
     var data = []
@@ -127,7 +210,7 @@ const getMRTStationNameFromServiceNo = (busService, res) => {
     })  
 }
 
-// Get Taxi Stand Location from ServiceNo chosen
+// Get Taxi Stand Location from Bus Service No.
 const getTaxiStandLocationFromServiceNo = (busService, res) => {
     var rawData = []
     var data = []
@@ -147,7 +230,7 @@ const getTaxiStandLocationFromServiceNo = (busService, res) => {
     })  
 }
 
-// topics are ServiceNo (FK - cannot update), Operator, Category
+// Update Bus Service Details (Operator / Category)
 const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     var rawData = []
     var data = []
@@ -163,6 +246,7 @@ const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     })
 }
 
+// Delete Bus Route while also Updating Sequences for all affected Bus Routes
 const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
     var rawData = []
     var data = []
@@ -188,7 +272,7 @@ const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
     })
 }
 
-//Get all MRT stations in DB
+// Get all MRT Stations
 const getMRTStationName = (res) => {
     var rawData = []
     var data = []
@@ -201,7 +285,7 @@ const getMRTStationName = (res) => {
     })  
 }
 
-//Get all MRT stations in DB
+// Get all MRT Lines
 const getMRTLines = (res) => {
     var rawData = []
     var data = []
@@ -214,7 +298,7 @@ const getMRTLines = (res) => {
     })  
 }
 
-//Get all MRT stations in DB
+// Get all MRT Station Codes
 const getMRTStnCodes = (res) => {
     var rawData = []
     var data = []
@@ -227,7 +311,7 @@ const getMRTStnCodes = (res) => {
     })  
 }
 
-// Get all MRT Stations from MRT line in DB
+// Get all MRT Stations from MRT Line
 const getMRTStationsFromLine = (mrtLine, res) => {
     var rawData = []
     var data = []
@@ -242,7 +326,7 @@ const getMRTStationsFromLine = (mrtLine, res) => {
     })  
 }
 
-//Get MRT Station from ServiceNo chosen
+// Get Location from MRT Station
 const getLocationFromMRTStation = (station, res) => {
     var rawData = []
     var data = []
@@ -257,7 +341,8 @@ const getLocationFromMRTStation = (station, res) => {
     })  
 }
 
-module.exports = {connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, 
-    getBusStopsOfServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode,
-    getMRTStationName,getMRTStationNameFromServiceNo, getMRTLines, getMRTStnCodes, getMRTStationsFromLine, 
-    getLocationFromMRTStation, getTaxiStandLocationFromServiceNo}
+module.exports = { connection, createBusService, createBusStop, createMRTStation, getBusServices, getBusServicesNo, 
+    getBusStopNameInOneDirection, getBusStopsOfServiceNo, getRoutesOfBusStopCode, checkBusStopCode, 
+    checkBusServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, 
+    getMRTStationName, getMRTLines, checkStnCode, getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
+    getMRTStnCodes, getTaxiStandLocationFromServiceNo }

@@ -5,27 +5,58 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-let { connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
-    updateBusService, deleteBusRouteAndUpdateSequences, getRoutesOfBusStopCode, getMRTStationName, getMRTLines,
-    getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
+let { connection, createBusService, createBusStop, createMRTStation, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
+    checkBusStopCode, getRoutesOfBusStopCode, checkBusServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, 
+    getMRTStationName, getMRTLines, checkStnCode, getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
     getMRTStnCodes, getTaxiStandLocationFromServiceNo } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
 
-// GET: Bus Services with details
+/* ---------- CREATE END POINTS ----------*/ 
+/*
+    CREATE: One bus service
+*/
+app.post('/api/bus-service', (req, res) => {
+    const { busService, operator, category } = req.query
+    createBusService(busService, operator, category, res)
+})
+
+/*
+    CREATE: One bus stop
+*/
+app.post('/api/bus-stop', (req, res) => {
+    const { busStopCode, roadName, description, latitude, longitude } = req.query
+    createBusStop(busStopCode, roadName, description, latitude, longitude, res)
+})
+
+/*
+    CREATE: One MRT station
+*/
+app.post('/api/mrt-station', (req, res) => {
+    const { stnCode, mrtStation, mrtLine, latitude, longitude } = req.query
+    createMRTStation(stnCode, mrtStation, mrtLine, latitude, longitude, res)
+})
+
+/* ---------- READ END POINTS ----------*/ 
+
+/*
+    GET: All bus service details
+*/
 app.get('/api/bus-services', (req, res) => {
     getBusServices(res)
 })
 
-// GET: Bus Services Number only
+/*
+    GET: All bus service numbers
+*/
 app.get('/api/bus-services-no', (req, res) => {
     getBusServicesNo(res)
 })
 
 /*  
     GET: Direction of bus service
-    Params: Bus Service Number (get from the dropdown menu)
+    Params: Bus Service No.
     Eg: [api/bus-direction?busService=10]
 */
 app.get('/api/bus-direction', (req, res) => {
@@ -34,50 +65,101 @@ app.get('/api/bus-direction', (req, res) => {
 })
 
 /*  
-    GET: ALl bus stops of a bus service
-    Params: Bus Service Number (get from the dropdown menu)
+    GET: All bus stops of a bus service
+    Params: Bus Service No.
     Eg: [api/bus-stops?busService=10]
 */
 app.get('/api/bus-stops', (req, res) => {
     const { busService } = req.query
-    console.log(busService)
     getBusStopsOfServiceNo(busService, res)
 })
 
-// GET: All MRT Station in database
+/*  
+    GET: Check if Bus Stop Code exists in DB
+    Params: Bus Stop Code
+    Eg: [api/check-bus-stop-code?busStopCode=99999]
+*/
+app.get('/api/check-bus-stop-code', (req, res) => {
+    const { busStopCode } = req.query
+    checkBusStopCode(busStopCode, res)
+})
+
+/*  
+    GET: Check if Bus Service No. exists in DB
+    Params: Bus Service No.
+    Eg: [api/check-bus-service?busService=10]
+*/
+app.get('/api/check-bus-service', (req, res) => {
+    const { busService } = req.query
+    checkBusServiceNo(busService, res)
+})
+
+/*  
+    GET: Check if MRT Stn Code exists in DB
+    Params: MRT Station Code
+    Eg: [api/check-station-code?stnCode=EW10]
+*/
+app.get('/api/check-station-code', (req, res) => {
+    const { stnCode } = req.query
+    checkStnCode(stnCode, res)
+})
+
+/*  
+    GET: All MRT Station Codes
+*/
 app.get('/api/MRTStnCodes', (req, res) => {
     getMRTStnCodes(res)
 })
 
-// GET: All MRT Station in database
+/*  
+    GET: All MRT Station Names
+*/
 app.get('/api/MRTStation', (req, res) => {
     getMRTStationName(res)
 })
 
-// GET: All MRT Lines in database
+/*  
+    GET: All MRT Lines
+*/
 app.get('/api/MRTLines', (req, res) => {
     getMRTLines(res)
 })
 
-// GET: All MRT Stations from MRT Line picked in database
+/*  
+    GET: All MRT Stations from MRT Line inputted
+    Params: MRT Line
+    Eg: [api/MRTStation-Line?mrtLine=Circle%20Line]
+*/
 app.get('/api/MRTStation-Line', (req, res) => {
     const { mrtLine } = req.query
     getMRTStationsFromLine(mrtLine, res)
 })
 
-//GET: MRT Station from bus service picked
+/*  
+    GET: MRT Station Name from Bus Service No inputted
+    Params: Bus Service No
+    Eg: [api/MRTStation-ServiceNo?serviceNo=10]
+*/
 app.get('/api/MRTStation-ServiceNo', (req, res) => {
     const { busService } = req.query
     getMRTStationNameFromServiceNo(busService, res)
 })
 
-//GET: Location from MRT Station picked
+/*  
+    GET: Location from MRT Station inputted
+    Params: MRT Station
+    Eg: [api/Location-MRTStation?station=Tampines]
+*/
 app.get('/api/Location-MRTStation', (req, res) => {
     const { station } = req.query
     getLocationFromMRTStation(station, res)
 })
 
-//GET: Taxi Stand from bus service picked
+/*  
+    GET: Taxi Stand from Bus Service inputted
+    Params: Bus Service No.
+    Eg: [api/Location-MRTStation?station=Tampines]
+*/
 app.get('/api/TaxiStand-ServiceNo', (req, res) => {
     const { busService } = req.query
     getTaxiStandLocationFromServiceNo(busService, res)
@@ -85,7 +167,7 @@ app.get('/api/TaxiStand-ServiceNo', (req, res) => {
 
 /*  
     GET: All routes of bus services from a bus stop code
-    Params: Bus Service Number (get from the dropdown menu)
+    Params: Bus Service No.
     Eg: [api/bus-stops?busService=10]
 */
 app.get('/api/bus-routes', (req, res) => {
