@@ -3,7 +3,7 @@
     "StnCode": "BP1",
     "MRTStation": "Choa Chu Kang",
     "MRTLine": "Bukit Panjang LRT",
-    "BusStopCode": 44009,
+    "BusStopCode": "44009",
     "Latitude": 1.3851,
     "Longitude": 103.7443
   },
@@ -67,7 +67,7 @@
     "StnCode": "BP6",
     "MRTStation": "Bukit Panjang",
     "MRTLine": "Bukit Panjang LRT",
-    "BusStopCode": 45009,
+    "BusStopCode": "45009",
     "Latitude": 1.3783,
     "Longitude": 103.7625
   },
@@ -82,7 +82,7 @@
     "StnCode": "BP8",
     "MRTStation": "Pending",
     "MRTLine": "Bukit Panjang LRT",
-    "Latitude": 1.3761999999999999,
+    "Latitude": 1.3762,
     "Longitude": 103.7713
   },
   {
@@ -124,22 +124,22 @@
     "StnCode": "CC13",
     "MRTStation": "Serangoon",
     "MRTLine": "Circle Line",
-    "BusStopCode": 66009,
-    "Latitude": 1.3498999999999999,
+    "BusStopCode": "66009",
+    "Latitude": 1.3499,
     "Longitude": 103.8731
   },
   {
     "StnCode": "CC14",
     "MRTStation": "Lorong Chuan",
     "MRTLine": "Circle Line",
-    "Latitude": 1.3517000000000001,
+    "Latitude": 1.3517,
     "Longitude": 103.8639
   },
   {
     "StnCode": "CC15",
     "MRTStation": "Bishan",
     "MRTLine": "Circle Line",
-    "BusStopCode": 53009,
+    "BusStopCode": "53009",
     "Latitude": 1.3512,
     "Longitude": 103.8485
   },
@@ -168,14 +168,14 @@
     "StnCode": "CC2",
     "MRTStation": "Bras Basah",
     "MRTLine": "Circle Line",
-    "Latitude": 1.2974999999999999,
+    "Latitude": 1.2975,
     "Longitude": 103.8504
   },
   {
     "StnCode": "CC20",
     "MRTStation": "Farrer Road",
     "MRTLine": "Circle Line",
-    "Latitude": 1.3174000000000001,
+    "Latitude": 1.3174,
     "Longitude": 103.8078
   },
   {
@@ -238,8 +238,8 @@
     "StnCode": "CC29",
     "MRTStation": "HarbourFront",
     "MRTLine": "Circle Line",
-    "BusStopCode": 14009,
-    "Latitude": 1.2650000000000001,
+    "BusStopCode": "14009",
+    "Latitude": 1.265,
     "Longitude": 103.8215
   },
   {
@@ -295,7 +295,7 @@
     "StnCode": "CE1",
     "MRTStation": "Bayfront",
     "MRTLine": "Circle Line Extension",
-    "Latitude": 1.2812999999999999,
+    "Latitude": 1.2813,
     "Longitude": 103.8589
   },
   {
@@ -323,7 +323,7 @@
     "StnCode": "DT1",
     "MRTStation": "Bukit Panjang",
     "MRTLine": "Downtown Line",
-    "BusStopCode": 45009,
+    "BusStopCode": "45009",
     "Latitude": 1.3783,
     "Longitude": 103.7625
   },
@@ -352,7 +352,7 @@
     "StnCode": "DT13",
     "MRTStation": "Rochor",
     "MRTLine": "Downtown Line",
-    "Latitude": 1.3035999999999999,
+    "Latitude": 1.3036,
     "Longitude": 103.8526
   },
   {
@@ -373,7 +373,7 @@
     "StnCode": "DT16",
     "MRTStation": "Bayfront",
     "MRTLine": "Downtown Line",
-    "Latitude": 1.2812999999999999,
+    "Latitude": 1.2813,
     "Longitude": 103.8589
   },
   {
@@ -499,7 +499,7 @@
     "StnCode": "DT32",
     "MRTStation": "Tampines",
     "MRTLine": "Downtown Line",
-    "BusStopCode": 75009,
+    "BusStopCode": "75009",
     "Latitude": 1.3533,
     "Longitude": 103.9452
   },
@@ -549,7 +549,7 @@
     "StnCode": "DT8",
     "MRTStation": "Tan Kah Kee",
     "MRTLine": "Downtown Line",
-    "Latitude": 1.3256000000000001,
+    "Latitude": 1.3256,
     "Longitude": 103.8079
   },
   {
@@ -563,7 +563,7 @@
     "StnCode": "EW1",
     "MRTStation": "Pasir Ris",
     "MRTLine": "East-West Line",
-    "BusStopCode": 77009,
+    "BusStopCode": "77009",
     "Latitude": 1.3732,
     "Longitude": 103.9493
   },
@@ -578,7 +578,7 @@
     "StnCode": "EW11",
     "MRTStation": "Lavender",
     "MRTLine": "East-West Line",
-    "Latitude": 1.3073000000000001,
+    "Latitude": 1.3073,
     "Longitude": 103.8629
   },
   {
@@ -641,7 +641,7 @@
     "StnCode": "EW2",
     "MRTStation": "Tampines",
     "MRTLine": "East-West Line",
-    "BusStopCode": 75009,
+    "BusStopCode": "75009",
     "Latitude": 1.3533,
     "Longitude": 103.9452
   },
@@ -670,7 +670,7 @@
     "StnCode": "EW23",
     "MRTStation": "Clementi",
     "MRTLine": "East-West Line",
-    "BusStopCode": 17009,
+    "BusStopCode": "17009",
     "Latitude": 1.3154,
     "Longitude": 103.7651
   },
@@ -678,7 +678,7 @@
     "StnCode": "EW24",
     "MRTStation": "Jurong East",
     "MRTLine": "East-West Line",
-    "BusStopCode": 28009,
+    "BusStopCode": "28009",
     "Latitude": 1.3331,
     "Longitude": 103.7423
   },
@@ -700,7 +700,7 @@
     "StnCode": "EW27",
     "MRTStation": "Boon Lay",
     "MRTLine": "East-West Line",
-    "BusStopCode": 22009,
+    "BusStopCode": "22009",
     "Latitude": 1.3386,
     "Longitude": 103.706
   },
@@ -715,7 +715,7 @@
     "StnCode": "EW29",
     "MRTStation": "Joo Koon",
     "MRTLine": "East-West Line",
-    "BusStopCode": 24009,
+    "BusStopCode": "24009",
     "Latitude": 1.3277,
     "Longitude": 103.6783
   },
@@ -765,7 +765,7 @@
     "StnCode": "EW5",
     "MRTStation": "Bedok",
     "MRTLine": "East-West Line",
-    "BusStopCode": 84009,
+    "BusStopCode": "84009",
     "Latitude": 1.3239,
     "Longitude": 103.9296
   },
@@ -780,7 +780,7 @@
     "StnCode": "EW7",
     "MRTStation": "Eunos",
     "MRTLine": "East-West Line",
-    "BusStopCode": 82009,
+    "BusStopCode": "82009",
     "Latitude": 1.3197,
     "Longitude": 103.9029
   },
@@ -802,8 +802,8 @@
     "StnCode": "NE1",
     "MRTStation": "HarbourFront",
     "MRTLine": "North East Line",
-    "BusStopCode": 14009,
-    "Latitude": 1.2652999999999999,
+    "BusStopCode": "14009",
+    "Latitude": 1.2653,
     "Longitude": 103.8223
   },
   {
@@ -824,8 +824,8 @@
     "StnCode": "NE12",
     "MRTStation": "Serangoon",
     "MRTLine": "North East Line",
-    "BusStopCode": 66009,
-    "Latitude": 1.3498999999999999,
+    "BusStopCode": "66009",
+    "Latitude": 1.3499,
     "Longitude": 103.8731
   },
   {
@@ -839,7 +839,7 @@
     "StnCode": "NE14",
     "MRTStation": "Hougang",
     "MRTLine": "North East Line",
-    "BusStopCode": 64009,
+    "BusStopCode": "64009",
     "Latitude": 1.3717,
     "Longitude": 103.893
   },
@@ -854,7 +854,7 @@
     "StnCode": "NE16",
     "MRTStation": "Sengkang",
     "MRTLine": "North East Line",
-    "BusStopCode": 67009,
+    "BusStopCode": "67009",
     "Latitude": 1.3915,
     "Longitude": 103.8936
   },
@@ -862,7 +862,7 @@
     "StnCode": "NE17",
     "MRTStation": "Punggol",
     "MRTLine": "North East Line",
-    "BusStopCode": 65009,
+    "BusStopCode": "65009",
     "Latitude": 1.4051,
     "Longitude": 103.9024
   },
@@ -919,7 +919,7 @@
     "StnCode": "NS1",
     "MRTStation": "Jurong East",
     "MRTLine": "North-South Line",
-    "BusStopCode": 28009,
+    "BusStopCode": "28009",
     "Latitude": 1.3332,
     "Longitude": 103.7423
   },
@@ -927,14 +927,14 @@
     "StnCode": "NS10",
     "MRTStation": "Admiralty",
     "MRTLine": "North-South Line",
-    "Latitude": 1.4405999999999999,
+    "Latitude": 1.4406,
     "Longitude": 103.801
   },
   {
     "StnCode": "NS11",
     "MRTStation": "Sembawang",
     "MRTLine": "North-South Line",
-    "BusStopCode": 58009,
+    "BusStopCode": "58009",
     "Latitude": 1.449,
     "Longitude": 103.8199
   },
@@ -949,7 +949,7 @@
     "StnCode": "NS13",
     "MRTStation": "Yishun",
     "MRTLine": "North-South Line",
-    "BusStopCode": 59009,
+    "BusStopCode": "59009",
     "Latitude": 1.4295,
     "Longitude": 103.835
   },
@@ -964,7 +964,7 @@
     "StnCode": "NS15",
     "MRTStation": "Yio Chu Kang",
     "MRTLine": "North-South Line",
-    "BusStopCode": 55509,
+    "BusStopCode": "55509",
     "Latitude": 1.3817,
     "Longitude": 103.8451
   },
@@ -972,7 +972,7 @@
     "StnCode": "NS16",
     "MRTStation": "Ang Mo Kio",
     "MRTLine": "North-South Line",
-    "BusStopCode": 54009,
+    "BusStopCode": "54009",
     "Latitude": 1.3687,
     "Longitude": 103.843
   },
@@ -980,7 +980,7 @@
     "StnCode": "NS17",
     "MRTStation": "Bishan",
     "MRTLine": "North-South Line",
-    "BusStopCode": 53009,
+    "BusStopCode": "53009",
     "Latitude": 1.3512,
     "Longitude": 103.8485
   },
@@ -995,7 +995,7 @@
     "StnCode": "NS19",
     "MRTStation": "Toa Payoh",
     "MRTLine": "North-South Line",
-    "BusStopCode": 52009,
+    "BusStopCode": "52009",
     "Latitude": 1.3263,
     "Longitude": 103.842
   },
@@ -1003,7 +1003,7 @@
     "StnCode": "NS2",
     "MRTStation": "Bukit Batok",
     "MRTLine": "North-South Line",
-    "BusStopCode": 43009,
+    "BusStopCode": "43009",
     "Latitude": 1.3491,
     "Longitude": 103.7496
   },
@@ -1019,7 +1019,7 @@
     "MRTStation": "Newton",
     "MRTLine": "North-South Line",
     "Latitude": 1.313,
-    "Longitude": 103.83840000000001
+    "Longitude": 103.8384
   },
   {
     "StnCode": "NS22",
@@ -1067,7 +1067,7 @@
     "StnCode": "NS28",
     "MRTStation": "Marina South Pier",
     "MRTLine": "North-South Line",
-    "Latitude": 1.2713999999999999,
+    "Latitude": 1.2714,
     "Longitude": 103.8636
   },
   {
@@ -1081,9 +1081,9 @@
     "StnCode": "NS4",
     "MRTStation": "Choa Chu Kang",
     "MRTLine": "North-South Line",
-    "BusStopCode": 44009,
+    "BusStopCode": "44009",
     "Latitude": 1.313,
-    "Longitude": 103.83840000000001
+    "Longitude": 103.8384
   },
   {
     "StnCode": "NS5",
@@ -1110,7 +1110,7 @@
     "StnCode": "NS9",
     "MRTStation": "Woodlands",
     "MRTLine": "North-South Line",
-    "BusStopCode": 46009,
+    "BusStopCode": "46009",
     "Latitude": 1.437,
     "Longitude": 103.7865
   },
@@ -1153,7 +1153,7 @@
     "StnCode": "PE6",
     "MRTStation": "Oasis",
     "MRTLine": "Punggol LRT",
-    "Latitude": 1.4022000000000001,
+    "Latitude": 1.4022,
     "Longitude": 103.9127
   },
   {
@@ -1167,7 +1167,7 @@
     "StnCode": "PTC",
     "MRTStation": "Punggol",
     "MRTLine": "Punggol LRT",
-    "BusStopCode": 65009,
+    "BusStopCode": "65009",
     "Latitude": 1.4051,
     "Longitude": 103.9024
   },
@@ -1259,7 +1259,7 @@
     "StnCode": "STC",
     "MRTStation": "Sengkang",
     "MRTLine": "Sengkang LRT",
-    "BusStopCode": 67009,
+    "BusStopCode": "67009",
     "Latitude": 1.3917,
     "Longitude": 103.8955
   },
@@ -1295,14 +1295,14 @@
     "StnCode": "SW5",
     "MRTStation": "Fernvale",
     "MRTLine": "Sengkang LRT",
-    "Latitude": 1.3919000000000001,
+    "Latitude": 1.3919,
     "Longitude": 103.8763
   },
   {
     "StnCode": "SW6",
     "MRTStation": "Layar",
     "MRTLine": "Sengkang LRT",
-    "Latitude": 1.3940000000000001,
+    "Latitude": 1.394,
     "Longitude": 103.8797
   },
   {
@@ -1330,7 +1330,7 @@
     "StnCode": "TE2",
     "MRTStation": "Woodlands",
     "MRTLine": "Thomson-East Coast Line",
-    "BusStopCode": 46009,
+    "BusStopCode": "46009",
     "Latitude": 1.437,
     "Longitude": 103.7865
   },

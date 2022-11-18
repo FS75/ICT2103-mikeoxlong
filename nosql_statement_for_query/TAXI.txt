@@ -1,0 +1,80 @@
+/*
+Use to find taxi based on roadname or description
+Example: "$match" :{ "Name":{ "$regrex": '^.*Jurong.*$'}}
+*/
+
+
+db.other_transportation.aggregate([
+    {
+        '$match': {
+            'Name': {
+                '$regex': '^.*Jurong.*$'
+            }
+        }
+    }, {
+        '$addFields': {
+            'BarrierFree': {
+                '$cond': [
+                    {
+                        '$eq': [
+                            '$Bfa', 1
+                        ]
+                    }, 'yes', 'no'
+                ]
+            }
+        }
+    }, {
+        '$project': {
+            'TaxiCode': 1, 
+            'BarrierFree': 1, 
+            'Name': 1, 
+            'NearestMRT': '$StnCode', 
+            '_id': 0
+        }
+    }
+])
+
+/*
+Find all Taxi Stand at MRT that the Bus Service pass through
+Can include direction
+Example:'$match': {'ServiceNo': '98'}
+Example:'$match': {'ServiceNo': '98', 'Direction': 1}
+*/
+
+
+db.bus_directory.aggregate([
+    {
+        '$match': {
+            'ServiceNo': '98'
+        }
+    }, {
+        '$lookup': {
+            'from': 'other_transportation', 
+            'localField': 'Route.BusStopCode', 
+            'foreignField': 'BusStopCode', 
+            'as': 'MRT'
+        }
+    }, {
+        '$lookup': {
+            'from': 'other_transportation', 
+            'localField': 'MRT.StnCode', 
+            'foreignField': 'StnCode', 
+            'as': 'Taxi'
+        }
+    }, {
+        '$unwind': {
+            'path': '$Taxi'
+        }
+    }, {
+        '$match': {
+            'Taxi.Name': {
+                '$ne': null
+            }
+        }
+    }, {
+        '$project': {
+            'Taxi.Name': 1, 
+            '_id': 0
+        }
+    }
+])

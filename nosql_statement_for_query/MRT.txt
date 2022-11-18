@@ -1,0 +1,39 @@
+/*
+Use to find mrt based on description
+Example:"MRTStation": /.*Bedok.*/
+*/
+
+db.other_transportation.find({"MRTStation": /.*Bedok.*/},{_id: 0})
+
+
+/*
+Find MRT Station for the Service No selected by user
+Example: "ServiceNo": /.*98.*/
+*/
+
+
+db.bus_directory.aggregate([
+    {
+        '$match': {
+            'ServiceNo': '98'
+        }
+    }, {
+        '$lookup': {
+            'from': 'other_transportation', 
+            'localField': 'OriginCode', 
+            'foreignField': 'BusStopCode', 
+            'as': 'MRTdetails'
+        }
+    }, {
+        '$project': {
+            'ServiceNo': 1, 
+            'MRTdetails.StnCode': 1, 
+            'MRTdetails.MRTStation': 1, 
+            'MRTdetails.MRTLine': 1, 
+            '_id': 0
+        }
+    }
+])
+ 
+ 
+ 
