@@ -61,6 +61,19 @@ const createMRTStation = (stnCode, mrtStation, mrtLine, latitude, longitude, res
     })
 }
 
+// Create Taxi Stand
+const createTaxiStand = (taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType, res) => {
+    var data = []
+    console.log(bfa)
+    const query = ` INSERT INTO taxi_stand VALUES ('${taxiCode}', '${latitude}', '${longitude}', ${bfa}, '${taxiOwnership}', '${taxiType}', '${description}', NULL); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        data = JSON.parse(JSON.stringify(rows));
+        res.send(data)
+    })
+}
+
 // Get All Bus Service details
 const getBusServices = (res) => {
     var data = []
@@ -120,6 +133,20 @@ const checkStnCode = (stnCode, res) => {
     })
 }
 
+// Check if Taxi Stand Code exists in DB
+const checkTaxiStandCode = (taxiStandCode, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT TaxiCode 
+                    FROM taxi_stand
+                    WHERE TaxiCode='${taxiStandCode}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })
+}
 
 // Get All Bus Stop names in one direction
 const getBusStopNameInOneDirection = (busService, res) => {
@@ -230,6 +257,25 @@ const getTaxiStandLocationFromServiceNo = (busService, res) => {
     })  
 }
 
+// Get Taxi Stand Location from MRT Station
+const getTaxiStandLocationFromMRTStation = (station, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT latitude, longitude 
+                    FROM taxi_stand taxi 
+                    WHERE taxi.stncode = 
+                    (SELECT mrt.stncode 
+                    FROM mrt_station mrt 
+                    WHERE taxi.stncode = mrt.stncode 
+                    AND mrt.MRTStation='${station}'); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
 // Update Bus Service Details (Operator / Category)
 const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     var rawData = []
@@ -326,6 +372,20 @@ const getMRTStationsFromLine = (mrtLine, res) => {
     })  
 }
 
+// Get All details from Taxi Stand
+const getTaxiStands = (res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT * 
+                    FROM taxi_stand; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
 // Get Location from MRT Station
 const getLocationFromMRTStation = (station, res) => {
     var rawData = []
@@ -341,8 +401,23 @@ const getLocationFromMRTStation = (station, res) => {
     })  
 }
 
-module.exports = { connection, createBusService, createBusStop, createMRTStation, getBusServices, getBusServicesNo, 
-    getBusStopNameInOneDirection, getBusStopsOfServiceNo, getRoutesOfBusStopCode, checkBusStopCode, 
-    checkBusServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, 
-    getMRTStationName, getMRTLines, checkStnCode, getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
-    getMRTStnCodes, getTaxiStandLocationFromServiceNo }
+// Get Location of Taxi Stand with inputted Name
+const getTaxiStandLocationFromName = (name, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT Latitude, Longitude 
+                    FROM taxi_stand WHERE Name="${name}"; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+module.exports = { connection, createBusService, createBusStop, createMRTStation, createTaxiStand, getBusServices, 
+    getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getRoutesOfBusStopCode, checkBusStopCode, 
+    checkBusServiceNo, checkTaxiStandCode, updateBusService, deleteBusRouteAndUpdateSequences, getMRTStationName, getMRTLines, 
+    checkStnCode, getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
+    getMRTStnCodes, getTaxiStands, getTaxiStandLocationFromName, getTaxiStandLocationFromServiceNo, 
+    getTaxiStandLocationFromMRTStation }

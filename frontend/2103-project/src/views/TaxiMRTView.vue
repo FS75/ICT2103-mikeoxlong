@@ -1,21 +1,22 @@
 <template>
     <b-container class="bv-example-row">
         <b-row class="mt-5">
-            <b-row></b-row>
-            <b-row>
-                <b-col></b-col>
-                <b-col cols="4">
-                    <Header text="Select Line:"></Header>
-                    <b-form-select v-model="selectedLine" :options="store.mrtLines.data" text-field="MRTLine"></b-form-select>
-                    <Header text="Select Station:"></Header>
-                    <b-form-select v-model="selectedStation" :options="store.mrtStations.data" text-field="MRTStation"></b-form-select>
-                </b-col>
-                <b-col cols="4">
-                    
-                </b-col>
-                <b-col></b-col>
-            </b-row>
-            <b-row></b-row>
+            <b-col></b-col>
+            <b-col cols="4">
+                <div class="mb-3"><u>Find MRT Station</u></div>
+                <Header text="Select Line:"></Header>
+                <b-form-select v-model="selectedLine" :options="store.mrtLines.data" text-field="MRTLine"></b-form-select>
+                <Header text="Select Station:"></Header>
+                <b-form-select v-model="selectedStation" :options="store.mrtStations.data" text-field="MRTStation"></b-form-select>
+            </b-col>
+            <b-col cols="4">
+                <div class="mb-3"><u>Find Taxi Stand</u></div>
+                <Header text="Select Taxi Stand:"></Header>
+                <v-select :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
+                    v-model="selectedTaxiStandName" :options="store.taxiStands.data" label="Name"></v-select>
+                <!-- <b-form-select v-model="selectedTaxiStandName" :options="store.taxiStandNames.data" text-field="Name"></b-form-select> -->
+            </b-col>
+            <b-col></b-col>
         </b-row>
 
         <b-row class="mt-5">
@@ -31,6 +32,16 @@
                     :key="index"
                     :position="m.position" 
                     :visible="m.visibility" />
+                <GMapMarker v-for="(m, index) in taxiMarkers" 
+                    :key="index"
+                    :position="m.position" 
+                    :visible="m.visibility"
+                    :icon='
+                    {
+                        url: "https://cdn-icons-png.flaticon.com/512/67/67907.png",
+                        scaledSize: {width: 30, height: 30},
+                        labelOrigin: {x: 16, y: -10}
+                    }' />
                 </GMapMap>
             </b-col>
             <b-col></b-col>
@@ -53,6 +64,7 @@ export default {
             store,
             selectedLine: "",
             selectedStation: "",
+            selectedTaxiStandName: "",
             mapZoom: 11.3,
             center: 
             {
@@ -67,12 +79,29 @@ export default {
                         lng: 0
                     },
                 }
+            ],
+            taxiMarkers: [
+                {
+                    position: 
+                    {
+                        lat: 0,
+                        lng: 0
+                    },
+                },
             ]
+        }
+    },
+    methods: {
+        setCharAt(str, index, chr) {
+            if(index > str.length-1) return str
+            return str.substring(0,index) + chr + str.substring(index+1);
         }
     },
     async mounted() {
         store.mrtLines = await axios.get(store.BACKEND_API_URL + "MRTLines")
         store.mrtStnCodes = await axios.get(store.BACKEND_API_URL + "MRTStnCodes")
+        store.taxiStands = await axios.get(store.BACKEND_API_URL + "taxi-stand")
+        console.log(store.taxiStands.data)
     },
     watch: {
         async selectedLine() {
@@ -80,14 +109,65 @@ export default {
         },
 
         async selectedStation() {
+            this.taxiMarkers = []
             store.mrtLocation = await axios.get(store.BACKEND_API_URL + `Location-MRTStation?station=${this.selectedStation}`)
+            const res = await axios.get(store.BACKEND_API_URL + `TaxiStand-MRTStation?station=${this.selectedStation}`).then(
+                res => {
+                    store.taxiStandNearby2 = res.data
+                    if (store.taxiStandNearby2.length != 0) {
+                        // populate markers
+                        for (let i = 0; i < store.taxiStandNearby2.length; i++) {
+                            this.taxiMarkers.push(
+                                {
+                                    position: 
+                                    {
+                                        lat: store.taxiStandNearby2[i].latitude,
+                                        lng: store.taxiStandNearby2[i].longitude,
+                                    }
+                                }
+                            )
+                        }
+                    }
+                    else
+                        store.taxiStandNearby2 = []
+                }   
+            )
 
             this.center.lat = store.mrtLocation.data[0].Latitude
             this.center.lng = store.mrtLocation.data[0].Longitude
             this.markers[0].position.lat = store.mrtLocation.data[0].Latitude
             this.markers[0].position.lng = store.mrtLocation.data[0].Longitude
             this.mapZoom = 18
+        },
+
+        async selectedTaxiStandName() {
+            var replacedName = this.selectedTaxiStandName.Name
+            let ampersandIndex = replacedName.indexOf("&")
+            if (ampersandIndex != -1) {
+                replacedName = this.setCharAt(replacedName, ampersandIndex, "%26")
+            }
+            // console.log(replacedName)
+
+            this.taxiMarkers = []
+            // query for taxi stand location based on name
+            const res = await axios.get(store.BACKEND_API_URL + `taxi-location-from-name?name=${replacedName}`).then(
+                res => {
+                    this.taxiMarkers.push(
+                        {
+                            position: {
+                                lat: res.data[0].Latitude,
+                                lng: res.data[0].Longitude
+                            }
+                        }
+                    )
+
+                    // console.log(this.taxiMarkers[this.taxiMarkers.length - 1].position.lat)
+                    this.center.lat = this.taxiMarkers[this.taxiMarkers.length - 1].position.lat
+                    this.center.lng = this.taxiMarkers[this.taxiMarkers.length - 1].position.lng
+                    this.mapZoom = 20
+                }
+            )
         }
-    }
+    },
 }
 </script>

@@ -8,7 +8,7 @@
         <b-form-select v-model="selectedServiceNo" :options="store.busServices.data" text-field="ServiceNo"></b-form-select>
       </b-col>
       <b-col>
-        <Header v-if="checkTaxiStandNearby()" text="Taxis Available Near You!" :style="{ 'justify-content': 'center' }"></Header>
+        <Header v-if="checkTaxiStandNearby()" text="Taxis Available Near Interchange!" :style="{ 'justify-content': 'center' }"></Header>
         <GMapMap
           v-if="checkTaxiStandNearby()"
           :center="center"
@@ -31,10 +31,10 @@
     </b-row>
 
     <b-row class="mt-5">
-      <b-col></b-col>
+      <b-col v-if="!checkBus"></b-col>
       <b-col cols="4">
         <div class="mb-3"><u>Select Starting Route</u></div>
-        <Header text="Select Service No:"></Header>
+        <Header text="Select Starting Route:"></Header>
         <b-form-select :disabled="startingRouteDisabled" v-model="selectedStartingRoute">
           <option v-for="busRoute in store.busRoutes.data" :key="busRoute.id" :value="busRoute">
             {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
@@ -42,14 +42,34 @@
         </b-form-select>
       </b-col>
       <b-col cols="4">
-        <div class="mb-3"><u>Select Starting Route</u></div>
-        <Header text="Select Service No:"></Header>
+        <div class="mb-3"><u>Select Destination Route</u></div>
+        <Header text="Select Destination Route:"></Header>
         <b-form-select :disabled="destinationRouteDisabled" v-model="selectedDestinationRoute">
           <option v-for="busRoute in store.destinationBusRoutes" :key="busRoute.id" :value="busRoute">
             {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
           </option></b-form-select>
       </b-col>
-      <b-col></b-col>
+      <b-col v-if="!checkBus"></b-col>
+
+      <b-col v-if="checkBus" cols="4">
+        <GMapMap
+          :center="center2"
+          :zoom="mapZoom2" 
+          map-type-id="terrain"
+          style="width: 30vw; height: 200px"
+          >
+          <GMapMarker v-for="(m, index) in busMarkers" 
+              :key="index"
+              :position="m.position" 
+              :visible="m.visibility"
+              :icon='
+              {
+                url: "https://cdn-icons-png.flaticon.com/512/635/635705.png",
+                scaledSize: {width: 30, height: 30},
+                labelOrigin: {x: 16, y: -10}
+              }' />
+        </GMapMap>
+      </b-col>
     </b-row>
 
     <b-row class="mt-5">
@@ -105,24 +125,40 @@
           selectedServiceNo: "",
           selectedStartingRoute: "",
           selectedDestinationRoute: "",
+          checkBus: false,
           distance: 0,
           startingRouteDisabled: true,
           destinationRouteDisabled: true,
           mapZoom: 11.3,
-            center: 
-            {
-                lat: 1.3521, 
-                lng: 103.8198
-            },
-            markers: [
-                {
-                    position: 
-                    {
-                        lat: 0,
-                        lng: 0
-                    },
-                },
-            ]
+          mapZoom2: 11.3,
+          center: 
+          {
+              lat: 1.3521, 
+              lng: 103.8198
+          },
+          markers: [
+              {
+                  position: 
+                  {
+                      lat: 0,
+                      lng: 0
+                  },
+              },
+          ],
+          center2: 
+          {
+              lat: 1.3521, 
+              lng: 103.8198
+          },
+          busMarkers: [
+              {
+                  position: 
+                  {
+                      lat: 0,
+                      lng: 0
+                  },
+              },
+          ]
         }
     },
     async mounted() {
@@ -133,56 +169,79 @@
     },
     methods: {
       parseTimes() {
-        this.selectedStartingRoute.WDFirstBus = this.selectedStartingRoute.WDFirstBus.toString()
-        this.selectedStartingRoute.WDLastBus = this.selectedStartingRoute.WDLastBus.toString()
-        this.selectedStartingRoute.SATFirstBus = this.selectedStartingRoute.SATFirstBus.toString()
-        this.selectedStartingRoute.SATLastBus = this.selectedStartingRoute.SATLastBus.toString()
-        this.selectedStartingRoute.SUNFirstBus = this.selectedStartingRoute.SUNFirstBus.toString()
-        this.selectedStartingRoute.SUNLastBus = this.selectedStartingRoute.SUNLastBus.toString()
-
         // hardcoded this bit because i cant use computed method to time then return to data
-        // javascript no pointers :(
-        if (this.selectedStartingRoute.WDFirstBus.length == 3)
-          this.selectedStartingRoute.WDFirstBus = "0" + this.selectedStartingRoute.WDFirstBus
-        else if (this.selectedStartingRoute.WDFirstBus.length == 2)
-          this.selectedStartingRoute.WDFirstBus = "00" + this.selectedStartingRoute.WDFirstBus
-        else if (this.selectedStartingRoute.WDFirstBus.length == 1)
-          this.selectedStartingRoute.WDFirstBus = "000" + this.selectedStartingRoute.WDFirstBus
 
-        if (this.selectedStartingRoute.WDLastBus.length == 3)
-          this.selectedStartingRoute.WDLastBus = "0" + this.selectedStartingRoute.WDLastBus
-        else if (this.selectedStartingRoute.WDLastBus.length == 2)
-          this.selectedStartingRoute.WDLastBus = "00" + this.selectedStartingRoute.WDLastBus
-        else if (this.selectedStartingRoute.WDLastBus.length == 1)
-          this.selectedStartingRoute.WDLastBus = "000" + this.selectedStartingRoute.WDLastBus
+        if (this.selectedStartingRoute.WDFirstBus != null) {
+          this.selectedStartingRoute.WDFirstBus = this.selectedStartingRoute.WDFirstBus.toString()
+          this.selectedStartingRoute.WDLastBus = this.selectedStartingRoute.WDLastBus.toString()
+          
+          if (this.selectedStartingRoute.WDFirstBus.length == 3)
+            this.selectedStartingRoute.WDFirstBus = "0" + this.selectedStartingRoute.WDFirstBus
+          else if (this.selectedStartingRoute.WDFirstBus.length == 2)
+            this.selectedStartingRoute.WDFirstBus = "00" + this.selectedStartingRoute.WDFirstBus
+          else if (this.selectedStartingRoute.WDFirstBus.length == 1)
+            this.selectedStartingRoute.WDFirstBus = "000" + this.selectedStartingRoute.WDFirstBus
 
-        if (this.selectedStartingRoute.SATFirstBus.length == 3)
-          this.selectedStartingRoute.SATFirstBus = "0" + this.selectedStartingRoute.SATFirstBus
-        else if (this.selectedStartingRoute.SATFirstBus.length == 2)
-          this.selectedStartingRoute.SATFirstBus = "00" + this.selectedStartingRoute.SATFirstBus
-        else if (this.selectedStartingRoute.SATFirstBus.length == 1)
-          this.selectedStartingRoute.SATFirstBus = "000" + this.selectedStartingRoute.SATFirstBus
+          if (this.selectedStartingRoute.WDLastBus.length == 3)
+            this.selectedStartingRoute.WDLastBus = "0" + this.selectedStartingRoute.WDLastBus
+          else if (this.selectedStartingRoute.WDLastBus.length == 2)
+            this.selectedStartingRoute.WDLastBus = "00" + this.selectedStartingRoute.WDLastBus
+          else if (this.selectedStartingRoute.WDLastBus.length == 1)
+            this.selectedStartingRoute.WDLastBus = "000" + this.selectedStartingRoute.WDLastBus
+        }
 
-        if (this.selectedStartingRoute.SATLastBus.length == 3)
-          this.selectedStartingRoute.SATLastBus = "0" + this.selectedStartingRoute.SATLastBus
-        else if (this.selectedStartingRoute.SATLastBus.length == 2)
-          this.selectedStartingRoute.SATLastBus = "00" + this.selectedStartingRoute.SATLastBus
-        else if (this.selectedStartingRoute.SATLastBus.length == 1)
-          this.selectedStartingRoute.SATLastBus = "000" + this.selectedStartingRoute.SATLastBus
+        else {
+          this.selectedStartingRoute.WDFirstBus = "Not in Operation"
+          this.selectedStartingRoute.WDLastBus = "Not in Operation"
+        }
 
-        if (this.selectedStartingRoute.SUNFirstBus.length == 3)
-          this.selectedStartingRoute.SUNFirstBus = "0" + this.selectedStartingRoute.SUNFirstBus
-        else if (this.selectedStartingRoute.SUNFirstBus.length == 2)
-          this.selectedStartingRoute.SUNFirstBus = "00" + this.selectedStartingRoute.SUNFirstBus
-        else if (this.selectedStartingRoute.SUNFirstBus.length == 1)
-          this.selectedStartingRoute.SUNFirstBus = "000" + this.selectedStartingRoute.SUNFirstBus
+        if (this.selectedStartingRoute.SATFirstBus != null) {
+          this.selectedStartingRoute.SATFirstBus = this.selectedStartingRoute.SATFirstBus.toString()
+          this.selectedStartingRoute.SATLastBus = this.selectedStartingRoute.SATLastBus.toString()
 
-        if (this.selectedStartingRoute.SUNLastBus.length == 3)
-          this.selectedStartingRoute.SUNLastBus = "0" + this.selectedStartingRoute.SUNLastBus
-        else if (this.selectedStartingRoute.SUNLastBus.length == 2)
-          this.selectedStartingRoute.SUNLastBus = "00" + this.selectedStartingRoute.SUNLastBus
-        else if (this.selectedStartingRoute.SUNLastBus.length == 1)
-          this.selectedStartingRoute.SUNLastBus = "000" + this.selectedStartingRoute.SUNLastBus
+          if (this.selectedStartingRoute.SATFirstBus.length == 3)
+            this.selectedStartingRoute.SATFirstBus = "0" + this.selectedStartingRoute.SATFirstBus
+          else if (this.selectedStartingRoute.SATFirstBus.length == 2)
+            this.selectedStartingRoute.SATFirstBus = "00" + this.selectedStartingRoute.SATFirstBus
+          else if (this.selectedStartingRoute.SATFirstBus.length == 1)
+            this.selectedStartingRoute.SATFirstBus = "000" + this.selectedStartingRoute.SATFirstBus
+
+          if (this.selectedStartingRoute.SATLastBus.length == 3)
+            this.selectedStartingRoute.SATLastBus = "0" + this.selectedStartingRoute.SATLastBus
+          else if (this.selectedStartingRoute.SATLastBus.length == 2)
+            this.selectedStartingRoute.SATLastBus = "00" + this.selectedStartingRoute.SATLastBus
+          else if (this.selectedStartingRoute.SATLastBus.length == 1)
+            this.selectedStartingRoute.SATLastBus = "000" + this.selectedStartingRoute.SATLastBus
+        }
+
+        else {
+          this.selectedStartingRoute.SATFirstBus = "Not in Operation"
+          this.selectedStartingRoute.SATLastBus = "Not in Operation"
+        }
+
+        if (this.selectedStartingRoute.SUNFirstBus != null) {
+          this.selectedStartingRoute.SUNFirstBus = this.selectedStartingRoute.SUNFirstBus.toString()
+          this.selectedStartingRoute.SUNLastBus = this.selectedStartingRoute.SUNLastBus.toString()
+
+          if (this.selectedStartingRoute.SUNFirstBus.length == 3)
+            this.selectedStartingRoute.SUNFirstBus = "0" + this.selectedStartingRoute.SUNFirstBus
+          else if (this.selectedStartingRoute.SUNFirstBus.length == 2)
+            this.selectedStartingRoute.SUNFirstBus = "00" + this.selectedStartingRoute.SUNFirstBus
+          else if (this.selectedStartingRoute.SUNFirstBus.length == 1)
+            this.selectedStartingRoute.SUNFirstBus = "000" + this.selectedStartingRoute.SUNFirstBus
+
+          if (this.selectedStartingRoute.SUNLastBus.length == 3)
+            this.selectedStartingRoute.SUNLastBus = "0" + this.selectedStartingRoute.SUNLastBus
+          else if (this.selectedStartingRoute.SUNLastBus.length == 2)
+            this.selectedStartingRoute.SUNLastBus = "00" + this.selectedStartingRoute.SUNLastBus
+          else if (this.selectedStartingRoute.SUNLastBus.length == 1)
+            this.selectedStartingRoute.SUNLastBus = "000" + this.selectedStartingRoute.SUNLastBus
+        }
+
+        else {
+          this.selectedStartingRoute.SUNFirstBus = "Not in Operation"
+          this.selectedStartingRoute.SUNLastBus = "Not in Operation"
+        }
       },
 
       checkTaxiStandNearby() {
@@ -213,6 +272,12 @@
         this.destinationRouteDisabled = true
         store.busRoutes = []
         store.destinationBusRoutes = []
+        this.selectedStartingRoute.WDFirstBus = ""
+        this.selectedStartingRoute.WDLastBus = ""
+        this.selectedStartingRoute.SATFirstBus = ""
+        this.selectedStartingRoute.SATLastBus = ""
+        this.selectedStartingRoute.SUNFirstBus = ""
+        this.selectedStartingRoute.SUNLastBus = ""
         store.busRoutes = await axios.get(store.BACKEND_API_URL + "bus-stops?busService="+ this.selectedServiceNo)
         const res = await axios.get(store.BACKEND_API_URL + "TaxiStand-ServiceNo?busService="+ this.selectedServiceNo).then(
           res => {
@@ -224,9 +289,6 @@
               store.taxiStandNearby = []
           }
         )
-        
-        // console.log(store.taxiStandNearby)
-        // console.log(store.busRoutes)
       },
       selectedStartingRoute() {
         this.destinationRouteDisabled = false
@@ -239,7 +301,27 @@
         this.parseTimes()
       },
       selectedDestinationRoute() {
+        this.checkBus = true
         this.distance = (Math.round((this.selectedDestinationRoute.Distance - this.selectedStartingRoute.Distance) * 100) / 100).toFixed(2);
+        this.busMarkers.push(
+            {
+                position: 
+                {
+                    lat: this.selectedStartingRoute.Latitude,
+                    lng: this.selectedStartingRoute.Longitude,
+                }
+            },
+            {
+                position: 
+                {
+                    lat: this.selectedDestinationRoute.Latitude,
+                    lng: this.selectedDestinationRoute.Longitude,
+                }
+            }
+        )
+        this.center2.lat = this.selectedStartingRoute.Latitude
+        this.center2.lng = this.selectedStartingRoute.Longitude
+        this.mapZoom2 = 13
       }
     }
   }

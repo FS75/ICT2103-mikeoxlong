@@ -5,10 +5,12 @@ const bodyParser = require("body-parser");
  
 const app = express();
 const PORT = 3000;
-let { connection, createBusService, createBusStop, createMRTStation, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
-    checkBusStopCode, getRoutesOfBusStopCode, checkBusServiceNo, updateBusService, deleteBusRouteAndUpdateSequences, 
-    getMRTStationName, getMRTLines, checkStnCode, getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
-    getMRTStnCodes, getTaxiStandLocationFromServiceNo } = require("./database");
+let { connection, createBusService, createBusStop, createMRTStation, createTaxiStand, getBusServices, 
+    getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
+    checkBusStopCode, getRoutesOfBusStopCode, checkBusServiceNo, checkTaxiStandCode, updateBusService, 
+    deleteBusRouteAndUpdateSequences, getMRTStationName, getMRTLines, checkStnCode, getMRTStationNameFromServiceNo, 
+    getMRTStationsFromLine, getLocationFromMRTStation, getMRTStnCodes, getTaxiStands, getTaxiStandLocationFromName, 
+    getTaxiStandLocationFromServiceNo, getTaxiStandLocationFromMRTStation } = require("./database");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -36,6 +38,14 @@ app.post('/api/bus-stop', (req, res) => {
 app.post('/api/mrt-station', (req, res) => {
     const { stnCode, mrtStation, mrtLine, latitude, longitude } = req.query
     createMRTStation(stnCode, mrtStation, mrtLine, latitude, longitude, res)
+})
+
+/*  
+    CREATE: One Taxi Stand
+*/
+app.post('/api/taxi-stand', (req, res) => {
+    const { taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType } = req.query
+    createTaxiStand(taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType, res)
 })
 
 /* ---------- READ END POINTS ----------*/ 
@@ -105,6 +115,33 @@ app.get('/api/check-station-code', (req, res) => {
 })
 
 /*  
+    GET: Check if Taxi Stand Code exists in DB
+    Params: Taxi Stand Code
+    Eg: [api/check-taxi-stand?taxiStandCode=A01]
+*/
+app.get('/api/check-taxi-stand', (req, res) => {
+    const { taxiStandCode } = req.query
+    checkTaxiStandCode(taxiStandCode, res)
+})
+
+/*  
+    GET: All Taxi Stand Details
+*/
+app.get('/api/taxi-stand', (req, res) => {
+    getTaxiStands(res)
+})
+
+/*  
+    GET: Taxi stand Location from Name
+    Params: Taxi Stand Name
+    Eg: [api/taxi-location-from-name?name=]
+*/
+app.get('/api/taxi-location-from-name', (req, res) => {
+    const { name } = req.query
+    getTaxiStandLocationFromName(name, res)
+})
+
+/*  
     GET: All MRT Station Codes
 */
 app.get('/api/MRTStnCodes', (req, res) => {
@@ -158,11 +195,21 @@ app.get('/api/Location-MRTStation', (req, res) => {
 /*  
     GET: Taxi Stand from Bus Service inputted
     Params: Bus Service No.
-    Eg: [api/Location-MRTStation?station=Tampines]
+    Eg: [api/Location-MRTStation?busService=10]
 */
 app.get('/api/TaxiStand-ServiceNo', (req, res) => {
     const { busService } = req.query
     getTaxiStandLocationFromServiceNo(busService, res)
+})
+
+/*  
+    GET: Taxi Stand Location from MRT Station inputted
+    Params: MRT Station
+    Eg: [api/TaxiStand-MRTStation?station=Tampines]
+*/
+app.get('/api/TaxiStand-MRTStation', (req, res) => {
+    const { station } = req.query
+    getTaxiStandLocationFromMRTStation(station, res)
 })
 
 /*  

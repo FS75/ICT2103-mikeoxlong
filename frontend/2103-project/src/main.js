@@ -4,6 +4,9 @@ import router from './router'
 
 import  { reactive } from 'vue'
 
+import vSelect from "vue-select"
+import "vue-select/dist/vue-select.css";
+
 import { BootstrapVue3 } from 'bootstrap-vue-3'
 import VueGoogleMaps from '@fawmi/vue-google-maps'
 
@@ -16,12 +19,14 @@ export const store = reactive({
     query: String,
     busServices: [],
     taxiStandNearby: [],
+    taxiStandNearby2: [],
     busRoutes: [],
     destinationBusRoutes: [],
     mrtLines: [],
     mrtStations: [],
     mrtStnCodes: [],
     mrtLocation: [],
+    taxiStands: [],
     operators: [
         {
             name: "SBST"
@@ -64,8 +69,24 @@ export const store = reactive({
             name: "Sunday"
         },
     ],
+    taxiOwnership: [
+        {
+            name: "LTA"
+        },
+        {
+            name: "Private"
+        },
+        {
+            name: "CCS"
+        },
+        {
+            name: "SMRT"
+        }
+    ],
     BACKEND_API_URL: "http://localhost:3000/api/",
 })
+
+
 
 const app = createApp(App)
 app.use(router)
@@ -76,6 +97,8 @@ app.use(VueGoogleMaps, {
         // language: 'de',
     },
 })
+app.component("v-select", vSelect);
+
 
 
 app.mount('#app')
