@@ -8,7 +8,7 @@
     "update-fe": "npm install && npm update",
     "update-be": "cd ../../backend && npm install && npm update",
     "update-all": "npm run update-fe && npm run update-be",
-    "dev": "concurrently \"cd ../../backend && npx nodemon app.js\" \"npm run serve\""
+    "dev": "concurrently \"cd ../../backend && npx nodemon app_sql.js\" \"npm run serve\""
   },
   "dependencies": {
     "@fawmi/vue-google-maps": "^0.9.79",

@@ -14,6 +14,7 @@
                 <Header text="Select Taxi Stand:"></Header>
                 <v-select :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
                     v-model="selectedTaxiStandName" :options="store.taxiStands.data" label="Name"></v-select>
+                <div class="mt-3">Wheelchair Friendly: {{bfa}}</div>
                 <!-- <b-form-select v-model="selectedTaxiStandName" :options="store.taxiStandNames.data" text-field="Name"></b-form-select> -->
             </b-col>
             <b-col></b-col>
@@ -65,6 +66,7 @@ export default {
             selectedLine: "",
             selectedStation: "",
             selectedTaxiStandName: "",
+            bfa: "",
             mapZoom: 11.3,
             center: 
             {
@@ -101,7 +103,7 @@ export default {
         store.mrtLines = await axios.get(store.BACKEND_API_URL + "MRTLines")
         store.mrtStnCodes = await axios.get(store.BACKEND_API_URL + "MRTStnCodes")
         store.taxiStands = await axios.get(store.BACKEND_API_URL + "taxi-stand")
-        console.log(store.taxiStands.data)
+        // console.log(store.taxiStands.data)
     },
     watch: {
         async selectedLine() {
@@ -165,6 +167,16 @@ export default {
                     this.center.lat = this.taxiMarkers[this.taxiMarkers.length - 1].position.lat
                     this.center.lng = this.taxiMarkers[this.taxiMarkers.length - 1].position.lng
                     this.mapZoom = 20
+                }
+            )
+
+            // query for bfa based on name
+            const res2 = await axios.get(store.BACKEND_API_URL + `taxi-bfa-from-name?name=${replacedName}`).then(
+                res2 => {
+                    if ((Object.values(res2.data[0])[0].data[0]) == 1)
+                        this.bfa = "Yes"
+                    else
+                        this.bfa = "No"
                 }
             )
         }

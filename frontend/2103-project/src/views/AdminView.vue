@@ -122,47 +122,21 @@
       </b-col>
 
       <b-col cols="4">
-        <div class="mb-3"><u>Update First Bus Timing</u></div>
+        <div class="mb-3"><u>Update Taxi BFA Status</u></div>
         <b-form @submit="onSubmit7">
-          <Header text="Select Service No:"></Header>
-          <b-form-select v-model="selectedServiceNo4" :options="store.busServices.data" text-field="ServiceNo" required></b-form-select>
-          <Header text="Select Day:"></Header>
-          <b-form-select class="mb-2" v-model="selectedDay1" :options="store.day" text-field="name" required></b-form-select>
-          <b-form-input v-b-tooltip.hover="'Eg. 0500'" v-model="inputtedTiming1" 
-            placeholder="Enter First Bus Timing" type="number" required></b-form-input>
+          <Header text="Select Taxi Stand"></Header>
+          <v-select :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
+                    v-model="selectedTaxiStand" :options="store.taxiStands.data" label="Name"></v-select>
+          <Header text="Select BFA (wheelchair friendly) Status:"></Header>
+          <b-form-select class="mb-2" v-model="selectedBFA" required>
+            <option>Yes</option>
+            <option>No</option>
+          </b-form-select>
           
           <b-button type="submit" variant="primary" class="w-50">
-            Update First Bus Timing
+            Update Taxi BFA Status
           </b-button>
         </b-form>
-        
-      </b-col>
-
-      <b-col cols="4">
-        <div class="mt-3 mb-3"><u>Update Last Bus Timing</u></div>
-        <b-form @submit="onSubmit8">
-          <Header text="Select Service No:"></Header>
-          <b-form-select v-model="selectedServiceNo5" :options="store.busServices.data" text-field="ServiceNo"></b-form-select>
-          <Header text="Select Day:"></Header>
-          <b-form-select class="mb-2" v-model="selectedDay2" :options="store.day" text-field="name"></b-form-select>
-          <b-form-input v-b-tooltip.hover="'Eg. 2359'" v-model="inputtedTiming2" 
-              placeholder="Enter Last Bus Timing" type="number" required></b-form-input>
-        </b-form>
-
-        <b-button class="w-50">
-          Update Last Bus Timing
-        </b-button>
-      </b-col>
-
-      <b-col cols="4">
-        <div class="mt-3 mb-3"><u>Update</u></div>
-      
-        <b-form-select class="mt-2"></b-form-select>
-        <b-form-select class="mb-2 mt-2"></b-form-select>
-
-        <b-button class="w-50">
-          
-        </b-button>
       </b-col>
     </b-row>
 
@@ -170,21 +144,48 @@
     <b-row class="mt-5">
       <b-col cols="4">
         <div class="mb-3"><u>Delete Bus Service Route</u></div>
-      
-        <Header text="Select Service No:"></Header>
-        <b-form-select v-model="selectedServiceNo3" :options="store.busServices.data" 
-          text-field="ServiceNo"></b-form-select>
-          
-        <Header text="Select Bus Route:"></Header>
-        <b-form-select class="mb-2" v-model="busRoute">
-          <option v-for="busRoute in store.busRoutes.data" :key="busRoute.id" :value="busRoute">
-            {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
-          </option>
-        </b-form-select>
+        <b-form @submit="onSubmit8">
+          <Header text="Select Service No:"></Header>
+          <b-form-select v-model="selectedServiceNo3" :options="store.busServices.data" 
+            text-field="ServiceNo"></b-form-select>
+            
+          <Header text="Select Bus Route:"></Header>
+          <b-form-select class="mb-2" v-model="busRoute">
+            <option v-for="busRoute in store.busRoutes.data" :key="busRoute.id" :value="busRoute">
+              {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
+            </option>
+          </b-form-select>
 
-        <b-button class="w-50" @click="deleteBusRoute(selectedServiceNo3, busRoute)">
-          Delete Bus Route
-        </b-button>
+          <b-button type="submit" variant="primary" class="w-50">
+            Delete Bus Route
+          </b-button>
+        </b-form>
+      </b-col>
+
+      <b-col cols="4">
+        <div class="mb-3"><u>Delete Taxi Stand</u></div>
+        <b-form @submit="onSubmit9">
+          <Header text="Select Taxi Stand"></Header>
+          <v-select class="mb-2" :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
+                    v-model="selectedTaxiStand" :options="store.taxiStands.data" label="Name"></v-select>
+
+          <b-button type="submit" variant="primary" class="w-50">
+            Delete Taxi Stand
+          </b-button>
+        </b-form>
+      </b-col>
+
+      <b-col cols="4">
+        <div class="mb-3"><u>Delete MRT Station</u></div>
+        <b-form @submit="onSubmit10">
+          <Header text="Select MRT Station"></Header>
+          <v-select class="mb-2" :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
+                    v-model="selectedMRTStation" :options="store.mrtStations.data" label="MRTStation"></v-select>
+
+          <b-button type="submit" variant="primary" class="w-50">
+            Delete Taxi Stand
+          </b-button>
+        </b-form>
       </b-col>
     </b-row>
   </b-container>
@@ -240,6 +241,9 @@ export default {
       selectedTaxiType: "",
       inputtedTiming1: "",
       inputtedTiming2: "",
+      selectedTaxiStand: "",
+      selectedBFA: "",
+      selectedMRTStation: "",
       busRoute: {},
     }
   },
@@ -250,7 +254,9 @@ export default {
   },
   async mounted() {
       store.busServices = await axios.get(store.BACKEND_API_URL + "bus-services")
+      store.mrtStations = await axios.get(store.BACKEND_API_URL + "MRTStation")
       store.mrtLines = await axios.get(store.BACKEND_API_URL + `MRTLines`)
+      store.taxiStands = await axios.get(store.BACKEND_API_URL + `taxi-stand`)
   },
   methods: {
     onSubmit1(event) {
@@ -288,12 +294,22 @@ export default {
 
     onSubmit7(event) {
       event.preventDefault()
-      this.updateFirstBusTiming(this.selectedServiceNo6, this.selectedDay1, this.inputtedTiming1)
+      this.updateTaxiBFA(this.selectedTaxiStand, this.selectedBFA)
     },
 
     onSubmit8(event) {
       event.preventDefault()
-      this.updateLastBusTiming(this.selectedServiceNo6, this.selectedDay2, this.inputtedTiming2)
+      this.deleteBusRoute(this.selectedServiceNo3, this.busRoute)
+    },
+
+    onSubmit9(event) {
+      event.preventDefault()
+      this.deleteTaxiStand(this.selectedTaxiStand)
+    },
+
+    onSubmit10(event) {
+      event.preventDefault()
+      this.deleteMRTStation(this.selectedMRTStation)
     },
 
     // topics are ServiceNo, Operator, Category
@@ -334,18 +350,22 @@ export default {
         // need a request that sends back serviceno, direction and stop sequence
         // given bus stop code
 
-        const req = await axios.get(store.BACKEND_API_URL + "bus-routes?busStopCode=" + busRoute.BusStopCode)
+        const res = await axios.get(store.BACKEND_API_URL + "bus-routes?busStopCode=" + busRoute.BusStopCode)
           // .then(req => {
           //   console.log(req)
           // })
 
-        const req2 = await axios.delete(store.BACKEND_API_URL + "bus-routes", 
+        const req = await axios.delete(store.BACKEND_API_URL + "bus-routes", 
         {
           data: {
-            "routes": req,
+            "routes": res,
             "busStopCode": busRoute.BusStopCode
           }
-        })
+        }).then(
+          req => {
+            alert(req.data)
+          }
+        )
       }
     },
 
@@ -356,7 +376,12 @@ export default {
             alert("Bus Service already exists!")
           }
           else {
-            const res2 = axios.post(store.BACKEND_API_URL + `bus-service?busService=${inputtedServiceNo}&operator=${inputtedOperator}&category=${inputtedCategory}`)
+            const res2 = axios.post(store.BACKEND_API_URL + `bus-service?busService=${inputtedServiceNo}
+              &operator=${inputtedOperator}&category=${inputtedCategory}`).then(
+                res2 => {
+                  alert(res2.data)
+                }
+              )
           }
         }
       )
@@ -371,7 +396,11 @@ export default {
           else {
             const res2 = axios.post(store.BACKEND_API_URL + `bus-stop?busStopCode=${inputtedBusStopCode}` + 
             `&roadName=${inputtedRoadName}&description=${inputtedDescription}&latitude=${inputtedLatitude}` + 
-            `&longitude=${inputtedLongitude}`)
+            `&longitude=${inputtedLongitude}`).then(
+              res2 => {
+                alert(res2.data)
+              }
+            )
           }
         }
       )
@@ -388,7 +417,7 @@ export default {
             `&mrtStation=${inputtedMRTStation}&mrtLine=${inputtedMRTLine}` + 
             `&latitude=${inputtedLatitude2}&longitude=${inputtedLongitude2}`).then(
               res2 => {
-                // console.log(res2)
+                alert(res2.data)
               }
             )
           }
@@ -409,16 +438,52 @@ export default {
                   bfa = "FALSE"
                 const res2 = await axios.post(store.BACKEND_API_URL + `taxi-stand?taxiCode=${inputtedTaxiCode}` + 
                 `&description=${inputtedDescription2}&latitude=${inputtedLatitude3}&longitude=${inputtedLongitude3}` + 
-                `&bfa=${bfa}&taxiOwnership=${selectedTaxiOwnership}&taxiType=${selectedTaxiType}` )
+                `&bfa=${bfa}&taxiOwnership=${selectedTaxiOwnership}&taxiType=${selectedTaxiType}` ).then(
+                  res2 => {
+                    alert(res2.data)
+                  }
+                )
               }
             }
           )
         },
 
-      updateFirstBusTiming: async (selectedServiceNo, selectedDay, inputtedTiming) => {
-        // carry on in future
-        // const res = await axios.post(store.BACKEND_API_URL + `?serviceNo=${selectedServiceNo}&day=${selectedDay}&time=${inputtedTiming}`)
-      }
+    updateTaxiBFA: async (taxiStand, bfa) => {
+      let convertedBfa = "FALSE"
+      if (bfa == "Yes")
+        convertedBfa = "TRUE"
+      const res = await axios.put(store.BACKEND_API_URL + `taxi-stand-bfa?code=${taxiStand.TaxiCode}&bfa=${convertedBfa}`).then(
+        res => {
+          alert(res.data)
+        }
+      )
+    },
+
+    deleteTaxiStand: async (taxiStand) => {
+      const req = await axios.delete(store.BACKEND_API_URL + "taxi-stand", 
+        {
+          data: {
+            "code": taxiStand
+          }
+        }).then(
+          req => {
+            alert(req.data)
+          }   
+        )
+    },
+
+    deleteMRTStation: async (mrtStation) => {
+      const req = await axios.delete(store.BACKEND_API_URL + "mrt-station", 
+        {
+          data: {
+            "name": mrtStation
+          }
+        }).then(
+          req => {
+            alert(req.data)
+          }   
+        )
+    }
   }
 }
 </script>

@@ -47,7 +47,8 @@
         <b-form-select :disabled="destinationRouteDisabled" v-model="selectedDestinationRoute">
           <option v-for="busRoute in store.destinationBusRoutes" :key="busRoute.id" :value="busRoute">
             {{ busRoute.Description }} - {{busRoute.RoadName}} ({{ busRoute.BusStopCode }})
-          </option></b-form-select>
+          </option>
+        </b-form-select>
       </b-col>
       <b-col v-if="!checkBus"></b-col>
 
@@ -75,7 +76,7 @@
     <b-row class="mt-5">
       <b-col></b-col>
       <b-col cols="4">
-        Distance: {{distance}} KM
+        Distance between routes: {{distance}} KM
       </b-col>
       <b-col></b-col>
     </b-row>
@@ -272,12 +273,12 @@
         this.destinationRouteDisabled = true
         store.busRoutes = []
         store.destinationBusRoutes = []
-        this.selectedStartingRoute.WDFirstBus = ""
-        this.selectedStartingRoute.WDLastBus = ""
-        this.selectedStartingRoute.SATFirstBus = ""
-        this.selectedStartingRoute.SATLastBus = ""
-        this.selectedStartingRoute.SUNFirstBus = ""
-        this.selectedStartingRoute.SUNLastBus = ""
+        // this.selectedStartingRoute.WDFirstBus = ""
+        // this.selectedStartingRoute.WDLastBus = ""
+        // this.selectedStartingRoute.SATFirstBus = ""
+        // this.selectedStartingRoute.SATLastBus = ""
+        // this.selectedStartingRoute.SUNFirstBus = ""
+        // this.selectedStartingRoute.SUNLastBus = ""
         store.busRoutes = await axios.get(store.BACKEND_API_URL + "bus-stops?busService="+ this.selectedServiceNo)
         const res = await axios.get(store.BACKEND_API_URL + "TaxiStand-ServiceNo?busService="+ this.selectedServiceNo).then(
           res => {

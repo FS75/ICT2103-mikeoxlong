@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import BusInterchangeView from "../views/BusInterchangeView.vue"
 import AdminView from "../views/AdminView.vue"
 import TaxiMRTView from "../views/TaxiMRTView.vue"
 
@@ -8,6 +9,11 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/businterchange',
+    name: 'businterchange',
+    component: BusInterchangeView
   },
   {
     path: '/admin',

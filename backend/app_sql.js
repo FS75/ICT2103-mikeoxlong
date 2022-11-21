@@ -6,11 +6,12 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 let { connection, createBusService, createBusStop, createMRTStation, createTaxiStand, getBusServices, 
-    getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, 
+    getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getBusInterchange, getServicesFromBusInterchange, 
     checkBusStopCode, getRoutesOfBusStopCode, checkBusServiceNo, checkTaxiStandCode, updateBusService, 
     deleteBusRouteAndUpdateSequences, getMRTStationName, getMRTLines, checkStnCode, getMRTStationNameFromServiceNo, 
     getMRTStationsFromLine, getLocationFromMRTStation, getMRTStnCodes, getTaxiStands, getTaxiStandLocationFromName, 
-    getTaxiStandLocationFromServiceNo, getTaxiStandLocationFromMRTStation } = require("./database");
+    getTaxiStandLocationFromServiceNo, getTaxiStandBFAFromName, getTaxiStandLocationFromMRTStation, getServiceWithHighestDistance, 
+    getServiceWithMostStops, updateTaxiBFA, deleteTaxiStand, deleteMRTStation } = require("./database_sql");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -132,13 +133,23 @@ app.get('/api/taxi-stand', (req, res) => {
 })
 
 /*  
-    GET: Taxi stand Location from Name
+    GET: Taxi Stand Location from Name
     Params: Taxi Stand Name
     Eg: [api/taxi-location-from-name?name=]
 */
 app.get('/api/taxi-location-from-name', (req, res) => {
     const { name } = req.query
     getTaxiStandLocationFromName(name, res)
+})
+
+/*  
+    GET: Taxi Stand BFA from Name
+    Params: Taxi Stand Name
+    Eg: [api/taxi-bfa-from-name?name=]
+*/
+app.get('/api/taxi-bfa-from-name', (req, res) => {
+    const { name } = req.query
+    getTaxiStandBFAFromName(name, res)
 })
 
 /*  
@@ -222,6 +233,38 @@ app.get('/api/bus-routes', (req, res) => {
     getRoutesOfBusStopCode(busStopCode, res)
 })
 
+/*  
+    GET: All Bus Interchange Details
+*/
+app.get('/api/bus-interchange', (req, res) => {
+    getBusInterchange(res)
+})
+
+
+/*  
+    GET: All Bus Service from Bus Interchange inputted
+    Params: Bus Interchange
+    Eg: [api/bus-interchange-services?interchange=Sengkang Int]
+*/
+app.get('/api/bus-interchange-services', (req, res) => {
+    const { interchange } = req.query
+    getServicesFromBusInterchange(interchange, res)
+})
+
+/*  
+    GET: Bus Service with most no. of bus stops in 1 direction
+*/
+app.get('/api/bus-service-most-stops', (req, res) => {
+    getServiceWithMostStops(res)
+})
+
+/*  
+    GET: Bus Service with highest distance in 1 direction
+*/
+app.get('/api/bus-service-highest-distance', (req, res) => {
+    getServiceWithHighestDistance(res)
+})
+
 /* ---------- UPDATE END POINTS ----------*/ 
 /* 
     UPDATE: One single bus service
@@ -240,6 +283,14 @@ app.put('/api/bus-services/', (req, res) => {
     updateBusService(topicValue, selectedServiceNo, updateValue, res)
 })
 
+app.put('/api/taxi-stand-bfa/', (req, res) => {
+    const { code, bfa } = req.query
+
+    updateTaxiBFA(code, bfa, res)
+})
+
+
+
 /* ---------- DELETE END POINTS ----------*/ 
 /* 
     DELETE: One single bus route
@@ -251,6 +302,26 @@ app.delete('/api/bus-routes/', (req, res) => {
     // const direction = Object.values(newData)[2]
 
     deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
+})
+
+/* 
+    DELETE: One taxi stand
+*/
+app.delete('/api/taxi-stand/', (req, res) => {
+    const newData = req.body
+    const code = Object.values(Object.values(newData)[0])[0]
+
+    deleteTaxiStand(code, res)
+})
+
+/* 
+    DELETE: One taxi stand
+*/
+app.delete('/api/mrt-station/', (req, res) => {
+    const newData = req.body
+    const name = Object.values(Object.values(newData)[0])[0]
+
+    deleteMRTStation(name, res)
 })
 
 

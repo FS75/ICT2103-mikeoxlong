@@ -1,8 +1,9 @@
 <template>
   <nav>
-    <router-link to="/">User (Bus)</router-link> |
-    <router-link to="/taximrt">User (MRT / Taxi)</router-link> |
-    <router-link to="/admin">Admin</router-link>
+    <router-link style="text-decoration: none;" to="/">User (Bus Services)</router-link> |
+    <router-link style="text-decoration: none;" to="/businterchange">User (Bus Interchanges)</router-link> |
+    <router-link style="text-decoration: none;" to="/taximrt">User (MRT / Taxi)</router-link> |
+    <router-link style="text-decoration: none;" to="/admin">Admin</router-link>
   </nav>
   <router-view/>
 </template>
@@ -23,7 +24,6 @@
 </script>
 
 <style>
-
   body {
     padding: 0;
     margin: 0;

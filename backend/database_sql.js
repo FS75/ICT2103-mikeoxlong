@@ -32,8 +32,9 @@ const createBusService = (busService, operator, category, res) => {
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
-        data = JSON.parse(JSON.stringify(rows));
-        res.send(data)
+        // data = JSON.parse(JSON.stringify(rows));
+        // res.send(data)
+        res.send(`Successfully created Bus Service with service number ${busService}, operator ${operator}, category ${category}`)
     })
 }
 
@@ -44,8 +45,11 @@ const createBusStop = (busStopCode, roadName, description, latitude, longitude, 
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
-        data = JSON.parse(JSON.stringify(rows));
-        res.send(data)
+        // data = JSON.parse(JSON.stringify(rows));
+        // res.send(data)
+
+        res.send(`Successfully created Bus Stop with bus stop code ${busStopCode}, road name ${roadName}, 
+            description ${description}, latitude ${latitude}, longitude ${longitude}`)
     })
 }
 
@@ -56,8 +60,11 @@ const createMRTStation = (stnCode, mrtStation, mrtLine, latitude, longitude, res
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
-        data = JSON.parse(JSON.stringify(rows));
-        res.send(data)
+        // data = JSON.parse(JSON.stringify(rows));
+        // res.send(data)
+
+        res.send(`Successfully created MRT Station with station code ${stnCode}, mrt station ${mrtStation}, 
+            mrt line ${mrtLine}, latitude ${latitude}, longitude ${longitude}`)
     })
 }
 
@@ -69,10 +76,45 @@ const createTaxiStand = (taxiCode, description, latitude, longitude, bfa, taxiOw
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 
+        // data = JSON.parse(JSON.stringify(rows));
+        // res.send(data)
+
+        res.send(`Successfully created Taxi Stand with taxi stand code ${taxiCode}, latitude ${latitude}, 
+            longitude ${longitude}, bfa ${bfa}, taxi ownership ${taxiOwnership}, taxi type ${taxiType}, description ${description}`)
+    })
+}
+
+// Get All Bus Interchange details
+const getBusInterchange = (res) => {
+    var data = []
+    const query = 'SELECT * FROM businterchange_services;'
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
         data = JSON.parse(JSON.stringify(rows));
         res.send(data)
     })
 }
+
+// Get All Bus Services ran by Bus Interchange
+const getServicesFromBusInterchange = (interchange, res) => {
+    var data = []
+    const query = ` select distinct serviceno 
+                    from bus_route route 
+                    where route.busstopcode=
+                    (select inter.busstopcode 
+                        from businterchange_services inter 
+                        where route.busstopcode=inter.busstopcode 
+                        and inter.description='${interchange}'); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        data = JSON.parse(JSON.stringify(rows));
+        res.send(data)
+    })
+}
+
+
 
 // Get All Bus Service details
 const getBusServices = (res) => {
@@ -288,7 +330,7 @@ const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
 
         // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
         // res.send(rawData)
-        res.send("Updated Bus Service " + selectedServiceNo + " to " + topicValue)
+        res.send(`Successfully updated bus service ${selectedServiceNo}'s ${topicValue} with ${updateValue}`)
     })
 }
 
@@ -415,9 +457,106 @@ const getTaxiStandLocationFromName = (name, res) => {
     })  
 }
 
+// Get BFA of Taxi Stand with inputted Name
+const getTaxiStandBFAFromName = (name, res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT Bfa
+                    FROM taxi_stand WHERE Name="${name}"; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+// Get Bus Service with highest distance in 1 direction
+const getServiceWithHighestDistance = (res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT serviceno, stopsequence, distance 
+                    FROM bus_route 
+                    WHERE distance = 
+                    (SELECT MAX(distance) 
+                    FROM bus_route); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+// Get Bus Service with most stops in 1 direction
+const getServiceWithMostStops = (res) => {
+    var rawData = []
+    var data = []
+    const query = ` SELECT serviceno, stopsequence, distance 
+                    FROM bus_route 
+                    WHERE stopsequence = 
+                    (SELECT MAX(stopsequence) 
+                    FROM bus_route); `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+// Update Taxi BFA
+const updateTaxiBFA = (code, bfa, res) => {
+    var rawData = []
+    var data = []
+    const query = ` UPDATE taxi_stand 
+                    SET bfa = ${bfa} 
+                    WHERE TaxiCode='${code}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        // res.send(rawData)
+        res.send(`Successfully updated Taxi Stand ${code} with BFA ${bfa}`)
+    })
+}
+
+// Delete Taxi Stand
+const deleteTaxiStand = (code, res) => {
+    var rawData = []
+    var data = []
+    const query = ` DELETE FROM taxi_stand 
+                    WHERE taxicode='${code}' `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        // res.send(rawData)
+        res.send(`Successfully deleted Taxi Stand ${code}`)
+    })
+}
+
+// Delete MRT Station
+const deleteMRTStation = (name, res) => {
+    var rawData = []
+    var data = []
+    const query = ` DELETE FROM mrt_station 
+                    WHERE MRTStation='${name}' `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        // res.send(rawData)
+        res.send(`Successfully deleted MRT Station ${name}`)
+    })
+}
+
+
+
+
 module.exports = { connection, createBusService, createBusStop, createMRTStation, createTaxiStand, getBusServices, 
-    getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getRoutesOfBusStopCode, checkBusStopCode, 
-    checkBusServiceNo, checkTaxiStandCode, updateBusService, deleteBusRouteAndUpdateSequences, getMRTStationName, getMRTLines, 
-    checkStnCode, getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
-    getMRTStnCodes, getTaxiStands, getTaxiStandLocationFromName, getTaxiStandLocationFromServiceNo, 
-    getTaxiStandLocationFromMRTStation }
+    getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getRoutesOfBusStopCode, getBusInterchange, getServicesFromBusInterchange, 
+    checkBusStopCode, checkBusServiceNo, checkTaxiStandCode, updateBusService, deleteBusRouteAndUpdateSequences, 
+    getMRTStationName, getMRTLines, checkStnCode, getMRTStationNameFromServiceNo, getMRTStationsFromLine, getLocationFromMRTStation, 
+    getMRTStnCodes, getTaxiStands, getTaxiStandLocationFromName, getTaxiStandBFAFromName, getTaxiStandLocationFromServiceNo, 
+    getTaxiStandLocationFromMRTStation, getServiceWithMostStops, getServiceWithHighestDistance, updateTaxiBFA, deleteTaxiStand, deleteMRTStation }
