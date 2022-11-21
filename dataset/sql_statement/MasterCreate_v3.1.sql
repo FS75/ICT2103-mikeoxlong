@@ -119,18 +119,18 @@ FROM bus_route q1_br JOIN bus_stop q1_bs
 ON q1_br.BusStopCode = q1_bs.BusStopCode
 WHERE q1_bs.Description LIKE "% int" OR q1_bs.Description LIKE "%ter"  OR q1_bs.Description LIKE "%terminal"
 
-EXCEPT /*---REMOVE END POINT FROM QUERY 1 SINCE WE DON'T WANT BUS SERVICES THAT END THERE---*/
+AND NOT EXISTS /*---REMOVE END POINT FROM QUERY 1 SINCE WE DON'T WANT BUS SERVICES THAT END THERE---*/
 
 /*---QUERY 2 LABELED AS q2
 GET ROW OF ALL END POINT OF BUS SERVICES---*/
-SELECT q2_br1.ServiceNo, q2_br1.Direction, q2_br1.BusStopCode, q2_br1.Distance, q2_br1.Stopsequence
+(SELECT q2_br1.ServiceNo, q2_br1.Direction, q2_br1.BusStopCode, q2_br1.Distance, q2_br1.Stopsequence
 FROM bus_route q2_br1 
 WHERE Stopsequence = 
 /*---GET LAST STOP SEQUENCE--*/
 (SELECT MAX( q2_br2.Stopsequence )
 FROM bus_route q2_br2
 WHERE q2_br1.ServiceNo = q2_br2.ServiceNo AND q2_br1.Direction = q2_br2.Direction)
-) startpass_table 
+)) startpass_table 
 JOIN bus_stop bs /*---THIS JOIN IS GET THE DESCRIPTION AND ROADNAME---*/
 ON startpass_table.BusStopCode = bs.BusStopCode
 WHERE startpass_table.BusStopCode IN 
