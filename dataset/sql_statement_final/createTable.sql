@@ -1,0 +1,65 @@
+CREATE TABLE Bus_Stop(
+BusStopCode INT NOT NULL PRIMARY KEY,
+RoadName VARCHAR (50) NOT NULL,
+Description VARCHAR (50) NOT NULL,
+Latitude DOUBLE NOT NULL,
+Longitude DOUBLE NOT NULL
+);
+
+CREATE TABLE Bus_Services(
+ServiceNo VARCHAR(5) NOT NULL PRIMARY KEY,
+Operator VARCHAR(10) NOT NULL,
+Category VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE Bus_Direction(
+ServiceNo VARCHAR(5) NOT NULL,
+Direction INT NOT NULL,
+OriginCode INT NOT NULL,
+DestinationCode INT NOT NULL,
+AMPeakFreq VARCHAR(10),
+AMOffpeakFreq VARCHAR(10),
+PMPeakFreq VARCHAR(10),
+PMOffpeakFreq VARCHAR(10),
+LoopDesc VARCHAR(50),
+FOREIGN KEY (ServiceNo) REFERENCES Bus_Services(ServiceNo) ON UPDATE CASCADE,
+PRIMARY KEY (ServiceNo, Direction)
+);
+
+CREATE TABLE Bus_Route(
+ServiceNo VARCHAR(5) NOT NULL,
+Direction INT NOT NULL,
+BusStopCode INT NOT NULL,
+Distance DOUBLE NOT NULL,
+StopSequence INT NOT NULL,
+SATFirstBus INT,
+SATLastBus INT,
+SUNFirstBus INT,
+SUNLastBus INT,
+WDFirstBus INT,
+WDLastBus INT,
+FOREIGN KEY (ServiceNo, Direction) REFERENCES Bus_Direction(ServiceNo, Direction) ON UPDATE CASCADE,
+FOREIGN KEY (BusStopCode) REFERENCES Bus_Stop(BusStopCode)
+);
+
+CREATE TABLE MRT_Station(
+StnCode VARCHAR(5) NOT NULL PRIMARY KEY,
+MRTStation VARCHAR(30) NOT NULL,
+MRTLine VARCHAR(30) NOT NULL,
+BusStopCode INT,
+Latitude DOUBLE NOT NULL,
+Longitude DOUBLE NOT NULL,
+FOREIGN KEY (BusStopCode) REFERENCES Bus_Stop(BusStopCode)
+);
+
+CREATE TABLE Taxi_Stand(
+TaxiCode  VARCHAR(3) NOT NULL PRIMARY KEY,
+Latitude  DOUBLE  NOT NULL,
+Longitude DOUBLE  NOT NULL,
+Bfa       BIT(1) NOT NULL,
+Ownership VARCHAR(10) NOT NULL,
+Type      VARCHAR(5) NOT NULL,
+Name      VARCHAR(90) NOT NULL,
+StnCode VARCHAR(5),
+FOREIGN KEY (StnCode) REFERENCES MRT_Station(StnCode) ON UPDATE CASCADE
+);

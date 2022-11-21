@@ -5,7 +5,7 @@ import httplib2 as http
 #External library
 if __name__=="__main__":
 #Authentication parameters
-    headers = { 'AccountKey' : 'S2wLIM8vSASIbTsKOdUF2w== ','accept' : 'application/json'} #this is by default
+    headers = { 'AccountKey' : 'YOUR-API-HERE','accept' : 'application/json'} #this is by default
 #API parameters
 
     with open("bus_routes.json", "w") as outfile:
