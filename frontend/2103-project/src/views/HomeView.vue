@@ -271,6 +271,7 @@
       async selectedServiceNo() {
         this.startingRouteDisabled = false
         this.destinationRouteDisabled = true
+        store.taxiStandNearby = []
         store.busRoutes = []
         store.destinationBusRoutes = []
         // this.selectedStartingRoute.WDFirstBus = ""
@@ -303,6 +304,7 @@
       },
       selectedDestinationRoute() {
         this.checkBus = true
+        this.busMarkers = []
         this.distance = (Math.round((this.selectedDestinationRoute.Distance - this.selectedStartingRoute.Distance) * 100) / 100).toFixed(2);
         this.busMarkers.push(
             {

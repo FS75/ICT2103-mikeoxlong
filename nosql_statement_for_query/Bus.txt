@@ -89,7 +89,7 @@ db.bus_directory.aggregate([
         }
     }, {
         '$lookup': {
-            'from': 'bus_stops', 
+            'from': 'locations', 
             'localField': 'Route.BusStopCode', 
             'foreignField': 'BusStopCode', 
             'as': 'BusStopDesc'
