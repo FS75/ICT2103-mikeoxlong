@@ -304,5 +304,46 @@ const checkBusStopCode = (busStopCode, res) => {
     })           
 }
 
+const deleteTaxiStand = (code,res) => {
+    const dbo = connection.db("ICT2103")
+        let bus_directory = dbo.collection("locations")
+
+        var query = { TaxiCode : code }
+        bus_directory.deleteOne(query)
+        if (err) throw err
+            res.send(`Successfully deleted Taxi Stand ${code}`)
+}
+
+const deleteMRTStation = (name,res) => {
+    const dbo = connection.db("ICT2103")
+        let bus_directory = dbo.collection("locations")
+
+        var query = { MRTStation : name }
+        bus_directory.deleteOne(query)
+        if (err) {
+            res.send(`Cannot delete MRT Station ${name}`)
+        }
+        else
+            res.send(`Successfully deleted MRT Station ${name}`)
+}
+
+const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
+        const dbo = connection.db("ICT2103")
+        let bus_directory = dbo.collection("bus_directory")
+        console.log("test")
+        var query = { "Route.BusStopCode" : busStopCode }
+        bus_directory.deleteOne(query)
+        for (let i = 0; i < routes.length; i++) {
+            var filter = { ServiceNo : routes[i].ServiceNo, Direction : routes[i].Direction, 
+                            "Route.StopSequence" : {$gt : routes[i].StopSequence}}
+            var newValues = {$inc : {"Route.$.StopSequence":-1}} 
+            bus_directory.updateMany(filter,newValues)
+        }
+        if (err) throw err
+
+        res.send("Deleted bus route for all affected bus services and updated stop sequences")
+}
+
 module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode }
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, deleteBusRouteAndUpdateSequences, 
+    deleteMRTStation, deleteTaxiStand}

@@ -7,7 +7,8 @@ const app = express();
 const PORT = 3000;
 
 let { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode } = require("./database_mongo");
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
+    deleteBusRouteAndUpdateSequences, deleteMRTStation, deleteTaxiStand} = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -147,4 +148,39 @@ app.put('/api/bus-services/', (req, res) => {
     const updateValue = Object.values(newData)[2]
 
     updateBusService(topicValue, selectedServiceNo, updateValue, res)
+})
+
+/* ---------- DELETE END POINTS ----------*/ 
+/* 
+    DELETE: One single bus route
+*/
+app.delete('/api/bus-routes/', (req, res) => {
+    const newData = req.body
+    // console.log(newData)
+    var routes = []
+    routes = Object.values(Object.values(newData)[0])[0]
+    const busStopCode = Object.values(newData)[1]
+
+    // console.log(routes)
+
+    deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
+})
+/* 
+    DELETE: One taxi stand
+*/
+app.delete('/api/taxi-stand/', (req, res) => {
+    const newData = req.body
+    const code = Object.values(newData)[0]
+    // console.log(code)
+
+    deleteTaxiStand(code, res)
+})
+/* 
+    DELETE: One mrt station
+*/
+app.delete('/api/mrt-station/', (req, res) => {
+    const newData = req.body
+    const name = Object.values(newData)[0]
+
+    deleteMRTStation(name, res)
 })
