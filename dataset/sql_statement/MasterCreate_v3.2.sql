@@ -1,4 +1,12 @@
-/*-----CREATE TABLE SQL HERE-----*/
+DROP TABLE IF EXISTS Bus_Route;
+DROP TABLE IF EXISTS Bus_Direction;
+DROP TABLE IF EXISTS Bus_Services;
+DROP TABLE IF EXISTS Taxi_Stand;
+DROP TABLE IF EXISTS MRT_Station;
+DROP TABLE IF EXISTS Bus_Stop;
+DROP VIEW IF EXISTS BusInterchange_Services;
+DROP VIEW IF EXISTS BusInterchange_Services_StartOnly;
+
 CREATE TABLE Bus_Stop(
 BusStopCode INT NOT NULL PRIMARY KEY,
 RoadName VARCHAR (50) NOT NULL,
@@ -23,7 +31,7 @@ AMOffpeakFreq VARCHAR(10),
 PMPeakFreq VARCHAR(10),
 PMOffpeakFreq VARCHAR(10),
 LoopDesc VARCHAR(50),
-FOREIGN KEY (ServiceNo) REFERENCES Bus_Services(ServiceNo) ON UPDATE CASCADE,
+FOREIGN KEY (ServiceNo) REFERENCES Bus_Services(ServiceNo),
 PRIMARY KEY (ServiceNo, Direction)
 );
 
@@ -39,7 +47,7 @@ SUNFirstBus INT,
 SUNLastBus INT,
 WDFirstBus INT,
 WDLastBus INT,
-FOREIGN KEY (ServiceNo, Direction) REFERENCES Bus_Direction(ServiceNo, Direction) ON UPDATE CASCADE,
+FOREIGN KEY (ServiceNo, Direction) REFERENCES Bus_Direction(ServiceNo, Direction),
 FOREIGN KEY (BusStopCode) REFERENCES Bus_Stop(BusStopCode)
 );
 
@@ -48,8 +56,6 @@ StnCode VARCHAR(5) NOT NULL PRIMARY KEY,
 MRTStation VARCHAR(30) NOT NULL,
 MRTLine VARCHAR(30) NOT NULL,
 BusStopCode INT,
-Latitude DOUBLE NOT NULL,
-Longitude DOUBLE NOT NULL,
 FOREIGN KEY (BusStopCode) REFERENCES Bus_Stop(BusStopCode)
 );
 
@@ -62,25 +68,25 @@ Ownership VARCHAR(10) NOT NULL,
 Type      VARCHAR(5) NOT NULL,
 Name      VARCHAR(90) NOT NULL,
 StnCode VARCHAR(5),
-FOREIGN KEY (StnCode) REFERENCES MRT_Station(StnCode) ON UPDATE CASCADE
+FOREIGN KEY (StnCode) REFERENCES MRT_Station(StnCode)
 );
 
-/*-----BUS ROUTE INDEX-----*/
+/*------BUS ROUTE INDEX------*/
 CREATE INDEX idx_key
 ON bus_route (ServiceNo, Direction, BusStopCode, StopSequence);
 
-/*-----BUS STOP INDEX-----*/
+/*------BUS STOP INDEX------*/
 CREATE INDEX idx_busstop_name
 ON bus_stop (RoadName, Description);
 
 CREATE INDEX idx_geolocation
 ON bus_stop (Latitude, Longitude);
 
-/*-----MRT INDEX-----*/
+/*------MRT INDEX------*/
 CREATE INDEX idx_mrt_description
 ON mrt_station (MRTStation, MRTLine);
 
-/*-----TAXI STAND INDEX-----*/
+/*------TAXI STAND INDEX------*/
 CREATE INDEX idx_geolocation
 ON taxi_stand (Latitude, Longitude);
 
@@ -134,7 +140,7 @@ HAVING BusServicesAvailable>0
 /*---This is to sort by bus stop code ---*/
 ORDER BY BusStopCode;
 
-/*---INSERT BUS STOP DATA---*/
+/* Insert data */
 INSERT INTO Bus_Stop(BusStopCode,RoadName,Description,Latitude,Longitude) VALUES 
 (01012,'Victoria St','Hotel Grand Pacific',1.29684825487647,103.85253591654006),
 (01013,'Victoria St','St. Joseph''s Ch',1.29770970610083,103.8532247463225),
@@ -5204,26 +5210,93 @@ INSERT INTO Bus_Stop(BusStopCode,RoadName,Description,Latitude,Longitude) VALUES
 (82091,'Tg Katong Rd','Aft Queen Of Peace Ch',1.31264667096781,103.89411050584133),
 (82099,'Tg Katong Rd','CDAC Bldg',1.31299461549467,103.89427184817765),
 (82109,'Geylang Rd','City Plaza',1.3151892235607,103.89331774481381);
-
-/*---INSERT BUS SERVICE DATA---*/
-INSERT INTO Bus_Services(ServiceNo,Operator,Category) VALUES
+INSERT IGNORE INTO Bus_Services(ServiceNo,Operator,Category) VALUES 
+('118','GAS','TRUNK'),
+('118','GAS','TRUNK'),
+('118A','GAS','TRUNK'),
+('118B','GAS','TRUNK'),
+('119','GAS','TRUNK'),
+('12','GAS','TRUNK'),
+('12','GAS','TRUNK'),
+('12e','GAS','EXPRESS'),
+('12e','GAS','EXPRESS'),
+('136','GAS','TRUNK'),
+('136','GAS','TRUNK'),
+('15','GAS','TRUNK'),
+('15A','GAS','TRUNK'),
+('17','GAS','TRUNK'),
+('17','GAS','TRUNK'),
+('17A','GAS','TRUNK'),
+('2','GAS','TRUNK'),
+('2','GAS','TRUNK'),
+('2A','GAS','FEEDER'),
+('3','GAS','TRUNK'),
+('3','GAS','TRUNK'),
+('34','GAS','TRUNK'),
+('34A','GAS','TRUNK'),
+('34B','GAS','TRUNK'),
+('354','GAS','FEEDER'),
+('358','GAS','FEEDER'),
+('359','GAS','FEEDER'),
+('36','GAS','TRUNK'),
+('36A','GAS','TRUNK'),
+('36B','GAS','TRUNK'),
+('381','GAS','FEEDER'),
+('382','GAS','FEEDER'),
+('382','GAS','FEEDER'),
+('382A','GAS','FEEDER'),
+('382G','GAS','FEEDER'),
+('382W','GAS','FEEDER'),
+('384','GAS','FEEDER'),
+('386','GAS','FEEDER'),
+('386A','GAS','FEEDER'),
+('3A','GAS','TRUNK'),
+('403','GAS','TRUNK'),
+('43','GAS','TRUNK'),
+('43','GAS','TRUNK'),
+('43e','GAS','EXPRESS'),
+('43e','GAS','EXPRESS'),
+('43M','GAS','TRUNK'),
+('518','GAS','EXPRESS'),
+('518A','GAS','EXPRESS'),
+('6','GAS','TRUNK'),
+('62','GAS','TRUNK'),
+('62A','GAS','TRUNK'),
+('661','GAS','CITY_LINK'),
+('661','GAS','CITY_LINK'),
+('666','GAS','CITY_LINK'),
+('666','GAS','CITY_LINK'),
+('68','GAS','TRUNK'),
+('68A','GAS','TRUNK'),
+('68B','GAS','TRUNK'),
+('82','GAS','TRUNK'),
+('83','GAS','TRUNK'),
+('83T','GAS','TRUNK'),
+('84','GAS','TRUNK'),
+('85','GAS','TRUNK'),
+('85','GAS','TRUNK'),
+('85A','GAS','TRUNK'),
 ('10','SBST','TRUNK'),
+('10','SBST','TRUNK'),
+('100','SBST','TRUNK'),
 ('100','SBST','TRUNK'),
 ('100A','SBST','TRUNK'),
 ('101','SBST','TRUNK'),
 ('102','SBST','TRUNK'),
 ('103','SBST','TRUNK'),
+('103','SBST','TRUNK'),
+('105','SBST','TRUNK'),
 ('105','SBST','TRUNK'),
 ('105B','SBST','TRUNK'),
-('106','TTS','TRUNK'),
-('106A','TTS','TRUNK'),
+('107','SBST','TRUNK'),
 ('107','SBST','TRUNK'),
 ('107M','SBST','TRUNK'),
 ('109','SBST','TRUNK'),
+('109','SBST','TRUNK'),
 ('109A','SBST','TRUNK'),
 ('10e','SBST','EXPRESS'),
+('10e','SBST','EXPRESS'),
 ('11','SBST','TRUNK'),
-('110','SMRT','TRUNK'),
 ('111','SBST','TRUNK'),
 ('112','SBST','TRUNK'),
 ('112A','SBST','TRUNK'),
@@ -5235,147 +5308,157 @@ INSERT INTO Bus_Services(ServiceNo,Operator,Category) VALUES
 ('116','SBST','TRUNK'),
 ('116A','SBST','TRUNK'),
 ('117','SBST','TRUNK'),
+('117','SBST','TRUNK'),
 ('117A','SBST','TRUNK'),
 ('117M','SBST','TRUNK'),
-('118','GAS','TRUNK'),
-('118A','GAS','TRUNK'),
-('118B','GAS','TRUNK'),
-('119','GAS','TRUNK'),
-('12','GAS','TRUNK'),
+('117M','SBST','TRUNK'),
 ('120','SBST','TRUNK'),
 ('121','SBST','TRUNK'),
 ('122','SBST','TRUNK'),
 ('123','SBST','TRUNK'),
+('123','SBST','TRUNK'),
 ('123M','SBST','TRUNK'),
+('124','SBST','TRUNK'),
 ('124','SBST','TRUNK'),
 ('125','SBST','TRUNK'),
 ('125A','SBST','TRUNK'),
 ('127','SBST','TRUNK'),
 ('127A','SBST','TRUNK'),
 ('129','SBST','TRUNK'),
-('12e','GAS','EXPRESS'),
+('129','SBST','TRUNK'),
+('13','SBST','TRUNK'),
 ('13','SBST','TRUNK'),
 ('130','SBST','TRUNK'),
+('130','SBST','TRUNK'),
 ('130A','SBST','TRUNK'),
+('131','SBST','TRUNK'),
 ('131','SBST','TRUNK'),
 ('131A','SBST','TRUNK'),
 ('131M','SBST','TRUNK'),
 ('132','SBST','TRUNK'),
+('132','SBST','TRUNK'),
+('133','SBST','TRUNK'),
 ('133','SBST','TRUNK'),
 ('134','SBST','TRUNK'),
 ('135','SBST','TRUNK'),
-('136','GAS','TRUNK'),
+('135','SBST','TRUNK'),
+('137','SBST','TRUNK'),
 ('137','SBST','TRUNK'),
 ('137A','SBST','TRUNK'),
 ('138','SBST','TRUNK'),
 ('138A','SBST','TRUNK'),
 ('138B','SBST','TRUNK'),
 ('139','SBST','TRUNK'),
+('139','SBST','TRUNK'),
 ('139M','SBST','TRUNK'),
 ('13A','SBST','TRUNK'),
 ('14','SBST','TRUNK'),
+('14','SBST','TRUNK'),
 ('140','SBST','TRUNK'),
+('141','SBST','TRUNK'),
 ('141','SBST','TRUNK'),
 ('142','SBST','TRUNK'),
 ('142A','SBST','TRUNK'),
-('143','TTS','TRUNK'),
-('143M','TTS','TRUNK'),
+('145','SBST','TRUNK'),
 ('145','SBST','TRUNK'),
 ('145A','SBST','TRUNK'),
+('147','SBST','TRUNK'),
 ('147','SBST','TRUNK'),
 ('147A','SBST','TRUNK'),
 ('14A','SBST','TRUNK'),
 ('14e','SBST','EXPRESS'),
-('15','GAS','TRUNK'),
+('14e','SBST','EXPRESS'),
 ('150','SBST','TRUNK'),
 ('151','SBST','TRUNK'),
+('151','SBST','TRUNK'),
 ('153','SBST','TRUNK'),
+('153','SBST','TRUNK'),
+('154','SBST','TRUNK'),
 ('154','SBST','TRUNK'),
 ('154A','SBST','TRUNK'),
 ('154B','SBST','TRUNK'),
 ('155','SBST','TRUNK'),
+('155','SBST','TRUNK'),
 ('156','SBST','TRUNK'),
+('156','SBST','TRUNK'),
+('157','SBST','TRUNK'),
 ('157','SBST','TRUNK'),
 ('158','SBST','TRUNK'),
 ('158A','SBST','TRUNK'),
 ('159','SBST','TRUNK'),
+('159','SBST','TRUNK'),
 ('159A','SBST','TRUNK'),
 ('159B','SBST','TRUNK'),
-('15A','GAS','TRUNK'),
+('16','SBST','TRUNK'),
 ('16','SBST','TRUNK'),
 ('160','SBST','TRUNK'),
 ('160A','SBST','TRUNK'),
 ('160M','SBST','TRUNK'),
 ('161','SBST','TRUNK'),
+('161','SBST','TRUNK'),
+('162','SBST','TRUNK'),
 ('162','SBST','TRUNK'),
 ('162M','SBST','TRUNK'),
 ('163','SBST','TRUNK'),
+('163','SBST','TRUNK'),
 ('163A','SBST','TRUNK'),
 ('165','SBST','TRUNK'),
+('165','SBST','TRUNK'),
 ('166','SBST','TRUNK'),
-('167','TTS','TRUNK'),
+('166','SBST','TRUNK'),
 ('168','SBST','TRUNK'),
-('169','TTS','TRUNK'),
-('169A','TTS','TRUNK'),
-('169B','TTS','TRUNK'),
+('168','SBST','TRUNK'),
 ('16M','SBST','TRUNK'),
-('17','GAS','TRUNK'),
+('16M','SBST','TRUNK'),
+('170','SBST','TRUNK'),
 ('170','SBST','TRUNK'),
 ('170X','SBST','TRUNK'),
-('171','TTS','TRUNK'),
-('172','SMRT','TRUNK'),
-('173','TTS','TRUNK'),
-('173A','TTS','TRUNK'),
+('170X','SBST','TRUNK'),
+('174','SBST','TRUNK'),
 ('174','SBST','TRUNK'),
 ('174e','SBST','EXPRESS'),
+('174e','SBST','EXPRESS'),
 ('175','SBST','TRUNK'),
-('176','SMRT','TRUNK'),
-('177','TTS','TRUNK'),
-('178','SMRT','TRUNK'),
-('178A','SMRT','TRUNK'),
+('175','SBST','TRUNK'),
 ('179','SBST','TRUNK'),
 ('179A','SBST','TRUNK'),
-('17A','GAS','TRUNK'),
 ('18','SBST','TRUNK'),
-('180','SMRT','TRUNK'),
-('180A','SMRT','TRUNK'),
 ('181','SBST','TRUNK'),
 ('181M','SBST','TRUNK'),
 ('182','SBST','TRUNK'),
 ('182M','SBST','TRUNK'),
-('183','TTS','TRUNK'),
-('183B','TTS','TRUNK'),
-('184','SMRT','TRUNK'),
+('185','SBST','TRUNK'),
 ('185','SBST','TRUNK'),
 ('186','SBST','TRUNK'),
-('187','SMRT','TRUNK'),
-('188','SMRT','TRUNK'),
-('188e','SMRT','EXPRESS'),
-('189','TTS','TRUNK'),
-('189A','TTS','TRUNK'),
+('186','SBST','TRUNK'),
 ('19','SBST','TRUNK'),
-('190','SMRT','TRUNK'),
-('190A','SMRT','TRUNK'),
 ('191','SBST','TRUNK'),
 ('192','SBST','TRUNK'),
+('192','SBST','TRUNK'),
+('193','SBST','TRUNK'),
 ('193','SBST','TRUNK'),
 ('194','SBST','TRUNK'),
 ('195','SBST','TRUNK'),
 ('195A','SBST','TRUNK'),
 ('196','SBST','TRUNK'),
+('196','SBST','TRUNK'),
 ('196A','SBST','TRUNK'),
 ('196e','SBST','EXPRESS'),
+('196e','SBST','EXPRESS'),
 ('197','SBST','TRUNK'),
+('197','SBST','TRUNK'),
+('198','SBST','TRUNK'),
 ('198','SBST','TRUNK'),
 ('198A','SBST','TRUNK'),
 ('199','SBST','TRUNK'),
-('2','GAS','TRUNK'),
 ('20','SBST','TRUNK'),
 ('200','SBST','TRUNK'),
 ('200A','SBST','TRUNK'),
 ('201','SBST','TRUNK'),
 ('21','SBST','TRUNK'),
+('21','SBST','TRUNK'),
 ('21A','SBST','TRUNK'),
+('22','SBST','TRUNK'),
 ('22','SBST','TRUNK'),
 ('222','SBST','FEEDER'),
 ('222A','SBST','FEEDER'),
@@ -5404,6 +5487,7 @@ INSERT INTO Bus_Services(ServiceNo,Operator,Category) VALUES
 ('248M','SBST','TRUNK'),
 ('249','SBST','INDUSTRIAL'),
 ('25','SBST','TRUNK'),
+('25','SBST','TRUNK'),
 ('251','SBST','INDUSTRIAL'),
 ('252','SBST','TRUNK'),
 ('253','SBST','INDUSTRIAL'),
@@ -5411,6 +5495,7 @@ INSERT INTO Bus_Services(ServiceNo,Operator,Category) VALUES
 ('255','SBST','INDUSTRIAL'),
 ('257','SBST','INDUSTRIAL'),
 ('258','SBST','INDUSTRIAL'),
+('26','SBST','TRUNK'),
 ('26','SBST','TRUNK'),
 ('261','SBST','FEEDER'),
 ('262','SBST','FEEDER'),
@@ -5426,169 +5511,143 @@ INSERT INTO Bus_Services(ServiceNo,Operator,Category) VALUES
 ('273','SBST','FEEDER'),
 ('27A','SBST','TRUNK'),
 ('28','SBST','TRUNK'),
-('282','TTS','FEEDER'),
-('284','TTS','FEEDER'),
-('285','TTS','FEEDER'),
+('28','SBST','TRUNK'),
 ('29','SBST','TRUNK'),
 ('291','SBST','FEEDER'),
 ('292','SBST','FEEDER'),
 ('293','SBST','FEEDER'),
 ('298','SBST','FEEDER'),
 ('29A','SBST','TRUNK'),
-('2A','GAS','FEEDER'),
-('3','GAS','TRUNK'),
 ('30','SBST','TRUNK'),
-('300','SMRT','FEEDER'),
-('301','SMRT','FEEDER'),
-('302','SMRT','FEEDER'),
-('302A','SMRT','FEEDER'),
-('307','SMRT','FEEDER'),
-('307A','SMRT','FEEDER'),
-('307T','SMRT','FEEDER'),
+('30','SBST','TRUNK'),
 ('30e','SBST','EXPRESS'),
+('30e','SBST','EXPRESS'),
+('31','SBST','TRUNK'),
 ('31','SBST','TRUNK'),
 ('315','SBST','FEEDER'),
 ('317','SBST','FEEDER'),
 ('31A','SBST','TRUNK'),
 ('32','SBST','TRUNK'),
+('32','SBST','TRUNK'),
 ('324','SBST','FEEDER'),
 ('325','SBST','FEEDER'),
 ('329','SBST','FEEDER'),
 ('33','SBST','TRUNK'),
-('333','TTS','FEEDER'),
-('334','TTS','FEEDER'),
-('335','TTS','FEEDER'),
+('33','SBST','TRUNK'),
 ('33A','SBST','TRUNK'),
 ('33B','SBST','TRUNK'),
-('34','GAS','TRUNK'),
-('34A','GAS','TRUNK'),
-('34B','GAS','TRUNK'),
 ('35','SBST','TRUNK'),
-('354','GAS','FEEDER'),
-('358','GAS','FEEDER'),
-('359','GAS','FEEDER'),
 ('35M','SBST','TRUNK'),
-('36','GAS','TRUNK'),
-('36A','GAS','TRUNK'),
-('36B','GAS','TRUNK'),
 ('37','SBST','TRUNK'),
 ('371','SBST','FEEDER'),
 ('372','SBST','FEEDER'),
 ('374','SBST','FEEDER'),
 ('38','SBST','TRUNK'),
-('381','GAS','FEEDER'),
-('382','GAS','FEEDER'),
-('382A','GAS','FEEDER'),
-('382G','GAS','FEEDER'),
-('382W','GAS','FEEDER'),
-('384','GAS','FEEDER'),
-('386','GAS','FEEDER'),
-('386A','GAS','FEEDER'),
+('38','SBST','TRUNK'),
 ('39','SBST','TRUNK'),
-('3A','GAS','TRUNK'),
+('39','SBST','TRUNK'),
 ('4','SBST','TRUNK'),
 ('40','SBST','TRUNK'),
 ('400','SBST','TRUNK'),
 ('401','SBST','TRUNK'),
-('403','GAS','TRUNK'),
 ('405','SBST','TRUNK'),
-('41','TTS','TRUNK'),
+('410','SBST','FEEDER'),
 ('410','SBST','FEEDER'),
 ('410G','SBST','FEEDER'),
 ('410W','SBST','FEEDER'),
 ('42','SBST','TRUNK'),
-('43','GAS','TRUNK'),
-('43e','GAS','EXPRESS'),
-('43M','GAS','TRUNK'),
+('45','SBST','TRUNK'),
 ('45','SBST','TRUNK'),
 ('45A','SBST','TRUNK'),
 ('46','SBST','TRUNK'),
+('46','SBST','TRUNK'),
 ('47','SBST','TRUNK'),
 ('48','SBST','TRUNK'),
-('49','TTS','TRUNK'),
+('48','SBST','TRUNK'),
 ('5','SBST','TRUNK'),
+('5','SBST','TRUNK'),
+('50','SBST','TRUNK'),
 ('50','SBST','TRUNK'),
 ('502','SBST','EXPRESS'),
 ('502A','SBST','EXPRESS'),
 ('506','SBST','EXPRESS'),
+('506','SBST','EXPRESS'),
+('51','SBST','TRUNK'),
 ('51','SBST','TRUNK'),
 ('513','SBST','EXPRESS'),
-('518','GAS','EXPRESS'),
-('518A','GAS','EXPRESS'),
+('513','SBST','EXPRESS'),
 ('51A','SBST','TRUNK'),
+('52','SBST','TRUNK'),
 ('52','SBST','TRUNK'),
 ('53','SBST','TRUNK'),
 ('53A','SBST','TRUNK'),
 ('53M','SBST','TRUNK'),
 ('54','SBST','TRUNK'),
+('54','SBST','TRUNK'),
+('55','SBST','TRUNK'),
 ('55','SBST','TRUNK'),
 ('55B','SBST','TRUNK'),
 ('56','SBST','TRUNK'),
+('56','SBST','TRUNK'),
 ('57','SBST','TRUNK'),
+('57','SBST','TRUNK'),
+('58','SBST','TRUNK'),
 ('58','SBST','TRUNK'),
 ('58A','SBST','TRUNK'),
 ('58B','SBST','TRUNK'),
 ('59','SBST','TRUNK'),
-('6','GAS','TRUNK'),
+('59','SBST','TRUNK'),
 ('60','SBST','TRUNK'),
 ('60A','SBST','TRUNK'),
 ('60T','SBST','TRUNK'),
-('61','SMRT','TRUNK'),
-('62','GAS','TRUNK'),
-('62A','GAS','TRUNK'),
 ('63','SBST','TRUNK'),
 ('63A','SBST','TRUNK'),
 ('63M','SBST','TRUNK'),
 ('64','SBST','TRUNK'),
 ('65','SBST','TRUNK'),
-('651','TTS','CITY_LINK'),
+('65','SBST','TRUNK'),
 ('652','SBST','CITY_LINK'),
-('653','TTS','CITY_LINK'),
+('652','SBST','CITY_LINK'),
+('654','SBST','CITY_LINK'),
 ('654','SBST','CITY_LINK'),
 ('655','SBST','CITY_LINK'),
-('656','TTS','CITY_LINK'),
-('657','TTS','CITY_LINK'),
-('66','TTS','TRUNK'),
+('655','SBST','CITY_LINK'),
 ('660','SBST','CITY_LINK'),
-('661','GAS','CITY_LINK'),
-('663','TTS','CITY_LINK'),
-('665','SMRT','CITY_LINK'),
-('666','GAS','CITY_LINK'),
+('660','SBST','CITY_LINK'),
+('667','SBST','CITY_LINK'),
 ('667','SBST','CITY_LINK'),
 ('668','SBST','CITY_LINK'),
-('67','SMRT','TRUNK'),
-('670','TTS','CITY_LINK'),
+('668','SBST','CITY_LINK'),
+('671','SBST','CITY_LINK'),
 ('671','SBST','CITY_LINK'),
 ('672','SBST','CITY_LINK'),
-('68','GAS','TRUNK'),
-('68A','GAS','TRUNK'),
-('68B','GAS','TRUNK'),
+('672','SBST','CITY_LINK'),
 ('69','SBST','TRUNK'),
 ('7','SBST','TRUNK'),
+('7','SBST','TRUNK'),
+('70','SBST','TRUNK'),
 ('70','SBST','TRUNK'),
 ('70A','SBST','TRUNK'),
 ('70B','SBST','TRUNK'),
 ('70M','SBST','TRUNK'),
 ('71','SBST','TRUNK'),
 ('72','SBST','TRUNK'),
+('72','SBST','TRUNK'),
 ('72A','SBST','TRUNK'),
 ('72B','SBST','TRUNK'),
 ('73','SBST','TRUNK'),
 ('73T','SBST','TRUNK'),
 ('74','SBST','TRUNK'),
-('75','SMRT','TRUNK'),
+('74','SBST','TRUNK'),
 ('76','SBST','TRUNK'),
-('77','TTS','TRUNK'),
-('78','TTS','TRUNK'),
-('78A','TTS','TRUNK'),
-('79','TTS','TRUNK'),
-('79A','TTS','TRUNK'),
+('76','SBST','TRUNK'),
 ('7A','SBST','TRUNK'),
 ('7B','SBST','TRUNK'),
 ('8','SBST','TRUNK'),
+('8','SBST','TRUNK'),
+('80','SBST','TRUNK'),
 ('80','SBST','TRUNK'),
 ('800','SBST','FEEDER'),
-('801','TTS','FEEDER'),
 ('803','SBST','FEEDER'),
 ('804','SBST','FEEDER'),
 ('805','SBST','FEEDER'),
@@ -5603,21 +5662,207 @@ INSERT INTO Bus_Services(ServiceNo,Operator,Category) VALUES
 ('811T','SBST','FEEDER'),
 ('812','SBST','FEEDER'),
 ('812T','SBST','FEEDER'),
-('82','GAS','TRUNK'),
-('825','TTS','TRUNK'),
-('83','GAS','TRUNK'),
-('83T','GAS','TRUNK'),
-('84','GAS','TRUNK'),
-('85','GAS','TRUNK'),
+('850E','SBST','EXPRESS'),
 ('850E','SBST','EXPRESS'),
 ('851','SBST','TRUNK'),
+('851','SBST','TRUNK'),
+('851e','SBST','EXPRESS'),
 ('851e','SBST','EXPRESS'),
 ('852','SBST','TRUNK'),
+('852','SBST','TRUNK'),
+('86','SBST','TRUNK'),
+('86','SBST','TRUNK'),
+('860','SBST','TRUNK'),
+('860T','SBST','TRUNK'),
+('87','SBST','TRUNK'),
+('87','SBST','TRUNK'),
+('88','SBST','TRUNK'),
+('88','SBST','TRUNK'),
+('88A','SBST','TRUNK'),
+('88B','SBST','TRUNK'),
+('89','SBST','TRUNK'),
+('89A','SBST','TRUNK'),
+('89e','SBST','EXPRESS'),
+('89e','SBST','EXPRESS'),
+('9','SBST','TRUNK'),
+('90','SBST','TRUNK'),
+('90A','SBST','TRUNK'),
+('91','SBST','TRUNK'),
+('92','SBST','TRUNK'),
+('92A','SBST','TRUNK'),
+('92B','SBST','TRUNK'),
+('92M','SBST','TRUNK'),
+('93','SBST','TRUNK'),
+('93','SBST','TRUNK'),
+('94','SBST','TRUNK'),
+('94A','SBST','TRUNK'),
+('95','SBST','TRUNK'),
+('95B','SBST','TRUNK'),
+('974','SBST','TRUNK'),
+('974A','SBST','TRUNK'),
+('99','SBST','TRUNK'),
+('99','SBST','TRUNK'),
+('9A','SBST','TRUNK'),
+('110','SMRT','TRUNK'),
+('172','SMRT','TRUNK'),
+('172','SMRT','TRUNK'),
+('176','SMRT','TRUNK'),
+('176','SMRT','TRUNK'),
+('178','SMRT','TRUNK'),
+('178','SMRT','TRUNK'),
+('178A','SMRT','TRUNK'),
+('180','SMRT','TRUNK'),
+('180A','SMRT','TRUNK'),
+('184','SMRT','TRUNK'),
+('187','SMRT','TRUNK'),
+('187','SMRT','TRUNK'),
+('188','SMRT','TRUNK'),
+('188','SMRT','TRUNK'),
+('188e','SMRT','EXPRESS'),
+('190','SMRT','TRUNK'),
+('190','SMRT','TRUNK'),
+('190A','SMRT','TRUNK'),
+('300','SMRT','FEEDER'),
+('301','SMRT','FEEDER'),
+('302','SMRT','FEEDER'),
+('302A','SMRT','FEEDER'),
+('307','SMRT','FEEDER'),
+('307','SMRT','FEEDER'),
+('307A','SMRT','FEEDER'),
+('307T','SMRT','FEEDER'),
+('61','SMRT','TRUNK'),
+('61','SMRT','TRUNK'),
+('665','SMRT','CITY_LINK'),
+('665','SMRT','CITY_LINK'),
+('67','SMRT','TRUNK'),
+('67','SMRT','TRUNK'),
+('75','SMRT','TRUNK'),
+('75','SMRT','TRUNK'),
+('868E','SMRT','EXPRESS'),
+('900','SMRT','FEEDER'),
+('900A','SMRT','FEEDER'),
+('901','SMRT','FEEDER'),
+('901M','SMRT','FEEDER'),
+('902','SMRT','FEEDER'),
+('903','SMRT','FEEDER'),
+('903M','SMRT','FEEDER'),
+('904','SMRT','FEEDER'),
+('911','SMRT','FEEDER'),
+('911','SMRT','FEEDER'),
+('911T','SMRT','FEEDER'),
+('912','SMRT','FEEDER'),
+('912A','SMRT','FEEDER'),
+('912B','SMRT','FEEDER'),
+('912M','SMRT','FEEDER'),
+('913','SMRT','FEEDER'),
+('913M','SMRT','FEEDER'),
+('913T','SMRT','FEEDER'),
+('920','SMRT','FEEDER'),
+('922','SMRT','FEEDER'),
+('925','SMRT','TRUNK'),
+('925','SMRT','TRUNK'),
+('925A','SMRT','TRUNK'),
+('925M','SMRT','TRUNK'),
+('927','SMRT','TRUNK'),
+('950','SMRT','TRUNK'),
+('951E','SMRT','EXPRESS'),
+('951E','SMRT','EXPRESS'),
+('960','SMRT','TRUNK'),
+('960','SMRT','TRUNK'),
+('960e','SMRT','EXPRESS'),
+('960e','SMRT','EXPRESS'),
+('961','SMRT','TRUNK'),
+('961','SMRT','TRUNK'),
+('961M','SMRT','TRUNK'),
+('961M','SMRT','TRUNK'),
+('962','SMRT','TRUNK'),
+('962B','SMRT','TRUNK'),
+('962C','SMRT','TRUNK'),
+('964','SMRT','TRUNK'),
+('970','SMRT','TRUNK'),
+('970','SMRT','TRUNK'),
+('972','SMRT','TRUNK'),
+('972A','SMRT','TRUNK'),
+('972M','SMRT','TRUNK'),
+('973','SMRT','TRUNK'),
+('973A','SMRT','TRUNK'),
+('975','SMRT','TRUNK'),
+('975A','SMRT','TRUNK'),
+('975B','SMRT','TRUNK'),
+('975C','SMRT','TRUNK'),
+('976','SMRT','TRUNK'),
+('976','SMRT','TRUNK'),
+('979','SMRT','TRUNK'),
+('982E','SMRT','EXPRESS'),
+('982E','SMRT','EXPRESS'),
+('983','SMRT','TRUNK'),
+('983A','SMRT','TRUNK'),
+('985','SMRT','TRUNK'),
+('985','SMRT','TRUNK'),
+('991','SMRT','TRUNK'),
+('991','SMRT','TRUNK'),
+('991A','SMRT','TRUNK'),
+('991B','SMRT','TRUNK'),
+('991C','SMRT','TRUNK'),
+('106','TTS','TRUNK'),
+('106','TTS','TRUNK'),
+('106A','TTS','TRUNK'),
+('143','TTS','TRUNK'),
+('143','TTS','TRUNK'),
+('143M','TTS','TRUNK'),
+('167','TTS','TRUNK'),
+('167','TTS','TRUNK'),
+('169','TTS','TRUNK'),
+('169','TTS','TRUNK'),
+('169A','TTS','TRUNK'),
+('169B','TTS','TRUNK'),
+('171','TTS','TRUNK'),
+('173','TTS','TRUNK'),
+('173A','TTS','TRUNK'),
+('177','TTS','TRUNK'),
+('183','TTS','TRUNK'),
+('183B','TTS','TRUNK'),
+('189','TTS','TRUNK'),
+('189A','TTS','TRUNK'),
+('282','TTS','FEEDER'),
+('284','TTS','FEEDER'),
+('285','TTS','FEEDER'),
+('333','TTS','FEEDER'),
+('334','TTS','FEEDER'),
+('335','TTS','FEEDER'),
+('41','TTS','TRUNK'),
+('49','TTS','TRUNK'),
+('651','TTS','CITY_LINK'),
+('651','TTS','CITY_LINK'),
+('653','TTS','CITY_LINK'),
+('653','TTS','CITY_LINK'),
+('656','TTS','CITY_LINK'),
+('656','TTS','CITY_LINK'),
+('657','TTS','CITY_LINK'),
+('657','TTS','CITY_LINK'),
+('66','TTS','TRUNK'),
+('663','TTS','CITY_LINK'),
+('663','TTS','CITY_LINK'),
+('670','TTS','CITY_LINK'),
+('670','TTS','CITY_LINK'),
+('77','TTS','TRUNK'),
+('77','TTS','TRUNK'),
+('78','TTS','TRUNK'),
+('78A','TTS','TRUNK'),
+('79','TTS','TRUNK'),
+('79A','TTS','TRUNK'),
+('801','TTS','FEEDER'),
+('825','TTS','TRUNK'),
+('853','TTS','TRUNK'),
 ('853','TTS','TRUNK'),
 ('853M','TTS','TRUNK'),
+('853M','TTS','TRUNK'),
+('854','TTS','TRUNK'),
 ('854','TTS','TRUNK'),
 ('854e','TTS','EXPRESS'),
 ('855','TTS','TRUNK'),
+('855','TTS','TRUNK'),
+('856','TTS','TRUNK'),
 ('856','TTS','TRUNK'),
 ('857','TTS','TRUNK'),
 ('857A','TTS','TRUNK'),
@@ -5629,120 +5874,43 @@ INSERT INTO Bus_Services(ServiceNo,Operator,Category) VALUES
 ('859A','TTS','TRUNK'),
 ('859B','TTS','TRUNK'),
 ('859T','TTS','TRUNK'),
-('85A','GAS','TRUNK'),
-('86','SBST','TRUNK'),
-('860','SBST','TRUNK'),
-('860T','SBST','TRUNK'),
-('868E','SMRT','EXPRESS'),
-('87','SBST','TRUNK'),
-('88','SBST','TRUNK'),
 ('882','TTS','TRUNK'),
 ('882A','TTS','TRUNK'),
 ('883','TTS','TRUNK'),
 ('883B','TTS','TRUNK'),
 ('883M','TTS','TRUNK'),
-('88A','SBST','TRUNK'),
-('88B','SBST','TRUNK'),
-('89','SBST','TRUNK'),
-('89A','SBST','TRUNK'),
-('89e','SBST','EXPRESS'),
-('9','SBST','TRUNK'),
-('90','SBST','TRUNK'),
-('900','SMRT','FEEDER'),
-('900A','SMRT','FEEDER'),
-('901','SMRT','FEEDER'),
-('901M','SMRT','FEEDER'),
-('902','SMRT','FEEDER'),
-('903','SMRT','FEEDER'),
-('903M','SMRT','FEEDER'),
-('904','SMRT','FEEDER'),
-('90A','SBST','TRUNK'),
-('91','SBST','TRUNK'),
-('911','SMRT','FEEDER'),
-('911T','SMRT','FEEDER'),
-('912','SMRT','FEEDER'),
-('912A','SMRT','FEEDER'),
-('912B','SMRT','FEEDER'),
-('912M','SMRT','FEEDER'),
-('913','SMRT','FEEDER'),
-('913M','SMRT','FEEDER'),
-('913T','SMRT','FEEDER'),
-('92','SBST','TRUNK'),
-('920','SMRT','FEEDER'),
-('922','SMRT','FEEDER'),
-('925','SMRT','TRUNK'),
-('925A','SMRT','TRUNK'),
-('925M','SMRT','TRUNK'),
-('927','SMRT','TRUNK'),
-('92A','SBST','TRUNK'),
-('92B','SBST','TRUNK'),
-('92M','SBST','TRUNK'),
-('93','SBST','TRUNK'),
-('94','SBST','TRUNK'),
 ('941','TTS','FEEDER'),
 ('944','TTS','FEEDER'),
 ('945','TTS','FEEDER'),
 ('947','TTS','FEEDER'),
-('94A','SBST','TRUNK'),
-('95','SBST','TRUNK'),
-('950','SMRT','TRUNK'),
-('951E','SMRT','EXPRESS'),
-('95B','SBST','TRUNK'),
 ('96','TTS','TRUNK'),
-('960','SMRT','TRUNK'),
-('960e','SMRT','EXPRESS'),
-('961','SMRT','TRUNK'),
-('961M','SMRT','TRUNK'),
-('962','SMRT','TRUNK'),
-('962B','SMRT','TRUNK'),
-('962C','SMRT','TRUNK'),
+('963','TTS','TRUNK'),
 ('963','TTS','TRUNK'),
 ('963e','TTS','EXPRESS'),
-('964','SMRT','TRUNK'),
+('963e','TTS','EXPRESS'),
 ('965','TTS','TRUNK'),
 ('965A','TTS','TRUNK'),
 ('965T','TTS','TRUNK'),
 ('966','TTS','TRUNK'),
 ('966A','TTS','TRUNK'),
 ('969','TTS','TRUNK'),
+('969','TTS','TRUNK'),
 ('969A','TTS','TRUNK'),
 ('96A','TTS','TRUNK'),
 ('96B','TTS','TRUNK'),
 ('97','TTS','TRUNK'),
-('970','SMRT','TRUNK'),
-('972','SMRT','TRUNK'),
-('972A','SMRT','TRUNK'),
-('972M','SMRT','TRUNK'),
-('973','SMRT','TRUNK'),
-('973A','SMRT','TRUNK'),
-('974','SBST','TRUNK'),
-('974A','SBST','TRUNK'),
-('975','SMRT','TRUNK'),
-('975A','SMRT','TRUNK'),
-('975B','SMRT','TRUNK'),
-('975C','SMRT','TRUNK'),
-('976','SMRT','TRUNK'),
-('979','SMRT','TRUNK'),
+('97','TTS','TRUNK'),
+('97e','TTS','EXPRESS'),
 ('97e','TTS','EXPRESS'),
 ('98','TTS','TRUNK'),
 ('980','TTS','TRUNK'),
+('980','TTS','TRUNK'),
 ('981','TTS','TRUNK'),
-('982E','SMRT','EXPRESS'),
-('983','SMRT','TRUNK'),
-('983A','SMRT','TRUNK'),
-('985','SMRT','TRUNK'),
+('981','TTS','TRUNK'),
 ('98A','TTS','TRUNK'),
 ('98B','TTS','TRUNK'),
 ('98M','TTS','TRUNK'),
-('99','SBST','TRUNK'),
-('990','TTS','TRUNK'),
-('991','SMRT','TRUNK'),
-('991A','SMRT','TRUNK'),
-('991B','SMRT','TRUNK'),
-('991C','SMRT','TRUNK'),
-('9A','SBST','TRUNK');
-
-/*---INSERT BUS DIRECTION DATA---*/
+('990','TTS','TRUNK');
 INSERT INTO Bus_Direction(ServiceNo,Direction,OriginCode,DestinationCode,AMPeakFreq,AMOffpeakFreq,PMPeakFreq,PMOffpeakFreq,LoopDesc) VALUES 
 ('118',1,65009,97009,'5-08','8-12','8-10','09-14',NULL),
 ('118',2,97009,65009,'10-10','8-11','4-08','9-12',NULL),
@@ -6444,9 +6612,6 @@ INSERT INTO Bus_Direction(ServiceNo,Direction,OriginCode,DestinationCode,AMPeakF
 ('98B',1,28501,21099,'06-51','10-10',NULL,NULL,NULL),
 ('98M',1,28009,28009,NULL,'17-18',NULL,'12-17','Corporation Rd'),
 ('990',1,43009,43009,'11-11','12-15','11-13','11-14','Jurong Gateway Rd');
-
-
-/*---INSERT BUS ROUTE DATA---*/
 INSERT INTO Bus_Route(BusStopCode,Direction,Distance,SATFirstBus,SATLastBus,SUNFirstBus,SUNLastBus,ServiceNo,StopSequence,WDFirstBus,WDLastBus) VALUES 
 (75009,1,0,0500,2300,0500,2300,'10',1,0500,2300),
 (76059,1,0.6,0502,2302,0502,2302,'10',2,0502,2302),
@@ -31490,506 +31655,897 @@ INSERT INTO Bus_Route(BusStopCode,Direction,Distance,SATFirstBus,SATLastBus,SUNF
 (76241,1,7.8,NULL,NULL,NULL,NULL,'9A',20,1856,2030),
 (98011,1,8.4,NULL,NULL,NULL,NULL,'9A',21,1859,2033);
 
-/*---INSERT MRT STATION DATA---*/
-INSERT INTO MRT_Station(StnCode,MRTStation,MRTLine,BusStopCode,Latitude,Longitude) VALUES
-('BP1','Choa Chu Kang','Bukit Panjang LRT',44009,1.3851,103.7443),
-('BP10','Fajar','Bukit Panjang LRT',NULL,1.3845,103.7709),
-('BP11','Segar','Bukit Panjang LRT',NULL,1.3877,103.7696),
-('BP12','Jelapang','Bukit Panjang LRT',NULL,1.3867,103.7644),
-('BP13','Senja','Bukit Panjang LRT',NULL,1.3829,103.7624),
-('BP2','South View','Bukit Panjang LRT',NULL,1.3803,103.7452),
-('BP3','Keat Hong','Bukit Panjang LRT',NULL,1.3786,103.749),
-('BP4','Teck Whye','Bukit Panjang LRT',NULL,1.3767,103.7537),
-('BP5','Phoenix','Bukit Panjang LRT',NULL,1.3785,103.7576),
-('BP6','Bukit Panjang','Bukit Panjang LRT',45009,1.3783,103.7625),
-('BP7','Petir','Bukit Panjang LRT',NULL,1.3777,103.7666),
-('BP8','Pending','Bukit Panjang LRT',NULL,1.3762,103.7713),
-('BP9','Bangkit','Bukit Panjang LRT',NULL,1.3801,103.7727),
-('CC1','Dhoby Ghaut','Circle Line',NULL,1.2989,103.8455),
-('CC10','MacPherson','Circle Line',NULL,1.3267,103.89),
-('CC11','Tai Seng','Circle Line',NULL,1.3359,103.8878),
-('CC12','Bartley','Circle Line',NULL,1.3423,103.8802),
-('CC13','Serangoon','Circle Line',66009,1.3499,103.8731),
-('CC14','Lorong Chuan','Circle Line',NULL,1.3517,103.8639),
-('CC15','Bishan','Circle Line',53009,1.3512,103.8485),
-('CC16','Marymount','Circle Line',NULL,1.349,103.8391),
-('CC17','Caldecott','Circle Line',NULL,1.3374,103.8398),
-('CC19','Botanic Gardens','Circle Line',NULL,1.3223,103.8149),
-('CC2','Bras Basah','Circle Line',NULL,1.2975,103.8504),
-('CC20','Farrer Road','Circle Line',NULL,1.3174,103.8078),
-('CC21','Holland Village','Circle Line',NULL,1.3111,103.7961),
-('CC22','Buona Vista','Circle Line',NULL,1.3072,103.7906),
-('CC23','one-north','Circle Line',NULL,1.299,103.7871),
-('CC24','Kent Ridge','Circle Line',NULL,1.2934,103.7843),
-('CC25','Haw Par Villa','Circle Line',NULL,1.283,103.7819),
-('CC26','Pasir Panjang','Circle Line',NULL,1.2761,103.7919),
-('CC27','Labrador Park','Circle Line',NULL,1.2723,103.8031),
-('CC28','Telok Blangah','Circle Line',NULL,1.2708,103.8099),
-('CC29','HarbourFront','Circle Line',14009,1.265,103.8215),
-('CC3','Esplanade','Circle Line',NULL,1.294,103.8554),
-('CC4','Promenade','Circle Line',NULL,1.2925,103.8604),
-('CC5','Nicoll Highway','Circle Line',NULL,1.2999,103.8635),
-('CC6','Stadium','Circle Line',NULL,1.3028,103.8754),
-('CC7','Mountbatten','Circle Line',NULL,1.3069,103.8825),
-('CC8','Dakota','Circle Line',NULL,1.3083,103.8888),
-('CC9','Paya Lebar','Circle Line',NULL,1.3182,103.8931),
-('CE1','Bayfront','Circle Line Extension',NULL,1.2813,103.8589),
-('CE2','Marina Bay','Circle Line Extension',NULL,1.2761,103.8549),
-('CG1','Expo','Changi Airport Branch Line',NULL,1.3344,103.9615),
-('CG2','Changi Airport','Changi Airport Branch Line',NULL,1.3573,103.9884),
-('DT1','Bukit Panjang','Downtown Line',45009,1.3783,103.7625),
-('DT10','Stevens','Downtown Line',NULL,1.3199,103.8261),
-('DT11','Newton','Downtown Line',NULL,1.3135,103.8383),
-('DT12','Little India','Downtown Line',NULL,1.3063,103.8494),
-('DT13','Rochor','Downtown Line',NULL,1.3036,103.8526),
-('DT14','Bugis','Downtown Line',NULL,1.3002,103.8561),
-('DT15','Promenade','Downtown Line',NULL,1.2941,103.8603),
-('DT16','Bayfront','Downtown Line',NULL,1.2813,103.8589),
-('DT17','Downtown','Downtown Line',NULL,1.2795,103.8532),
-('DT18','Telok Ayer','Downtown Line',NULL,1.282,103.8487),
-('DT19','Chinatown','Downtown Line',NULL,1.2848,103.8439),
-('DT2','Cashew','Downtown Line',NULL,1.3699,103.7645),
-('DT20','Fort Canning','Downtown Line',NULL,1.2928,103.8445),
-('DT21','Bencoolen','Downtown Line',NULL,1.2985,103.8499),
-('DT22','Jalan Besar','Downtown Line',NULL,1.3056,103.8553),
-('DT23','Bendemeer','Downtown Line',NULL,1.3138,103.8629),
-('DT24','Geylang Bahru','Downtown Line',NULL,1.2795,103.8529),
-('DT25','Mattar','Downtown Line',NULL,1.3268,103.8833),
-('DT26','MacPherson','Downtown Line',NULL,1.3267,103.89),
-('DT27','Ubi','Downtown Line',NULL,1.33,103.899),
-('DT28','Kaki Bukit','Downtown Line',NULL,1.3349,103.909),
-('DT29','Bedok North','Downtown Line',NULL,1.3352,103.918),
-('DT3','Hillview','Downtown Line',NULL,1.3631,103.7674),
-('DT30','Bedok Reservoir','Downtown Line',NULL,1.3364,103.9329),
-('DT31','Tampines West','Downtown Line',NULL,1.3455,103.9382),
-('DT32','Tampines','Downtown Line',75009,1.3533,103.9452),
-('DT33','Tampines East','Downtown Line',NULL,1.3556,103.9552),
-('DT34','Upper Changi','Downtown Line',NULL,1.3417,103.9615),
-('DT35','Expo','Downtown Line',NULL,1.3344,103.9615),
-('DT5','Beauty World','Downtown Line',NULL,1.3417,103.776),
-('DT6','King Albert Park','Downtown Line',NULL,1.3357,103.7832),
-('DT7','Sixth Avenue','Downtown Line',NULL,1.3316,103.797),
-('DT8','Tan Kah Kee','Downtown Line',NULL,1.3256,103.8079),
-('DT9','Botanic Gardens','Downtown Line',NULL,1.3223,103.8149),
-('EW1','Pasir Ris','East-West Line',77009,1.3732,103.9493),
-('EW10','Kallang','East-West Line',NULL,1.3115,103.8714),
-('EW11','Lavender','East-West Line',NULL,1.3073,103.8629),
-('EW12','Bugis','East-West Line',NULL,1.3002,103.8561),
-('EW13','City Hall','East-West Line',NULL,1.2931,103.852),
-('EW14','Raffles Place','East-West Line',NULL,1.2839,103.8515),
-('EW15','Tanjong Pagar','East-West Line',NULL,1.2768,103.8452),
-('EW16','Outram Park','East-West Line',NULL,1.2814,103.8392),
-('EW17','Tiong Bahru','East-West Line',NULL,1.2857,103.8269),
-('EW18','Redhill','East-West Line',NULL,1.2894,103.817),
-('EW19','Queenstown','East-West Line',NULL,1.2948,103.8058),
-('EW2','Tampines','East-West Line',75009,1.3533,103.9452),
-('EW20','Commonwealth','East-West Line',NULL,1.3024,103.7983),
-('EW21','Buona Vista','East-West Line',NULL,1.3072,103.7906),
-('EW22','Dover','East-West Line',NULL,1.3114,103.7786),
-('EW23','Clementi','East-West Line',17009,1.3154,103.7651),
-('EW24','Jurong East','East-West Line',28009,1.3331,103.7423),
-('EW25','Chinese Garden','East-West Line',NULL,1.3424,103.7327),
-('EW26','Lakeside','East-West Line',NULL,1.3443,103.7208),
-('EW27','Boon Lay','East-West Line',22009,1.3386,103.706),
-('EW28','Pioneer','East-West Line',NULL,1.3359,103.6917),
-('EW29','Joo Koon','East-West Line',24009,1.3277,103.6783),
-('EW3','Simei','East-West Line',NULL,1.3432,103.9534),
-('EW30','Gul Circle','East-West Line',NULL,1.3188,103.6604),
-('EW31','Tuas Crescent','East-West Line',NULL,1.3206,103.6491),
-('EW32','Tuas West Road','East-West Line',NULL,1.33,103.6396),
-('EW33','Tuas Link','East-West Line',NULL,1.3403,103.6367),
-('EW4','Tanah Merah','East-West Line',NULL,1.3272,103.9465),
-('EW5','Bedok','East-West Line',84009,1.3239,103.9296),
-('EW6','Kembangan','East-West Line',NULL,1.321,103.9129),
-('EW7','Eunos','East-West Line',82009,1.3197,103.9029),
-('EW8','Paya Lebar','East-West Line',NULL,1.3182,103.8931),
-('EW9','Aljunied','East-West Line',NULL,1.3164,103.8829),
-('NE1','HarbourFront','North East Line',14009,1.2653,103.8223),
-('NE10','Potong Pasir','North East Line',NULL,1.3313,103.869),
-('NE11','Woodleigh','North East Line',NULL,1.3388,103.8705),
-('NE12','Serangoon','North East Line',66009,1.3499,103.8731),
-('NE13','Kovan','North East Line',NULL,1.3599,103.8851),
-('NE14','Hougang','North East Line',64009,1.3717,103.893),
-('NE15','Buangkok','North East Line',NULL,1.3829,103.8933),
-('NE16','Sengkang','North East Line',67009,1.3915,103.8936),
-('NE17','Punggol','North East Line',65009,1.4051,103.9024),
-('NE3','Outram Park','North East Line',NULL,1.2802,103.8395),
-('NE4','Chinatown','North East Line',NULL,1.2849,103.844),
-('NE5','Clarke Quay','North East Line',NULL,1.2887,103.8466),
-('NE6','Dhoby Ghaut','North East Line',NULL,1.3307,103.7976),
-('NE7','Little India','North East Line',NULL,1.3063,103.8494),
-('NE8','Farrer Park','North East Line',NULL,1.3124,103.8542),
-('NE9','Boon Keng','North East Line',NULL,1.32,103.8616),
-('NS1','Jurong East','North-South Line',28009,1.3332,103.7423),
-('NS10','Admiralty','North-South Line',NULL,1.4406,103.801),
-('NS11','Sembawang','North-South Line',58009,1.449,103.8199),
-('NS12','Canberra','North-South Line',NULL,1.4433,103.8296),
-('NS13','Yishun','North-South Line',59009,1.4295,103.835),
-('NS14','Khatib','North-South Line',NULL,1.4173,103.833),
-('NS15','Yio Chu Kang','North-South Line',55509,1.3817,103.8451),
-('NS16','Ang Mo Kio','North-South Line',54009,1.3687,103.843),
-('NS17','Bishan','North-South Line',53009,1.3512,103.8485),
-('NS18','Braddell','North-South Line',NULL,1.3407,103.8467),
-('NS19','Toa Payoh','North-South Line',52009,1.3263,103.842),
-('NS2','Bukit Batok','North-South Line',43009,1.3491,103.7496),
-('NS20','Novena','North-South Line',NULL,1.3204,103.8438),
-('NS21','Newton','North-South Line',NULL,1.313,103.8384),
-('NS22','Orchard','North-South Line',NULL,1.304,103.8318),
-('NS23','Somerset','North-South Line',NULL,1.3005,103.8385),
-('NS24','Dhoby Ghaut','North-South Line',NULL,1.2992,103.8457),
-('NS25','City Hall','North-South Line',NULL,1.2931,103.852),
-('NS26','Raffles Place','North-South Line',NULL,1.283,103.8513),
-('NS27','Marina Bay','North-South Line',NULL,1.2761,103.8548),
-('NS28','Marina South Pier','North-South Line',NULL,1.2714,103.8636),
-('NS3','Bukit Gombak','North-South Line',NULL,1.3588,103.752),
-('NS4','Choa Chu Kang','North-South Line',44009,1.313,103.8384),
-('NS5','Yew Tee','North-South Line',NULL,1.3976,103.7475),
-('NS7','Kranji','North-South Line',NULL,1.4252,103.762),
-('NS8','Marsiling','North-South Line',NULL,1.4325,103.7741),
-('NS9','Woodlands','North-South Line',46009,1.437,103.7865),
-('PE1','Cove','Punggol LRT',NULL,1.3993,103.9059),
-('PE2','Meridian','Punggol LRT',NULL,1.3967,103.9089),
-('PE3','Coral Edge','Punggol LRT',NULL,1.3937,103.9127),
-('PE4','Riviera','Punggol LRT',NULL,1.3944,103.916),
-('PE5','Kadaloor','Punggol LRT',NULL,1.3994,103.9165),
-('PE6','Oasis','Punggol LRT',NULL,1.4022,103.9127),
-('PE7','Damai','Punggol LRT',NULL,1.4051,103.9086),
-('PTC','Punggol','Punggol LRT',65009,1.4051,103.9024),
-('PW1','Sam Kee','Punggol LRT',NULL,1.4098,103.9049),
-('PW2','Teck Lee','Punggol LRT',NULL,1.4126,103.906),
-('PW3','Punggol Point','Punggol LRT',NULL,1.4168,103.9067),
-('PW4','Samudera','Punggol LRT',NULL,1.4159,103.9022),
-('PW5','Nibong','Punggol LRT',NULL,1.4118,103.9003),
-('PW6','Sumang','Punggol LRT',NULL,1.4085,103.8985),
-('PW7','Soo Teck','Punggol LRT',NULL,1.4052,103.8976),
-('SE1','Compassvale','Sengkang LRT',NULL,1.3944,103.9005),
-('SE2','Rumbia','Sengkang LRT',NULL,1.3915,103.906),
-('SE3','Bakau','Sengkang LRT',NULL,1.388,103.9051),
-('SE4','Kangkar','Sengkang LRT',NULL,1.3837,103.9019),
-('SE5','Ranggung','Sengkang LRT',NULL,1.3843,103.8972),
-('STC','Sengkang','Sengkang LRT',67009,1.3917,103.8955),
-('SW1','Cheng Lim','Sengkang LRT',NULL,1.3963,103.8938),
-('SW2','Farmway','Sengkang LRT',NULL,1.3971,103.8892),
-('SW3','Kupang','Sengkang LRT',NULL,1.3982,103.8814),
-('SW4','Thanggam','Sengkang LRT',NULL,1.3974,103.8756),
-('SW5','Fernvale','Sengkang LRT',NULL,1.3919,103.8763),
-('SW6','Layar','Sengkang LRT',NULL,1.394,103.8797),
-('SW7','Tongkang','Sengkang LRT',NULL,1.3893,103.8859),
-('SW8','Renjong','Sengkang LRT',NULL,1.3867,103.8905),
-('TE1','Woodlands North','Thomson-East Coast Line',NULL,1.3851,103.7443),
-('TE2','Woodlands','Thomson-East Coast Line',46009,1.437,103.7865),
-('TE3','Woodlands South','Thomson-East Coast Line',NULL,1.4274,103.7931),
-('TE4','Springleaf','Thomson-East Coast Line',NULL,1.3974,103.8185),
-('TE5','Lentor','Thomson-East Coast Line',NULL,1.3844,103.8368),
-('TE6','Mayflower','Thomson-East Coast Line',NULL,1.293,103.856),
-('TE7','Bright Hill','Thomson-East Coast Line',NULL,1.3632,103.8332),
-('TE8','Upper Thomson','Thomson-East Coast Line',NULL,1.354,103.8338),
-('TE9','Caldecott','Thomson-East Coast Line',NULL,1.3374,103.8398);
+INSERT INTO Taxi_Stand(TaxiCode,Latitude,Longitude,Bfa,Ownership,Type,Name) VALUES 
+('A01',1.304294727,103.8338467,1,'LTA','Stand','Orchard Rd along driveway of Lucky Plaza'),
+('A05',1.304571786,103.835547,1,'Private','Stand','Mt Elizabeth Rd at Mt Elizabeth Hospital'),
+('A06',1.303519805,103.8376729,1,'LTA','Stop','Cairnhill Rd at Cairnhill Nine'),
+('A08',1.303709915,103.8327402,1,'Private','Stand','Orchard Turn at Wisma Atria Shopping Centre'),
+('A12',1.302879021,103.8405818,1,'Private','Stop','Cuppage Rd at Starhub Centre'),
+('A13',1.300918488,103.8422631,0,'LTA','Stand','Kramat Lane outside Concorde Hotel & Shopping Mall'),
+('A14',1.302600342,103.8409503,1,'Private','Stop','Cavenagh Rd at Holiday Inn Singapore Orchard City Centre'),
+('A16',1.300514561,103.8452133,1,'Private','Stand','Handy Rd at Plaza Singapura'),
+('A17',1.299321982,103.8473265,1,'CCS','Stand','Handy Rd near Cathay Building'),
+('A18',1.298096109,103.8448645,1,'Private','Stand','Penang Rd at driveway of 9 Penang Rd'),
+('A19',1.296991268,103.8439415,1,'CCS','Stand','Clemenceau Ave in front of Haw Par Glass Centre'),
+('A22',1.300360761,103.8395453,1,'Private','Stand','Somerset Rd at Orchardgateway'),
+('A23',1.299953217,103.8371289,1,'Private','Stand','Devonshire Rd outside TripleOne Somerset'),
+('B02',1.300574856,103.8496715,1,'CCS','Stand','Selegie Rd in front of Parklane Shopping Mall'),
+('B03',1.302957817,103.85095,1,'LTA','Stand','Short St near La Salle Arts College'),
+('B04',1.30152,103.8523716,1,'LTA','Stop','Bencoolen St outside Summerview Hotel'),
+('B06',1.297702738,103.8490929,1,'Private','Stop','Bencoolen St at SMU School of Econ & Social Sciences'),
+('B07',1.297537879,103.8493444,1,'Private','Stop','Bencoolen St at SMU School of Information Systems'),
+('B08',1.296189886,103.8504108,1,'Private','Stand','Queen St at SMU Li Ka Shing Library'),
+('B09',1.298087188,103.8521884,1,'LTA','Stand','Queen St at China Cultural Centre'),
+('B10',1.299986059,103.8526465,1,'CCS','Stand','Waterloo St at Stamford Arts Centre'),
+('B11',1.298453493,103.8554588,1,'Private','Stand','North Bridge Rd along driveway of Bugis Junction Tower'),
+('B12',1.29894,103.8563957,1,'LTA','Stand','Tan Quee Lan St outside Bugis DTL Station'),
+('B14',1.2962475,103.8554079,0,'LTA','Stand','Purvis St outside Shop House No. 24'),
+('B17',1.299549334,103.850739,1,'LTA','Stand','Bencoolen St at Masjid Bencoolen opp Bencoolen DTL Station (Ent A)'),
+('B18',1.299986346,103.8555097,1,'Private','Stand','Victoria St along driveway of Bugis Junction'),
+('C01',1.291210939,103.8459884,1,'Private','Stand','River Valley Rd at Clarke Quay'),
+('C02',1.291754372,103.84526,1,'CCS','Stand','River Valley Rd at Liang Court'),
+('C04',1.29075,103.844965,1,'LTA','Stand','Tan Tye Place at Clarke Quay'),
+('C08',1.291985691,103.85036,1,'Private','Stand','Coleman St along driveway outside Peninsula Excelsior Hotel'),
+('C12',1.291346056,103.8514997,1,'Private','Stop','Coleman St at The Adelphi'),
+('C13',1.292852981,103.8514184,1,'Private','Stand','North Bridge Rd outside Capitol Piazza'),
+('C14',1.293521677,103.8526911,1,'Private','Stand','Stamford Rd along driveway of Raffles City'),
+('C15',1.294264086,103.8527548,1,'Private','Stand','North Bridge Rd along driveway of Raffles City'),
+('C18',1.295428554,103.858684,1,'Private','Stand','Temasek Blvd at Suntec Tower 1 & 2'),
+('C19',1.29494786,103.8595444,1,'Private','Stand','Temasek Blvd at Suntec Tower 3 & 4'),
+('C20',1.29157,103.859883,1,'Private','Stand','Raffles Blvd at Millenia Walk'),
+('C21',1.292638277,103.8605789,1,'Private','Stand','Temasek Ave at Millenia Tower'),
+('C22',1.291408737,103.8583529,1,'Private','Stand','Raffles Blvd along driveway of Marina Square'),
+('C24',1.289841322,103.8565807,1,'Private','Stand','Raffles Ave at The Esplanade'),
+('C25',1.292799093,103.8567298,1,'Private','Stand','Raffles Blvd at Suntec City Mall'),
+('C26',1.296323466,103.8460788,1,'LTA','Stop','Percival Rd at round-about of Fort Canning Park'),
+('C27',1.293912465,103.8579088,1,'Private','Stand','Temasek Blvd at Suntec Tower 5'),
+('C28',1.29242,103.8442659,1,'LTA','Stand','Clarke Quay outside Fort Canning DTL Station (towards River Valley) (Ent A)'),
+('C29',1.292509725,103.8447777,1,'LTA','Stand','River Valley Rd outside Fort Canning DTL Station (towards Downtown) (Ent B)'),
+('D01',1.280230061,103.840696,1,'Private','Stand','Teo Hong Rd beside Dorsett Residences'),
+('D02',1.27887,103.8418178,1,'LTA','Stand','Neil Rd in front of Chinatown Plaza'),
+('D04',1.281778766,103.8416742,1,'LTA','Stand','Kreta Ayer Rd opposite Oriental Plaza'),
+('D05',1.283656238,103.8423153,1,'Private','Stand','Park Cres outside People''s Park Complex'),
+('D06',1.285392643,103.8431889,1,'LTA','Stand','Upp Cross St outside OG Building'),
+('D07',1.28617,103.8443717,0,'LTA','Stop','Havelock Sq beside People''s Park Centre'),
+('D08',1.285481664,103.8447352,1,'Private','Stand','New Bridge Rd along driveway of Chinatown Point'),
+('D09',1.287418156,103.8447597,1,'Private','Stop','New Market Rd outside Ministry of Manpower'),
+('D10',1.289193914,103.84261,1,'Private','Stand','Magazine Rd at Central Mall'),
+('D11',1.289224474,103.8441026,1,'Private','Stand','Merchant Rd at Riverside Point'),
+('D13',1.288958327,103.8481398,1,'Private','Stop','Upp Circular Rd at The Riverwalk'),
+('D14',1.288425892,103.8474801,0,'LTA','Stand','Carpenter St Opposite Safra Town Club'),
+('D15',1.286978749,103.847022,1,'LTA','Stand','North Canal Rd opposite Hong Lim Park'),
+('D16',1.282546178,103.8453397,1,'LTA','Stand','South Bridge Rd outside Sri Mariamman Temple'),
+('D18',1.28291657,103.8439659,0,'LTA','Stand','Temple St in front of Grand Court Restaurant'),
+('D19',1.28429035,103.8440421,0,'LTA','Stand','Mosque St in front of Dragon Brand Bird''s Nest Building'),
+('D20',1.282438481,103.8461855,1,'LTA','Stand','Club St at City State Apartments'),
+('D21',1.28348,103.8432689,0,'LTA','Stop','Temple St beside Lucky Chinatown'),
+('E03',1.284,103.8465539,1,'Private','Stop','Cross St at Cross St Exchange'),
+('E04',1.28594,103.84858,1,'CCS','Stop','South Canal Rd near OCBC Centre'),
+('E06',1.281424263,103.8474429,0,'LTA','Stand','Amoy St behind Thian Hock Keng Temple'),
+('E07',1.282566584,103.8487873,1,'LTA','Stand','Telok Ayer St outside PWC Building'),
+('E08',1.278955786,103.8479948,1,'CCS','Stop','Cecil St outside GB Building (before McCallum St)'),
+('E09',1.280094551,103.8486742,1,'CCS','Stop','Cecil St outside Keck Seng Tower'),
+('E10',1.282069751,103.8498846,1,'Private','Stop','Cecil St outside CapitaGreen'),
+('E11',1.283473113,103.8512297,1,'CCS','Stop','D''almeida St outside Bharat Building'),
+('E13',1.285219403,103.8521762,1,'Private','Stop','Battery Rd at Straits Trading Building'),
+('E14',1.278151896,103.8484951,1,'LTA','Stop','Robinson Rd before McCallum Street outside Singapore Post'),
+('E15',1.279458605,103.849295,0,'LTA','Stop','Robinson Rd outside Robinson Centre'),
+('E16',1.28163,103.85145,1,'CCS','Stop','Raffles Quay at 6 Raffles Quay (near Telegraph Street)'),
+('E18',1.279050272,103.8498471,1,'LTA','Stop','Shenton Way outside SGX Centre'),
+('E19',1.277450623,103.848892,1,'LTA','Stop','Shenton Way outside OUE Downtown'),
+('E20',1.27466,103.8470063,1,'LTA','Stop','Shenton Way outside MAS Building'),
+('E21',1.278768825,103.8441858,0,'LTA','Stand','Cook St behind Murray Terrace Food Alley'),
+('E22',1.277848957,103.8431344,0,'LTA','Stand','Duxton Rd at Shophouse No 61'),
+('E23',1.274215422,103.84201,0,'Private','Stop','Hoe Chiang Rd at Keppel Tower'),
+('E25',1.275819548,103.843246,1,'CCS','Stand','Tanjong Pagar Rd at Tanjong Pagar Plaza'),
+('E26',1.27836043,103.8450738,1,'LTA','Stand','Peck Seah St opposite Nehsons Building'),
+('E27',1.273441105,103.8437939,1,'CCS','Stand','Bernam St outside Fuji Xerox Towers'),
+('E32',1.284198427,103.8527361,1,'CCS','Stop','Collyer Quay at Income@Raffles'),
+('E33',1.287969175,103.8488857,0,'LTA','Stand','Circular Rd at Shophouse No. 5'),
+('E34',1.277880862,103.8437301,0,'LTA','Stand','Tanjong Pagar Rd opposite Mac-Nels Building'),
+('E35',1.286873972,103.8488084,0,'LTA','Stand','Lor Telok at Archipelago Brewery Building'),
+('E36',1.280434689,103.8507074,0,'LTA','Stop','Raffles Quay at Lau Pa Sat'),
+('E37',1.283432665,103.8528276,1,'Private','Stop','Collyer Quay at OUE Bayfront'),
+('E38',1.278781731,103.8438314,0,'LTA','Stand','Tanjong Pagar Rd at Shophouse No. 68'),
+('E39',1.281883092,103.8488787,1,'LTA','Stand','Cross St outside Telok Ayer DTL Station'),
+('E40',1.27613445,103.8553065,1,'LTA','Stand','Bayfront Ave outside Marina Bay MRT Station'),
+('F01',1.382026421,103.8445289,1,'LTA','Stand','Ang Mo Kio Ave 6 outside Yio Chu Kang MRT Station'),
+('F02',1.370108751,103.84924,1,'LTA','Stand','Ang Mo Kio Ave 8 outside Ang Mo Kio MRT Station'),
+('F03',1.350671693,103.8491326,1,'Private','Stand','Bishan Place at Bishan Junction 8 shopping Centre'),
+('F04',1.35142,103.8477482,1,'LTA','Stand','Bishan Rd opposite Bishan MRT Station (towards Ang Mo Kio)'),
+('F05',1.35155724,103.8481049,1,'LTA','Stand','Bishan Rd outside Bishan MRT Station (towards Toa Payoh)'),
+('F06',1.334208117,103.85037,1,'CCS','Stand','Toa Payoh Ctrl in front of Toa Payoh Community Library'),
+('F07',1.341053657,103.8460525,1,'CCS','Stand','Lor 1 Toa Payoh in front of Blk 109 (near Braddell MRT Station)'),
+('F08',1.333769871,103.8470449,1,'LTA','Stand','Lor 2 Toa Payoh in front of Blk 175'),
+('F09',1.331199896,103.8497216,1,'Private','Stand','Lor 6 Toa Payoh along driveway of OrangeTee Building'),
+('F10',1.354926873,103.8313135,1,'Private','Stand','Upp Thomson Rd along driveway of Thomson Plaza'),
+('F11',1.322791357,103.855,1,'CCS','Stand','Whampoa Dr outside Blk 90 Market & Hawker Centre'),
+('F12',1.324689142,103.8507971,1,'CCS','Stand','Balestier Rd outside Orange Valley Care Centre'),
+('F14',1.31829,103.8633956,1,'Private','Stand','Bendemeer Rd outside Blk 25/27 (Bendemeer Shopping Mall)'),
+('F16',1.319794451,103.861914,1,'LTA','Stand','Serangoon Rd outside Boon Keng NEL Station (Ent B)(opp Blk 102)'),
+('F17',1.310999436,103.8550641,1,'Private','Stand','Serangoon Rd at driveway of Centrium Square'),
+('F19',1.30325,103.8614,1,'CCS','Stand','Jalan Sultan near Sultan Plaza'),
+('F20',1.302933713,103.8647842,0,'Private','Stand','Beach Rd along driveway of Golden Mile Complex'),
+('F21',1.299617827,103.8633075,1,'LTA','Stand','Republic Ave outside Nicoll Highway CCL Station (Ent A)'),
+('F23',1.305255256,103.8515787,1,'Private','Stand','Hastings Rd at Tekka Place'),
+('F24',1.303455756,103.85305,1,'CCS','Stop','Rochor Canal Rd outside Sim Lim Square'),
+('F26',1.305679526,103.8494423,1,'LTA','Stand','Bukit Timah Rd outside Little India NEL Station (Ent A)'),
+('F27',1.306996505,103.8499904,1,'LTA','Stand','Race Course Rd outside Little India NEL Station (Ent C) (outside Blk 661)'),
+('F28',1.312347768,103.85341,1,'LTA','Stand','Race Course Rd outside Farrer Park NEL Station(Ent C) outside Connexion'),
+('F29',1.312507907,103.8532167,1,'LTA','Stand','Race Course Rd outside Farrer Park NEL Station (Ent D) (towards Rangoon Rd)'),
+('F31',1.277896783,103.8184586,1,'CCS','Stand','Telok Blangah Cres opposite Blk 11 Market & Food Centre'),
+('F32',1.265908733,103.8215015,1,'LTA','Stand','Telok Blangah Rd opposite Harbourfront NEL Station (Ent D) (opp Harbourfront Centre)'),
+('F34',1.281128741,103.8391854,1,'LTA','Stand','Outram Rd outside Outram Park MRT Station'),
+('F35',1.288850483,103.8347407,1,'Private','Stand','Outram Rd along driveway of Holiday Inn Atrium & Shopping Centre'),
+('F37',1.284709597,103.8326127,1,'LTA','Stand','Seng Poh Rd outside Tiong Bahru Market'),
+('F38',1.282859406,103.8168686,1,'CCS','Stand','Bukit Merah Ctrl outside Blk 165'),
+('F39',1.27412,103.8248956,1,'CCS','Stand','Bukit Purmei Ave outside Blk 109'),
+('F40',1.28921385,103.8171921,1,'LTA','Stand','Tiong Bahru Rd outside Redhill MRT Station'),
+('F41',1.302465431,103.7986999,1,'LTA','Stand','Commonwealth Ave outside Commonwealth MRT Station (towards Alexandra Rd)'),
+('F42',1.302390488,103.7979976,1,'LTA','Stand','Commonwealth Ave outside Commonwealth MRT Station (towards Clementi)'),
+('F43',1.295058976,103.8055077,1,'LTA','Stand','Commonwealth Ave outside Queenstown MRT Station (towards Clementi)'),
+('F44',1.294263434,103.8064757,1,'LTA','Stand','Commonwealth Ave outside Queenstown MRT Station (towards Alexandra)'),
+('F45',1.28826,103.8034558,1,'CCS','Stand','Queensway outside Queenstown Neighbourhood Police Centre'),
+('F46',1.306664636,103.7904927,1,'LTA','Stand','North Buona Vista Rd outside Buona Vista CCL Station (towards Holland Road)'),
+('F47',1.293347286,103.8251269,1,'CCS','Stand','Jervois Rd outside Sheares Ville'),
+('F48',1.299915572,103.8226493,1,'Private','Stop','Chatsworth Rd outside Embassy of Republic of Indonesia'),
+('F49',1.305180656,103.8214378,0,'LTA','Stand','Angullia Park beside Liat Towers'),
+('F50',1.307231142,103.8291059,1,'CCS','Stop','Claymore Rd beside Orchard Towers'),
+('F51',1.307345629,103.8200908,1,'Private','Stand','Napier Rd along Driveway of Gleneagles Hospital'),
+('F53',1.311927082,103.8377197,1,'LTA','Stand','Scotts Rd outside Newton MRT Station (towards Orchard)'),
+('F54',1.312200299,103.8375721,1,'LTA','Stand','Scotts Rd outside Newton MRT Station (towards Newton Circus)'),
+('F55',1.306458124,103.82685,1,'Private','Stand','Tanglin Rd along driveway of Tanglin Shopping Centre'),
+('F56',1.305188053,103.8240871,0,'Private','Stand','Tanglin Rd outside Tanglin Mall'),
+('F57',1.321524668,103.81451,1,'LTA','Stand','Cluny Park Rd outside Botanic Gardens CCL Station'),
+('F58',1.337739375,103.8394597,1,'LTA','Stand','Toa Payoh Link outside Caldecott CCL Station (towards Toa Payoh Rise)'),
+('F59',1.337742082,103.84,1,'LTA','Stand','Toa Payoh Link outside Caldecott TEL Station (towards Toa Payoh West)'),
+('F60',1.306979998,103.78774,1,'Private','Stand','Vista Exchange Green at The Star'),
+('F61',1.270634228,103.8621229,1,'LTA','Stand','Marina Coastal Dr outside Marina South Pier MRT Station'),
+('F63',1.31379042,103.83805,1,'LTA','Stand','Bukit Timah Rd outside Newton DTL Station'),
+('F64',1.319934318,103.826323,1,'LTA','Stand','Robin Walk outside Stevens DTL Station'),
+('F65',1.322716694,103.81583,1,'LTA','Stop','Bukit Timah Rd outside Botanic Gardens DTL Station'),
+('F66',1.325717218,103.8075461,1,'LTA','Stand','Bukit Timah Rd outside Tan Kah Kee DTL Station'),
+('F67',1.326497665,103.80777,1,'LTA','Stop','Dunearn Rd opposite Tan Kah Kee DTL Station'),
+('F68',1.331046304,103.7967355,1,'LTA','Stop','Bukit Timah Rd outside Sixth Ave DTL Station'),
+('F69',1.33580755,103.78318,1,'LTA','Stop','Bukit Timah Rd outside King Albert Park  DTL Station'),
+('F70',1.31078,103.86422,1,'Private','Stand','Kallang Ave at driveway of Aperia'),
+('F71',1.32092,103.85268,1,'Private','Stand','Balestier Rd at driveway of BT Centre'),
+('F72',1.3858,103.83532,1,'LTA','Stand','Lentor Drive outside Lentor TEL Station (Ent 1)'),
+('F73',1.38592,103.83541,1,'LTA','Stand','Lentor Drive outside Lentor TEL Station (Ent 2)'),
+('F74',1.30598,103.85547,1,'LTA','Stand','Jalan Besar outside Jalan Besar DTL Station (Ent B)'),
+('F75',1.31382645,103.86346,1,'LTA','Stop','Kallang Bahru outside Bendeemer DTL Station (Ent B)'),
+('F76',1.321368532,103.87128,1,'LTA','Stand','Geylang Bahru outside Geylang Bahru DTL Station (Ent A)'),
+('F77',1.384737415,103.838,1,'LTA','Stand','Yio Chu Kang Rd outside Lentor TEL Station (Ent 3)'),
+('F78',1.383,103.838,1,'LTA','Stand','Ang Mo Kio Ave 4 outside Lentor TEL Station (Ent 4)'),
+('F79',1.371413546,103.837,1,'LTA','Stand','Ang Mo Kio Ave 4 outside Mayflower TEL Station (Ent 4)'),
+('F80',1.372892299,103.837,1,'LTA','Stand','Ang Mo Kio Ave 4 outside Mayflower TEL Station (Ent 1)'),
+('F81',1.363570548,103.833,1,'LTA','Stand','Sin Ming Ave outside Bright Hill TEL Station (Ent 1)'),
+('F82',1.362,103.832,1,'LTA','Stand','Sin Ming Ave outside Bright Hill TEL Station (Ent 4)'),
+('F83',1.354215857,103.834,1,'SMRT','Stand','Driveway off Jalan Keli outside Upper Thomson TEL Station'),
+('F84',1.354,103.834,1,'SMRT','Stand','Upp Thomson Rd outside Upper Thomson TEL Station'),
+('F85',1.338,103.84,1,'LTA','Stand','Toa Payoh Rise outside Caldecott TEL Station (Ent 2)'),
+('F86',1.338,103.841,1,'LTA','Stand','Toa Payoh Rise outside Caldecott TEL Station (Ent 3)'),
+('G01',1.332610277,103.86861,1,'LTA','Stand','Potong Pasir Ave 1 outside Potong Pasir NEL Station (Ent A) (in front of Blk 101)'),
+('G02',1.33162593,103.86936,1,'LTA','Stand','Upp Serangoon Rd outside Potong Pasir NEL Station (Ent B) (towards City)'),
+('G03',1.339038269,103.87052,1,'LTA','Stand','Upp Serangoon Rd outside Woodleigh NEL Station (Ent B) (towards Serangoon)'),
+('G04',1.351517098,103.86464,1,'CCS','Stand','Serangoon Ave 3 outside Blk 267'),
+('G05',1.35082,103.87298,1,'LTA','Stand','Serangoon Ctrl outside Serangoon CCL Station (Ent E) (outside NEX Shopping Mall)'),
+('G06',1.35066,103.87429,1,'LTA','Stand','Upp Serangoon Rd outside Serangoon NEL Station (Ent C) (towards Kovan)'),
+('G07',1.349452199,103.87411,1,'LTA','Stand','Serangoon Ctrl outside Serangoon NEL Station (Ent A) (outside Blk 413)'),
+('G08',1.35152439,103.86091,1,'LTA','Stand','Serangoon Ave 3 outside Lorong Chuan CCL Station (Ent A)'),
+('G09',1.354567437,103.87715,1,'CCS','Stand','Yio Chu Kang Rd outside Space@Kovan'),
+('G10',1.359570573,103.88465,1,'LTA','Stand','Upp Serangoon Rd outside Kovan NEL Station (Ent C) (towards Serangoon)'),
+('G11',1.359799606,103.88438,1,'LTA','Stand','Upp Serangoon Rd opposite Kovan NEL Station(Ent A) (towards Hougang)'),
+('G12',1.371468131,103.8926,1,'LTA','Stand','Hougang Ctrl outside Hougang NEL Station (Ent B) (opp Hougang Central Bus Interchange)'),
+('G13',1.38267,103.89318,1,'LTA','Stand','Sengkang Ctrl outside Buangkok NEL Station (Ent B) (towards Hougang)'),
+('G14',1.382498214,103.89291,1,'LTA','Stand','Sengkang Ctrl outside Buangkok NEL Station (Ent A) (towards Sengkang)'),
+('G15',1.38532,103.90126,1,'LTA','Stand','Punggol Rd outside Rivervale Plaza'),
+('G16',1.392498779,103.89557,1,'LTA','Stand','Sengkang East Way outside Sengkang NEL Station (Ent D) (outside Compass Point)'),
+('G17',1.39268,103.896,1,'LTA','Stand','Sengkang East Way outside Sengkang NEL Station (outside Blk 257C)'),
+('G18',1.390717032,103.89519,1,'LTA','Stand','Sengkang Sq outside Sengkang NEL Station (Ent C) (near Kopitiam Square)'),
+('G19',1.40587,103.90173,1,'Private','Stand','Punggol Ctrl at driveway of Waterway Point'),
+('G20',1.404867351,103.90266,1,'LTA','Stand','Punggol Ctrl outside Punggol NEL Station (Ent C) (outside Punggol Bus Interchange)'),
+('G21',1.4135,103.87196,1,'Private','Stop','Seletar Aerospace Road 1 at Seletar Airport Passenger Terminal'),
+('G22',1.372380134,103.9487,1,'CCS','Stand','Pasir Ris Ctrl outside Pasir Ris MRT Station'),
+('G23',1.3727,103.94973,1,'Private','Stand','Pasir Ris Ctrl St 3 at White Sands Shopping Mall'),
+('G24',1.402288981,103.91308,1,'Private','Stand','Punggol Dr at Oasis Terraces'),
+('G25',1.417076232,103.902,1,'LTA','Stand','Northshore Drive at Northshore Plaza I'),
+('H01',1.31177,103.788,1,'CCS','Stand','Ghim Moh Rd outside Blk 19'),
+('H02',1.310177009,103.793,1,'LTA','Stand','Holland Dr opp Blk 18D'),
+('H03',1.310069406,103.79544,1,'CCS','Stand','Holland Ave outside Holland Road Shopping Centre'),
+('H05',1.308271898,103.80722,1,'LTA','Stand','Farrer Rd outside Farrer Road CCL Station'),
+('H06',1.338581385,103.7789,1,'Private','Stand','Upp Bukit Timah Rd along driveway of Bukit Timah Plaza'),
+('H07',1.417110963,103.83305,1,'LTA','Stand','Yishun Ave 2 outside Khatib MRT Station'),
+('H08',1.428789044,103.83513,1,'LTA','Stand','Yishun Ave 2 outside Yishun MRT Station'),
+('H10',1.429373341,103.83676,1,'Private','Stand','Yishun Ctrl 1 at driveway of Northpoint City'),
+('H12',1.441797408,103.82439,1,'Private','Stand','Sembawang Rd along driveway of Sembawang Shopping Centre'),
+('H13',1.44941,103.82033,1,'LTA','Stand','Sembawang Way outside Sembawang MRT Station'),
+('H14',1.440960972,103.80125,1,'LTA','Stand','Woodlands Ave 7 outside Admiralty MRT Station'),
+('H15',1.437227489,103.7872,1,'LTA','Stand','Woodlands Sq (East End) outside Woodlands MRT Station (Ent C)'),
+('H17',1.443618301,103.76957,1,'LTA','Stand','Woodlands Centre Rd at Woodlands Train Checkpoint Complex'),
+('H18',1.43242395,103.77369,1,'LTA','Stand','Woodlands Ave 3 outside Marsiling MRT Station'),
+('H19',1.425622829,103.76226,1,'LTA','Stand','Woodlands Rd outside Kranji MRT Station'),
+('H21',1.36265,103.76771,1,'LTA','Stand','Upp Bukit Timah Rd outside Hillview DTL Station'),
+('H22',1.341852368,103.77604,1,'LTA','Stand','Upp Bukit Timah Rd along driveway of Beauty World DTL Station'),
+('H23',1.343237024,103.77575,1,'LTA','Stand','Upp Bukit Timah Rd along driveway in front of Bukit Timah Shoppng Centre'),
+('H24',1.370228318,103.76416,1,'LTA','Stand','Upp Bukit Timah Rd outside Cashew DTL Station'),
+('H25',1.378213898,103.76158,1,'LTA','Stand','Upp Bukit Timah Rd outside Bukit Panjang DTL Station Ent B'),
+('H26',1.42767,103.8368,1,'Private','Stand','Northpoint Dr at driveway of Northpoint City'),
+('H27',1.44273,103.83008,1,'LTA','Stand','Canberra Link outside Canberra MRT Station'),
+('H28',1.44796,103.78496,1,'LTA','Stand','Woodlands North Coast Rd outside Woodlands North TEL Station'),
+('H29',1.43635,103.78892,1,'LTA','Stop','Woodlands Ave 2 outside Woodlands TEL Station (Ent 5)'),
+('H30',1.42785,103.79249,1,'LTA','Stand','Woodlands Ave 1 near Woodlands South TEL Station (Ent 1) in front of  Ace The Place CC'),
+('H31',1.42777,103.79281,1,'LTA','Stand','Woodlands Ave 1 outside Woodlands South TEL Station (Ent 2) in front of Blk 541'),
+('H32',1.42743,103.7949,1,'LTA','Stand','Woodlands Ave 1 outside Woodlands South TEL Station (Ent 3) in front of Blk 588'),
+('H33',1.42724,103.79493,1,'LTA','Stand','Woodlands Ave 1 outside Woodlands South TEL Station (Ent 4)'),
+('H34',1.398,103.818,1,'LTA','Stand','Upp Thomson Rd outside Springleaf TEL Station (Ent 1)'),
+('H35',1.398,103.818,1,'LTA','Stand','Upp Thomson Rd outside Springleaf TEL Station (Ent 3)'),
+('I01',1.389711441,103.98674,1,'CCS','Stand','Changi Village Rd outside Blk 5'),
+('I02',1.335829294,103.96084,1,'Private','Stand','Expo Dr along driveway of Singapore EXPO'),
+('I03',1.352335748,103.94519,1,'Private','Stand','Tampines Ave 4 at driveway of Tampines Mall'),
+('I04',1.34248,103.95282,1,'Private','Stand','Simei St 6 at Eastpoint Shopping Mall'),
+('I05',1.326716192,103.94606,1,'LTA','Stand','New Upp Changi Rd outside Tanah Merah MRT station (Ent A) (towards Bedok)'),
+('I06',1.327340922,103.94578,1,'LTA','Stand','New Upp Changi Rd outside Tanah Merah MRT station (Ent B) (towards Tampines)'),
+('I07',1.324506389,103.93147,1,'Private','Stand','New Upp Changi Rd along driveway outside Blk 209'),
+('I08',1.323646586,103.92953,1,'LTA','Stand','New Upp Changi Rd outside Bedok MRT station (towards City)'),
+('I09',1.331132333,103.92546,1,'CCS','Stand','Bedok North St 3 outside Blk 539'),
+('I10',1.338108416,103.92401,1,'LTA','Stand','Bedok Reservoir Rd outside Blk 739A'),
+('I11',1.312193423,103.93895,1,'CCS','Stand','Bayshore Rd outside The Bayshore'),
+('I12',1.308198547,103.92259,1,'LTA','Stand','Marine Parade Rd outside Mandarin Gardens'),
+('I13',1.305179817,103.91491,1,'CCS','Stand','Marine Terrace outside Blk 54'),
+('I16',1.303803724,103.90131,1,'Private','Stand','Mountbatten Rd along driveway of Katong Shopping Centre'),
+('I17',1.320761251,103.91243,1,'LTA','Stand','Sims Ave East outside Kembangan MRT station'),
+('I18',1.317731858,103.89797,1,'CCS','Stand','Sims Ave outside Block 2C'),
+('I19',1.316465598,103.89459,1,'CCS','Stand','Sims Ave near Tanjong Katong Complex'),
+('I20',1.314680937,103.89405,1,'CCS','Stand','Tanjong Katong Rd outside City Plaza'),
+('I21',1.314713111,103.8943,1,'Private','Stand','Tanjong Katong Rd at KINEX'),
+('I22',1.318291566,103.89179,1,'LTA','Stand','Paya Lebar Rd outside Paya Lebar CCL Station (Ent C)'),
+('I23',1.3189409,103.8931,1,'Private','Stand','Eunos Rd 8 outside Paya Lebar Square'),
+('I24',1.319169945,103.88729,1,'LTA','Stand','Geylang East Ctrl outside Geylang Polyclinic'),
+('I25',1.315995967,103.88315,0,'LTA','Stand','Geylang Lor 25A outside Aljunied MRT Station'),
+('I26',1.34241649,103.88034,1,'LTA','Stand','Bartley Rd outside Bartley CCL Station (Ent A)'),
+('I27',1.308611817,103.88922,1,'LTA','Stand','Old Airport Rd outside Dakota CCL Station (Ent A)'),
+('I28',1.300969009,103.87539,1,'Private','Stand','Stadium Cres outside Singapore Indoor Stadium'),
+('I29',1.305449464,103.87702,1,'Private','Stand','Stadium Blvd near OCBC Arena'),
+('I30',1.304187434,103.87226,1,'Private','Stand','Stadium Pl outside Kallang Wave Mall'),
+('I31',1.324236901,103.92926,1,'Private','Stand','New Upp Changi Rd at Bedok Mall'),
+('I32',1.32746,103.93246,1,'Private','Stop','Bedok North St 1 at Heartbeat@Bedok (Bedok Integrated Complex)'),
+('I33',1.327411052,103.88291,1,'LTA','Stand','Merpati Rd outside Mattar DTL Station (Ent A)'),
+('I34',1.326178661,103.88388,1,'LTA','Stand','Mattar Rd outside Mattar DTL Station (Ent B)'),
+('I35',1.326299648,103.88939,1,'LTA','Stand','Circuit Rd outside Macpherson DTL Station (Ent A)'),
+('I36',1.330088636,103.89989,1,'LTA','Stand','Ubi Ave 2 outside Ubi DTL Station (towards MacPherson) (Ent A)'),
+('I37',1.329802589,103.87159,1,'LTA','Stand','Ubi Ave 2 outside Ubi DTL Station (towards Kaki Bukit) (Ent B)'),
+('I38',1.334693728,103.90737,1,'LTA','Stand','Kaki Bukit Ave 1 outside Kaki Bukit DTL Station (Ent B)'),
+('I39',1.334708862,103.90908,1,'LTA','Stand','Jalan Damai outside Kaki Bukit DTL Station (Ent B)'),
+('I40',1.335501676,103.91802,1,'LTA','Stand','Bedok North Rd outside Bedok North DTL Station (Ent A)'),
+('I41',1.33413593,103.91886,1,'LTA','Stand','Bedok North Rd outside Bedok North DTL Station (Ent B)'),
+('I42',1.333853533,103.95719,1,'Private','Stand','Upp Changi Rd East at driveway of Max Atria EXPO'),
+('I43',1.336475101,103.93305,1,'LTA','Stand','Bedok North Ave 3 outside Bedok Reservoir DTL Station (towards Bedok Reservoir) (Ent A)'),
+('I44',1.336316569,103.93355,1,'LTA','Stand','Bedok North Ave 3 outside Bedok Reservoir DTL Station (Ent B)'),
+('I45',1.350789067,103.93828,1,'LTA','Stand','Tampines Ave 4 outside Tampines West DTL Station (Ent A)'),
+('I46',1.344952831,103.9392,1,'LTA','Stand','Tampines Ave 1 outside Tampines West DTL Station (Ent B)'),
+('I47',1.356448608,103.95468,1,'LTA','Stand','Tampines Ave 7 outside Tampines East DTL Station (Ent A)'),
+('I48',1.342067713,103.96111,1,'LTA','Stop','Jln Pergam outside Upper Changi DTL Station (Ent A)'),
+('I49',1.341393579,103.96163,1,'LTA','Stand','Upp Changi Rd East outside Upper Changi DTL Station (Ent B)'),
+('I51',1.35406,103.94041,1,'Private','Stand','Tampines Walk at Our Tampines Hub'),
+('I52',1.361422973,103.98987,1,'Private','Stop','Taxi Stop 1A at Changi Airport T1 Arrival (T1 North West)'),
+('I53',1.36124187,103.99032,1,'Private','Stop','Taxi Stop 1B at Changi Airport T1 Arrival (T1 North East)'),
+('I54',1.3613,103.9898013,1,'Private','Stop','Taxi Stop 1C at Changi Airport T1 Arrival (T1 South West)'),
+('I55',1.36114237,103.9902741,1,'Private','Stop','Taxi Stop 1D at Changi Airport T1 Arrival (T1 South East)'),
+('I56',1.356408947,103.9892756,1,'Private','Stop','Taxi Stop 2B at Changi Airport T2 Arrival Drive (T2 North)'),
+('I57',1.355839598,103.9885351,1,'Private','Stop','Taxi Stop 2A at Changi Airport T2 Arrival Drive (T2 South)'),
+('I58',1.356643761,103.9875269,1,'Private','Stop','Taxi Stop 3B at Changi Airport T3 Arrival Drive (T3 North)'),
+('I59',1.355278088,103.98691,1,'Private','Stop','Taxi Stop 3A at Changi Airport T3 Arrival Drive (T3 South)'),
+('I60',1.338923313,103.9831195,1,'Private','Stop','Taxi Stop 4B at Changi Airport T4 Link (T4 North)'),
+('I61',1.337565301,103.9825397,1,'Private','Stop','Taxi Stop 4A at Changi Airport T4 Link (T4 South)'),
+('I62',1.34579,103.9464283,1,'CCS','Stand','Tampines St 11 near Blk 114'),
+('J01',1.358821047,103.7515,1,'LTA','Stand','Bukit Batok West Ave 5 opposite Bukit Gombak MRT Station (outside Blk 372)'),
+('J03',1.397176098,103.7475142,1,'LTA','Stand','Choa Chu Kang Dr outside Yew Tee MRT Station'),
+('J04',1.28376027,103.7812063,1,'LTA','Stand','Pasir Panjang Rd outside Haw Par Villa'),
+('J05',1.311569631,103.7779283,1,'LTA','Stand','Commonwealth Ave West outside Dover MRT Station (Ent A)'),
+('J06',1.311302029,103.779308,1,'LTA','Stand','Commonwealth Ave West outside Dover MRT Station (Ent B)'),
+('J07',1.313697769,103.7656452,1,'LTA','Stand','Commonwealth Ave West outside Clementi MRT Station (towards Jurong East)'),
+('J08',1.332333119,103.74267,1,'LTA','Stand','Summit Lane outside Jurong East MRT Station'),
+('J09',1.333573076,103.7405862,1,'LTA','Stand','Jurong Gateway Rd at JCube'),
+('J10',1.350169801,103.7250506,1,'LTA','Stand','Jurong West Ave 1 outside Blk 492'),
+('J11',1.342952414,103.732047,1,'LTA','Stand','Boon Lay Way outside Chinese Garden MRT Station'),
+('J12',1.344548958,103.7207867,1,'LTA','Stand','Boon Lay Way outside Lakeside MRT Station'),
+('J13',1.338106832,103.706546,1,'LTA','Stand','Boon Lay Way outside Boon Lay MRT Station (towards Jurong East)'),
+('J14',1.338186768,103.7071111,1,'LTA','Stand','Boon Lay Way outside Boon Lay MRT Station (towards Tuas)'),
+('J15',1.338995805,103.7069825,1,'Private','Stand','Boon Lay Way outside Jurong Point Shopping Mall'),
+('J16',1.337774924,103.69767,1,'LTA','Stand','Jurong West St 63 outside Pioneer MRT Station (Ent B)'),
+('J19',1.283306206,103.78169,1,'LTA','Stand','Pasir Panjang Rd outside Haw Par Villa CCL Station'),
+('J21',1.319421548,103.6608667,1,'LTA','Stand','Tuas Rd outside Gul Circle MRT Station (Ent A)'),
+('J22',1.32149,103.649021,1,'LTA','Stand','Pioneer Rd outside Tuas Crescent MRT Station (Ent B)'),
+('J23',1.329977199,103.6392144,1,'LTA','Stand','Pioneer Rd outside Tuas West Road MRT Station (Ent A)'),
+('J24',1.33043,103.6394942,1,'LTA','Stand','Pioneer Rd outside Tuas West Road MRT Station (Ent B)'),
+('J25',1.340728759,103.6372527,1,'LTA','Stand','Tuas West Dr outside Tuas Link MRT Station (Ent A)'),
+('J26',1.34039,103.6368153,1,'LTA','Stand','Tuas West Dr outside Tuas Link MRT Station (Ent B)');
 
-/*---INSERT TAXI STAND DATA---*/
-INSERT INTO Taxi_Stand(TaxiCode,Latitude,Longitude,Bfa,Ownership,Type,Name,StnCode) VALUES
-('A01',1.304294727,103.8338467,1,'LTA','Stand','Orchard Rd along driveway of Lucky Plaza',NULL),
-('A05',1.304571786,103.835547,1,'Private','Stand','Mt Elizabeth Rd at Mt Elizabeth Hospital',NULL),
-('A06',1.303519805,103.8376729,1,'LTA','Stop','Cairnhill Rd at Cairnhill Nine',NULL),
-('A08',1.303709915,103.8327402,1,'Private','Stand','Orchard Turn at Wisma Atria Shopping Centre',NULL),
-('A12',1.302879021,103.8405818,1,'Private','Stop','Cuppage Rd at Starhub Centre',NULL),
-('A13',1.300918488,103.8422631,0,'LTA','Stand','Kramat Lane outside Concorde Hotel & Shopping Mall',NULL),
-('A14',1.302600342,103.8409503,1,'Private','Stop','Cavenagh Rd at Holiday Inn Singapore Orchard City Centre',NULL),
-('A16',1.300514561,103.8452133,1,'Private','Stand','Handy Rd at Plaza Singapura',NULL),
-('A17',1.299321982,103.8473265,1,'CCS','Stand','Handy Rd near Cathay Building',NULL),
-('A18',1.298096109,103.8448645,1,'Private','Stand','Penang Rd at driveway of 9 Penang Rd',NULL),
-('A19',1.296991268,103.8439415,1,'CCS','Stand','Clemenceau Ave in front of Haw Par Glass Centre',NULL),
-('A22',1.300360761,103.8395453,1,'Private','Stand','Somerset Rd at Orchardgateway',NULL),
-('A23',1.299953217,103.8371289,1,'Private','Stand','Devonshire Rd outside TripleOne Somerset',NULL),
-('B02',1.300574856,103.8496715,1,'CCS','Stand','Selegie Rd in front of Parklane Shopping Mall',NULL),
-('B03',1.302957817,103.85095,1,'LTA','Stand','Short St near La Salle Arts College',NULL),
-('B04',1.30152,103.8523716,1,'LTA','Stop','Bencoolen St outside Summerview Hotel',NULL),
-('B06',1.297702738,103.8490929,1,'Private','Stop','Bencoolen St at SMU School of Econ & Social Sciences',NULL),
-('B07',1.297537879,103.8493444,1,'Private','Stop','Bencoolen St at SMU School of Information Systems',NULL),
-('B08',1.296189886,103.8504108,1,'Private','Stand','Queen St at SMU Li Ka Shing Library',NULL),
-('B09',1.298087188,103.8521884,1,'LTA','Stand','Queen St at China Cultural Centre',NULL),
-('B10',1.299986059,103.8526465,1,'CCS','Stand','Waterloo St at Stamford Arts Centre',NULL),
-('B11',1.298453493,103.8554588,1,'Private','Stand','North Bridge Rd along driveway of Bugis Junction Tower',NULL),
-('B12',1.29894,103.8563957,1,'LTA','Stand','Tan Quee Lan St outside Bugis DTL Station','DT14'),
-('B14',1.2962475,103.8554079,0,'LTA','Stand','Purvis St outside Shop House No. 24',NULL),
-('B17',1.299549334,103.850739,1,'LTA','Stand','Bencoolen St at Masjid Bencoolen opp Bencoolen DTL Station (Ent A)','DT21'),
-('B18',1.299986346,103.8555097,1,'Private','Stand','Victoria St along driveway of Bugis Junction',NULL),
-('C01',1.291210939,103.8459884,1,'Private','Stand','River Valley Rd at Clarke Quay',NULL),
-('C02',1.291754372,103.84526,1,'CCS','Stand','River Valley Rd at Liang Court',NULL),
-('C04',1.29075,103.844965,1,'LTA','Stand','Tan Tye Place at Clarke Quay',NULL),
-('C08',1.291985691,103.85036,1,'Private','Stand','Coleman St along driveway outside Peninsula Excelsior Hotel',NULL),
-('C12',1.291346056,103.8514997,1,'Private','Stop','Coleman St at The Adelphi',NULL),
-('C13',1.292852981,103.8514184,1,'Private','Stand','North Bridge Rd outside Capitol Piazza',NULL),
-('C14',1.293521677,103.8526911,1,'Private','Stand','Stamford Rd along driveway of Raffles City',NULL),
-('C15',1.294264086,103.8527548,1,'Private','Stand','North Bridge Rd along driveway of Raffles City',NULL),
-('C18',1.295428554,103.858684,1,'Private','Stand','Temasek Blvd at Suntec Tower 1 & 2',NULL),
-('C19',1.29494786,103.8595444,1,'Private','Stand','Temasek Blvd at Suntec Tower 3 & 4',NULL),
-('C20',1.29157,103.859883,1,'Private','Stand','Raffles Blvd at Millenia Walk',NULL),
-('C21',1.292638277,103.8605789,1,'Private','Stand','Temasek Ave at Millenia Tower',NULL),
-('C22',1.291408737,103.8583529,1,'Private','Stand','Raffles Blvd along driveway of Marina Square',NULL),
-('C24',1.289841322,103.8565807,1,'Private','Stand','Raffles Ave at The Esplanade',NULL),
-('C25',1.292799093,103.8567298,1,'Private','Stand','Raffles Blvd at Suntec City Mall',NULL),
-('C26',1.296323466,103.8460788,1,'LTA','Stop','Percival Rd at round-about of Fort Canning Park',NULL),
-('C27',1.293912465,103.8579088,1,'Private','Stand','Temasek Blvd at Suntec Tower 5',NULL),
-('C28',1.29242,103.8442659,1,'LTA','Stand','Clarke Quay outside Fort Canning DTL Station (towards River Valley) (Ent A)','DT20'),
-('C29',1.292509725,103.8447777,1,'LTA','Stand','River Valley Rd outside Fort Canning DTL Station (towards Downtown) (Ent B)','DT20'),
-('D01',1.280230061,103.840696,1,'Private','Stand','Teo Hong Rd beside Dorsett Residences',NULL),
-('D02',1.27887,103.8418178,1,'LTA','Stand','Neil Rd in front of Chinatown Plaza',NULL),
-('D04',1.281778766,103.8416742,1,'LTA','Stand','Kreta Ayer Rd opposite Oriental Plaza',NULL),
-('D05',1.283656238,103.8423153,1,'Private','Stand','Park Cres outside People''s Park Complex',NULL),
-('D06',1.285392643,103.8431889,1,'LTA','Stand','Upp Cross St outside OG Building',NULL),
-('D07',1.28617,103.8443717,0,'LTA','Stop','Havelock Sq beside People''s Park Centre',NULL),
-('D08',1.285481664,103.8447352,1,'Private','Stand','New Bridge Rd along driveway of Chinatown Point',NULL),
-('D09',1.287418156,103.8447597,1,'Private','Stop','New Market Rd outside Ministry of Manpower',NULL),
-('D10',1.289193914,103.84261,1,'Private','Stand','Magazine Rd at Central Mall',NULL),
-('D11',1.289224474,103.8441026,1,'Private','Stand','Merchant Rd at Riverside Point',NULL),
-('D13',1.288958327,103.8481398,1,'Private','Stop','Upp Circular Rd at The Riverwalk',NULL),
-('D14',1.288425892,103.8474801,0,'LTA','Stand','Carpenter St Opposite Safra Town Club',NULL),
-('D15',1.286978749,103.847022,1,'LTA','Stand','North Canal Rd opposite Hong Lim Park',NULL),
-('D16',1.282546178,103.8453397,1,'LTA','Stand','South Bridge Rd outside Sri Mariamman Temple',NULL),
-('D18',1.28291657,103.8439659,0,'LTA','Stand','Temple St in front of Grand Court Restaurant',NULL),
-('D19',1.28429035,103.8440421,0,'LTA','Stand','Mosque St in front of Dragon Brand Bird''s Nest Building',NULL),
-('D20',1.282438481,103.8461855,1,'LTA','Stand','Club St at City State Apartments',NULL),
-('D21',1.28348,103.8432689,0,'LTA','Stop','Temple St beside Lucky Chinatown',NULL),
-('E03',1.284,103.8465539,1,'Private','Stop','Cross St at Cross St Exchange',NULL),
-('E04',1.28594,103.84858,1,'CCS','Stop','South Canal Rd near OCBC Centre',NULL),
-('E06',1.281424263,103.8474429,0,'LTA','Stand','Amoy St behind Thian Hock Keng Temple',NULL),
-('E07',1.282566584,103.8487873,1,'LTA','Stand','Telok Ayer St outside PWC Building',NULL),
-('E08',1.278955786,103.8479948,1,'CCS','Stop','Cecil St outside GB Building (before McCallum St)',NULL),
-('E09',1.280094551,103.8486742,1,'CCS','Stop','Cecil St outside Keck Seng Tower',NULL),
-('E10',1.282069751,103.8498846,1,'Private','Stop','Cecil St outside CapitaGreen',NULL),
-('E11',1.283473113,103.8512297,1,'CCS','Stop','D''almeida St outside Bharat Building',NULL),
-('E13',1.285219403,103.8521762,1,'Private','Stop','Battery Rd at Straits Trading Building',NULL),
-('E14',1.278151896,103.8484951,1,'LTA','Stop','Robinson Rd before McCallum Street outside Singapore Post',NULL),
-('E15',1.279458605,103.849295,0,'LTA','Stop','Robinson Rd outside Robinson Centre',NULL),
-('E16',1.28163,103.85145,1,'CCS','Stop','Raffles Quay at 6 Raffles Quay (near Telegraph Street)',NULL),
-('E18',1.279050272,103.8498471,1,'LTA','Stop','Shenton Way outside SGX Centre',NULL),
-('E19',1.277450623,103.848892,1,'LTA','Stop','Shenton Way outside OUE Downtown',NULL),
-('E20',1.27466,103.8470063,1,'LTA','Stop','Shenton Way outside MAS Building',NULL),
-('E21',1.278768825,103.8441858,0,'LTA','Stand','Cook St behind Murray Terrace Food Alley',NULL),
-('E22',1.277848957,103.8431344,0,'LTA','Stand','Duxton Rd at Shophouse No 61',NULL),
-('E23',1.274215422,103.84201,0,'Private','Stop','Hoe Chiang Rd at Keppel Tower',NULL),
-('E25',1.275819548,103.843246,1,'CCS','Stand','Tanjong Pagar Rd at Tanjong Pagar Plaza',NULL),
-('E26',1.27836043,103.8450738,1,'LTA','Stand','Peck Seah St opposite Nehsons Building',NULL),
-('E27',1.273441105,103.8437939,1,'CCS','Stand','Bernam St outside Fuji Xerox Towers',NULL),
-('E32',1.284198427,103.8527361,1,'CCS','Stop','Collyer Quay at Income@Raffles',NULL),
-('E33',1.287969175,103.8488857,0,'LTA','Stand','Circular Rd at Shophouse No. 5',NULL),
-('E34',1.277880862,103.8437301,0,'LTA','Stand','Tanjong Pagar Rd opposite Mac-Nels Building',NULL),
-('E35',1.286873972,103.8488084,0,'LTA','Stand','Lor Telok at Archipelago Brewery Building',NULL),
-('E36',1.280434689,103.8507074,0,'LTA','Stop','Raffles Quay at Lau Pa Sat',NULL),
-('E37',1.283432665,103.8528276,1,'Private','Stop','Collyer Quay at OUE Bayfront',NULL),
-('E38',1.278781731,103.8438314,0,'LTA','Stand','Tanjong Pagar Rd at Shophouse No. 68',NULL),
-('E39',1.281883092,103.8488787,1,'LTA','Stand','Cross St outside Telok Ayer DTL Station','DT18'),
-('E40',1.27613445,103.8553065,1,'LTA','Stand','Bayfront Ave outside Marina Bay MRT Station','NS27'),
-('F01',1.382026421,103.8445289,1,'LTA','Stand','Ang Mo Kio Ave 6 outside Yio Chu Kang MRT Station','NS15'),
-('F02',1.370108751,103.84924,1,'LTA','Stand','Ang Mo Kio Ave 8 outside Ang Mo Kio MRT Station','NS16'),
-('F03',1.350671693,103.8491326,1,'Private','Stand','Bishan Place at Bishan Junction 8 shopping Centre',NULL),
-('F04',1.35142,103.8477482,1,'LTA','Stand','Bishan Rd opposite Bishan MRT Station (towards Ang Mo Kio)','NS17'),
-('F05',1.35155724,103.8481049,1,'LTA','Stand','Bishan Rd outside Bishan MRT Station (towards Toa Payoh)','NS17'),
-('F06',1.334208117,103.85037,1,'CCS','Stand','Toa Payoh Ctrl in front of Toa Payoh Community Library',NULL),
-('F07',1.341053657,103.8460525,1,'CCS','Stand','Lor 1 Toa Payoh in front of Blk 109 (near Braddell MRT Station)','NS18'),
-('F08',1.333769871,103.8470449,1,'LTA','Stand','Lor 2 Toa Payoh in front of Blk 175',NULL),
-('F09',1.331199896,103.8497216,1,'Private','Stand','Lor 6 Toa Payoh along driveway of OrangeTee Building',NULL),
-('F10',1.354926873,103.8313135,1,'Private','Stand','Upp Thomson Rd along driveway of Thomson Plaza',NULL),
-('F11',1.322791357,103.855,1,'CCS','Stand','Whampoa Dr outside Blk 90 Market & Hawker Centre',NULL),
-('F12',1.324689142,103.8507971,1,'CCS','Stand','Balestier Rd outside Orange Valley Care Centre',NULL),
-('F14',1.31829,103.8633956,1,'Private','Stand','Bendemeer Rd outside Blk 25/27 (Bendemeer Shopping Mall)',NULL),
-('F16',1.319794451,103.861914,1,'LTA','Stand','Serangoon Rd outside Boon Keng NEL Station (Ent B)(opp Blk 102)','NE9'),
-('F17',1.310999436,103.8550641,1,'Private','Stand','Serangoon Rd at driveway of Centrium Square',NULL),
-('F19',1.30325,103.8614,1,'CCS','Stand','Jalan Sultan near Sultan Plaza',NULL),
-('F20',1.302933713,103.8647842,0,'Private','Stand','Beach Rd along driveway of Golden Mile Complex',NULL),
-('F21',1.299617827,103.8633075,1,'LTA','Stand','Republic Ave outside Nicoll Highway CCL Station (Ent A)','CC5'),
-('F23',1.305255256,103.8515787,1,'Private','Stand','Hastings Rd at Tekka Place',NULL),
-('F24',1.303455756,103.85305,1,'CCS','Stop','Rochor Canal Rd outside Sim Lim Square',NULL),
-('F26',1.305679526,103.8494423,1,'LTA','Stand','Bukit Timah Rd outside Little India NEL Station (Ent A)','NE7'),
-('F27',1.306996505,103.8499904,1,'LTA','Stand','Race Course Rd outside Little India NEL Station (Ent C) (outside Blk 661)','NE7'),
-('F28',1.312347768,103.85341,1,'LTA','Stand','Race Course Rd outside Farrer Park NEL Station(Ent C) outside Connexion','NE8'),
-('F29',1.312507907,103.8532167,1,'LTA','Stand','Race Course Rd outside Farrer Park NEL Station (Ent D) (towards Rangoon Rd)','NE8'),
-('F31',1.277896783,103.8184586,1,'CCS','Stand','Telok Blangah Cres opposite Blk 11 Market & Food Centre',NULL),
-('F32',1.265908733,103.8215015,1,'LTA','Stand','Telok Blangah Rd opposite Harbourfront NEL Station (Ent D) (opp Harbourfront Centre)','NE1'),
-('F34',1.281128741,103.8391854,1,'LTA','Stand','Outram Rd outside Outram Park MRT Station','EW16'),
-('F35',1.288850483,103.8347407,1,'Private','Stand','Outram Rd along driveway of Holiday Inn Atrium & Shopping Centre',NULL),
-('F37',1.284709597,103.8326127,1,'LTA','Stand','Seng Poh Rd outside Tiong Bahru Market',NULL),
-('F38',1.282859406,103.8168686,1,'CCS','Stand','Bukit Merah Ctrl outside Blk 165',NULL),
-('F39',1.27412,103.8248956,1,'CCS','Stand','Bukit Purmei Ave outside Blk 109',NULL),
-('F40',1.28921385,103.8171921,1,'LTA','Stand','Tiong Bahru Rd outside Redhill MRT Station','EW18'),
-('F41',1.302465431,103.7986999,1,'LTA','Stand','Commonwealth Ave outside Commonwealth MRT Station (towards Alexandra Rd)','EW20'),
-('F42',1.302390488,103.7979976,1,'LTA','Stand','Commonwealth Ave outside Commonwealth MRT Station (towards Clementi)','EW20'),
-('F43',1.295058976,103.8055077,1,'LTA','Stand','Commonwealth Ave outside Queenstown MRT Station (towards Clementi)','EW19'),
-('F44',1.294263434,103.8064757,1,'LTA','Stand','Commonwealth Ave outside Queenstown MRT Station (towards Alexandra)','EW19'),
-('F45',1.28826,103.8034558,1,'CCS','Stand','Queensway outside Queenstown Neighbourhood Police Centre',NULL),
-('F46',1.306664636,103.7904927,1,'LTA','Stand','North Buona Vista Rd outside Buona Vista CCL Station (towards Holland Road)','CC22'),
-('F47',1.293347286,103.8251269,1,'CCS','Stand','Jervois Rd outside Sheares Ville',NULL),
-('F48',1.299915572,103.8226493,1,'Private','Stop','Chatsworth Rd outside Embassy of Republic of Indonesia',NULL),
-('F49',1.305180656,103.8214378,0,'LTA','Stand','Angullia Park beside Liat Towers',NULL),
-('F50',1.307231142,103.8291059,1,'CCS','Stop','Claymore Rd beside Orchard Towers',NULL),
-('F51',1.307345629,103.8200908,1,'Private','Stand','Napier Rd along Driveway of Gleneagles Hospital',NULL),
-('F53',1.311927082,103.8377197,1,'LTA','Stand','Scotts Rd outside Newton MRT Station (towards Orchard)','NS21'),
-('F54',1.312200299,103.8375721,1,'LTA','Stand','Scotts Rd outside Newton MRT Station (towards Newton Circus)','NS21'),
-('F55',1.306458124,103.82685,1,'Private','Stand','Tanglin Rd along driveway of Tanglin Shopping Centre',NULL),
-('F56',1.305188053,103.8240871,0,'Private','Stand','Tanglin Rd outside Tanglin Mall',NULL),
-('F57',1.321524668,103.81451,1,'LTA','Stand','Cluny Park Rd outside Botanic Gardens CCL Station','CC19'),
-('F58',1.337739375,103.8394597,1,'LTA','Stand','Toa Payoh Link outside Caldecott CCL Station (towards Toa Payoh Rise)','CC17'),
-('F59',1.337742082,103.84,1,'LTA','Stand','Toa Payoh Link outside Caldecott TEL Station (towards Toa Payoh West)','TE9'),
-('F60',1.306979998,103.78774,1,'Private','Stand','Vista Exchange Green at The Star',NULL),
-('F61',1.270634228,103.8621229,1,'LTA','Stand','Marina Coastal Dr outside Marina South Pier MRT Station','NS28'),
-('F63',1.31379042,103.83805,1,'LTA','Stand','Bukit Timah Rd outside Newton DTL Station','DT11'),
-('F64',1.319934318,103.826323,1,'LTA','Stand','Robin Walk outside Stevens DTL Station','DT10'),
-('F65',1.322716694,103.81583,1,'LTA','Stop','Bukit Timah Rd outside Botanic Gardens DTL Station','DT9'),
-('F66',1.325717218,103.8075461,1,'LTA','Stand','Bukit Timah Rd outside Tan Kah Kee DTL Station','DT8'),
-('F67',1.326497665,103.80777,1,'LTA','Stop','Dunearn Rd opposite Tan Kah Kee DTL Station','DT8'),
-('F68',1.331046304,103.7967355,1,'LTA','Stop','Bukit Timah Rd outside Sixth Ave DTL Station','DT7'),
-('F69',1.33580755,103.78318,1,'LTA','Stop','Bukit Timah Rd outside King Albert Park  DTL Station','DT6'),
-('F70',1.31078,103.86422,1,'Private','Stand','Kallang Ave at driveway of Aperia',NULL),
-('F71',1.32092,103.85268,1,'Private','Stand','Balestier Rd at driveway of BT Centre',NULL),
-('F72',1.3858,103.83532,1,'LTA','Stand','Lentor Drive outside Lentor TEL Station (Ent 1)','TE5'),
-('F73',1.38592,103.83541,1,'LTA','Stand','Lentor Drive outside Lentor TEL Station (Ent 2)','TE5'),
-('F74',1.30598,103.85547,1,'LTA','Stand','Jalan Besar outside Jalan Besar DTL Station (Ent B)','DT22'),
-('F75',1.31382645,103.86346,1,'LTA','Stop','Kallang Bahru outside Bendeemer DTL Station (Ent B)','DT23'),
-('F76',1.321368532,103.87128,1,'LTA','Stand','Geylang Bahru outside Geylang Bahru DTL Station (Ent A)','DT24'),
-('F77',1.384737415,103.838,1,'LTA','Stand','Yio Chu Kang Rd outside Lentor TEL Station (Ent 3)','TE5'),
-('F78',1.383,103.838,1,'LTA','Stand','Ang Mo Kio Ave 4 outside Lentor TEL Station (Ent 4)','TE5'),
-('F79',1.371413546,103.837,1,'LTA','Stand','Ang Mo Kio Ave 4 outside Mayflower TEL Station (Ent 4)','TE6'),
-('F80',1.372892299,103.837,1,'LTA','Stand','Ang Mo Kio Ave 4 outside Mayflower TEL Station (Ent 1)','TE6'),
-('F81',1.363570548,103.833,1,'LTA','Stand','Sin Ming Ave outside Bright Hill TEL Station (Ent 1)','TE7'),
-('F82',1.362,103.832,1,'LTA','Stand','Sin Ming Ave outside Bright Hill TEL Station (Ent 4)','TE7'),
-('F83',1.354215857,103.834,1,'SMRT','Stand','Driveway off Jalan Keli outside Upper Thomson TEL Station','TE8'),
-('F84',1.354,103.834,1,'SMRT','Stand','Upp Thomson Rd outside Upper Thomson TEL Station','TE8'),
-('F85',1.338,103.84,1,'LTA','Stand','Toa Payoh Rise outside Caldecott TEL Station (Ent 2)','TE9'),
-('F86',1.338,103.841,1,'LTA','Stand','Toa Payoh Rise outside Caldecott TEL Station (Ent 3)','TE9'),
-('G01',1.332610277,103.86861,1,'LTA','Stand','Potong Pasir Ave 1 outside Potong Pasir NEL Station (Ent A) (in front of Blk 101)','NE10'),
-('G02',1.33162593,103.86936,1,'LTA','Stand','Upp Serangoon Rd outside Potong Pasir NEL Station (Ent B) (towards City)','NE10'),
-('G03',1.339038269,103.87052,1,'LTA','Stand','Upp Serangoon Rd outside Woodleigh NEL Station (Ent B) (towards Serangoon)','NE11'),
-('G04',1.351517098,103.86464,1,'CCS','Stand','Serangoon Ave 3 outside Blk 267',NULL),
-('G05',1.35082,103.87298,1,'LTA','Stand','Serangoon Ctrl outside Serangoon CCL Station (Ent E) (outside NEX Shopping Mall)','CC13'),
-('G06',1.35066,103.87429,1,'LTA','Stand','Upp Serangoon Rd outside Serangoon NEL Station (Ent C) (towards Kovan)','NE12'),
-('G07',1.349452199,103.87411,1,'LTA','Stand','Serangoon Ctrl outside Serangoon NEL Station (Ent A) (outside Blk 413)','NE12'),
-('G08',1.35152439,103.86091,1,'LTA','Stand','Serangoon Ave 3 outside Lorong Chuan CCL Station (Ent A)','CC14'),
-('G09',1.354567437,103.87715,1,'CCS','Stand','Yio Chu Kang Rd outside Space@Kovan',NULL),
-('G10',1.359570573,103.88465,1,'LTA','Stand','Upp Serangoon Rd outside Kovan NEL Station (Ent C) (towards Serangoon)','NE13'),
-('G11',1.359799606,103.88438,1,'LTA','Stand','Upp Serangoon Rd opposite Kovan NEL Station(Ent A) (towards Hougang)','NE13'),
-('G12',1.371468131,103.8926,1,'LTA','Stand','Hougang Ctrl outside Hougang NEL Station (Ent B) (opp Hougang Central Bus Interchange)','NE14'),
-('G13',1.38267,103.89318,1,'LTA','Stand','Sengkang Ctrl outside Buangkok NEL Station (Ent B) (towards Hougang)','NE15'),
-('G14',1.382498214,103.89291,1,'LTA','Stand','Sengkang Ctrl outside Buangkok NEL Station (Ent A) (towards Sengkang)','NE15'),
-('G15',1.38532,103.90126,1,'LTA','Stand','Punggol Rd outside Rivervale Plaza',NULL),
-('G16',1.392498779,103.89557,1,'LTA','Stand','Sengkang East Way outside Sengkang NEL Station (Ent D) (outside Compass Point)','NE16'),
-('G17',1.39268,103.896,1,'LTA','Stand','Sengkang East Way outside Sengkang NEL Station (outside Blk 257C)','NE16'),
-('G18',1.390717032,103.89519,1,'LTA','Stand','Sengkang Sq outside Sengkang NEL Station (Ent C) (near Kopitiam Square)','NE16'),
-('G19',1.40587,103.90173,1,'Private','Stand','Punggol Ctrl at driveway of Waterway Point',NULL),
-('G20',1.404867351,103.90266,1,'LTA','Stand','Punggol Ctrl outside Punggol NEL Station (Ent C) (outside Punggol Bus Interchange)','NE17'),
-('G21',1.4135,103.87196,1,'Private','Stop','Seletar Aerospace Road 1 at Seletar Airport Passenger Terminal',NULL),
-('G22',1.372380134,103.9487,1,'CCS','Stand','Pasir Ris Ctrl outside Pasir Ris MRT Station','EW1'),
-('G23',1.3727,103.94973,1,'Private','Stand','Pasir Ris Ctrl St 3 at White Sands Shopping Mall',NULL),
-('G24',1.402288981,103.91308,1,'Private','Stand','Punggol Dr at Oasis Terraces',NULL),
-('G25',1.417076232,103.902,1,'LTA','Stand','Northshore Drive at Northshore Plaza I',NULL),
-('H01',1.31177,103.788,1,'CCS','Stand','Ghim Moh Rd outside Blk 19',NULL),
-('H02',1.310177009,103.793,1,'LTA','Stand','Holland Dr opp Blk 18D',NULL),
-('H03',1.310069406,103.79544,1,'CCS','Stand','Holland Ave outside Holland Road Shopping Centre',NULL),
-('H05',1.308271898,103.80722,1,'LTA','Stand','Farrer Rd outside Farrer Road CCL Station','CC20'),
-('H06',1.338581385,103.7789,1,'Private','Stand','Upp Bukit Timah Rd along driveway of Bukit Timah Plaza',NULL),
-('H07',1.417110963,103.83305,1,'LTA','Stand','Yishun Ave 2 outside Khatib MRT Station','NS14'),
-('H08',1.428789044,103.83513,1,'LTA','Stand','Yishun Ave 2 outside Yishun MRT Station','NS13'),
-('H10',1.429373341,103.83676,1,'Private','Stand','Yishun Ctrl 1 at driveway of Northpoint City',NULL),
-('H12',1.441797408,103.82439,1,'Private','Stand','Sembawang Rd along driveway of Sembawang Shopping Centre',NULL),
-('H13',1.44941,103.82033,1,'LTA','Stand','Sembawang Way outside Sembawang MRT Station','NS11'),
-('H14',1.440960972,103.80125,1,'LTA','Stand','Woodlands Ave 7 outside Admiralty MRT Station','NS10'),
-('H15',1.437227489,103.7872,1,'LTA','Stand','Woodlands Sq (East End) outside Woodlands MRT Station (Ent C)','NS9'),
-('H17',1.443618301,103.76957,1,'LTA','Stand','Woodlands Centre Rd at Woodlands Train Checkpoint Complex',NULL),
-('H18',1.43242395,103.77369,1,'LTA','Stand','Woodlands Ave 3 outside Marsiling MRT Station','NS8'),
-('H19',1.425622829,103.76226,1,'LTA','Stand','Woodlands Rd outside Kranji MRT Station','NS7'),
-('H21',1.36265,103.76771,1,'LTA','Stand','Upp Bukit Timah Rd outside Hillview DTL Station','DT3'),
-('H22',1.341852368,103.77604,1,'LTA','Stand','Upp Bukit Timah Rd along driveway of Beauty World DTL Station','DT15'),
-('H23',1.343237024,103.77575,1,'LTA','Stand','Upp Bukit Timah Rd along driveway in front of Bukit Timah Shoppng Centre',NULL),
-('H24',1.370228318,103.76416,1,'LTA','Stand','Upp Bukit Timah Rd outside Cashew DTL Station','DT2'),
-('H25',1.378213898,103.76158,1,'LTA','Stand','Upp Bukit Timah Rd outside Bukit Panjang DTL Station Ent B','DT1'),
-('H26',1.42767,103.8368,1,'Private','Stand','Northpoint Dr at driveway of Northpoint City',NULL),
-('H27',1.44273,103.83008,1,'LTA','Stand','Canberra Link outside Canberra MRT Station','NS12'),
-('H28',1.44796,103.78496,1,'LTA','Stand','Woodlands North Coast Rd outside Woodlands North TEL Station','TE1'),
-('H29',1.43635,103.78892,1,'LTA','Stop','Woodlands Ave 2 outside Woodlands TEL Station (Ent 5)','TE2'),
-('H30',1.42785,103.79249,1,'LTA','Stand','Woodlands Ave 1 near Woodlands South TEL Station (Ent 1) in front of  Ace The Place CC','TE3'),
-('H31',1.42777,103.79281,1,'LTA','Stand','Woodlands Ave 1 outside Woodlands South TEL Station (Ent 2) in front of Blk 541','TE3'),
-('H32',1.42743,103.7949,1,'LTA','Stand','Woodlands Ave 1 outside Woodlands South TEL Station (Ent 3) in front of Blk 588','TE3'),
-('H33',1.42724,103.79493,1,'LTA','Stand','Woodlands Ave 1 outside Woodlands South TEL Station (Ent 4)','TE3'),
-('H34',1.398,103.818,1,'LTA','Stand','Upp Thomson Rd outside Springleaf TEL Station (Ent 1)','TE4'),
-('H35',1.398,103.818,1,'LTA','Stand','Upp Thomson Rd outside Springleaf TEL Station (Ent 3)','TE4'),
-('I01',1.389711441,103.98674,1,'CCS','Stand','Changi Village Rd outside Blk 5',NULL),
-('I02',1.335829294,103.96084,1,'Private','Stand','Expo Dr along driveway of Singapore EXPO',NULL),
-('I03',1.352335748,103.94519,1,'Private','Stand','Tampines Ave 4 at driveway of Tampines Mall',NULL),
-('I04',1.34248,103.95282,1,'Private','Stand','Simei St 6 at Eastpoint Shopping Mall',NULL),
-('I05',1.326716192,103.94606,1,'LTA','Stand','New Upp Changi Rd outside Tanah Merah MRT station (Ent A) (towards Bedok)','EW4'),
-('I06',1.327340922,103.94578,1,'LTA','Stand','New Upp Changi Rd outside Tanah Merah MRT station (Ent B) (towards Tampines)','EW4'),
-('I07',1.324506389,103.93147,1,'Private','Stand','New Upp Changi Rd along driveway outside Blk 209',NULL),
-('I08',1.323646586,103.92953,1,'LTA','Stand','New Upp Changi Rd outside Bedok MRT station (towards City)','EW5'),
-('I09',1.331132333,103.92546,1,'CCS','Stand','Bedok North St 3 outside Blk 539',NULL),
-('I10',1.338108416,103.92401,1,'LTA','Stand','Bedok Reservoir Rd outside Blk 739A',NULL),
-('I11',1.312193423,103.93895,1,'CCS','Stand','Bayshore Rd outside The Bayshore',NULL),
-('I12',1.308198547,103.92259,1,'LTA','Stand','Marine Parade Rd outside Mandarin Gardens',NULL),
-('I13',1.305179817,103.91491,1,'CCS','Stand','Marine Terrace outside Blk 54',NULL),
-('I16',1.303803724,103.90131,1,'Private','Stand','Mountbatten Rd along driveway of Katong Shopping Centre',NULL),
-('I17',1.320761251,103.91243,1,'LTA','Stand','Sims Ave East outside Kembangan MRT station','EW6'),
-('I18',1.317731858,103.89797,1,'CCS','Stand','Sims Ave outside Block 2C',NULL),
-('I19',1.316465598,103.89459,1,'CCS','Stand','Sims Ave near Tanjong Katong Complex',NULL),
-('I20',1.314680937,103.89405,1,'CCS','Stand','Tanjong Katong Rd outside City Plaza',NULL),
-('I21',1.314713111,103.8943,1,'Private','Stand','Tanjong Katong Rd at KINEX',NULL),
-('I22',1.318291566,103.89179,1,'LTA','Stand','Paya Lebar Rd outside Paya Lebar CCL Station (Ent C)','EW8'),
-('I23',1.3189409,103.8931,1,'Private','Stand','Eunos Rd 8 outside Paya Lebar Square',NULL),
-('I24',1.319169945,103.88729,1,'LTA','Stand','Geylang East Ctrl outside Geylang Polyclinic',NULL),
-('I25',1.315995967,103.88315,0,'LTA','Stand','Geylang Lor 25A outside Aljunied MRT Station','EW9'),
-('I26',1.34241649,103.88034,1,'LTA','Stand','Bartley Rd outside Bartley CCL Station (Ent A)','CC12'),
-('I27',1.308611817,103.88922,1,'LTA','Stand','Old Airport Rd outside Dakota CCL Station (Ent A)','CC8'),
-('I28',1.300969009,103.87539,1,'Private','Stand','Stadium Cres outside Singapore Indoor Stadium',NULL),
-('I29',1.305449464,103.87702,1,'Private','Stand','Stadium Blvd near OCBC Arena',NULL),
-('I30',1.304187434,103.87226,1,'Private','Stand','Stadium Pl outside Kallang Wave Mall',NULL),
-('I31',1.324236901,103.92926,1,'Private','Stand','New Upp Changi Rd at Bedok Mall',NULL),
-('I32',1.32746,103.93246,1,'Private','Stop','Bedok North St 1 at Heartbeat@Bedok (Bedok Integrated Complex)',NULL),
-('I33',1.327411052,103.88291,1,'LTA','Stand','Merpati Rd outside Mattar DTL Station (Ent A)','DT25'),
-('I34',1.326178661,103.88388,1,'LTA','Stand','Mattar Rd outside Mattar DTL Station (Ent B)','DT25'),
-('I35',1.326299648,103.88939,1,'LTA','Stand','Circuit Rd outside Macpherson DTL Station (Ent A)','DT26'),
-('I36',1.330088636,103.89989,1,'LTA','Stand','Ubi Ave 2 outside Ubi DTL Station (towards MacPherson) (Ent A)','DT27'),
-('I37',1.329802589,103.87159,1,'LTA','Stand','Ubi Ave 2 outside Ubi DTL Station (towards Kaki Bukit) (Ent B)','DT27'),
-('I38',1.334693728,103.90737,1,'LTA','Stand','Kaki Bukit Ave 1 outside Kaki Bukit DTL Station (Ent B)','DT28'),
-('I39',1.334708862,103.90908,1,'LTA','Stand','Jalan Damai outside Kaki Bukit DTL Station (Ent B)','DT28'),
-('I40',1.335501676,103.91802,1,'LTA','Stand','Bedok North Rd outside Bedok North DTL Station (Ent A)','DT29'),
-('I41',1.33413593,103.91886,1,'LTA','Stand','Bedok North Rd outside Bedok North DTL Station (Ent B)','DT29'),
-('I42',1.333853533,103.95719,1,'Private','Stand','Upp Changi Rd East at driveway of Max Atria EXPO',NULL),
-('I43',1.336475101,103.93305,1,'LTA','Stand','Bedok North Ave 3 outside Bedok Reservoir DTL Station (towards Bedok Reservoir) (Ent A)','DT30'),
-('I44',1.336316569,103.93355,1,'LTA','Stand','Bedok North Ave 3 outside Bedok Reservoir DTL Station (Ent B)','DT30'),
-('I45',1.350789067,103.93828,1,'LTA','Stand','Tampines Ave 4 outside Tampines West DTL Station (Ent A)','DT31'),
-('I46',1.344952831,103.9392,1,'LTA','Stand','Tampines Ave 1 outside Tampines West DTL Station (Ent B)','DT31'),
-('I47',1.356448608,103.95468,1,'LTA','Stand','Tampines Ave 7 outside Tampines East DTL Station (Ent A)','DT33'),
-('I48',1.342067713,103.96111,1,'LTA','Stop','Jln Pergam outside Upper Changi DTL Station (Ent A)','DT34'),
-('I49',1.341393579,103.96163,1,'LTA','Stand','Upp Changi Rd East outside Upper Changi DTL Station (Ent B)','DT34'),
-('I51',1.35406,103.94041,1,'Private','Stand','Tampines Walk at Our Tampines Hub',NULL),
-('I52',1.361422973,103.98987,1,'Private','Stop','Taxi Stop 1A at Changi Airport T1 Arrival (T1 North West)',NULL),
-('I53',1.36124187,103.99032,1,'Private','Stop','Taxi Stop 1B at Changi Airport T1 Arrival (T1 North East)',NULL),
-('I54',1.3613,103.9898013,1,'Private','Stop','Taxi Stop 1C at Changi Airport T1 Arrival (T1 South West)',NULL),
-('I55',1.36114237,103.9902741,1,'Private','Stop','Taxi Stop 1D at Changi Airport T1 Arrival (T1 South East)',NULL),
-('I56',1.356408947,103.9892756,1,'Private','Stop','Taxi Stop 2B at Changi Airport T2 Arrival Drive (T2 North)',NULL),
-('I57',1.355839598,103.9885351,1,'Private','Stop','Taxi Stop 2A at Changi Airport T2 Arrival Drive (T2 South)',NULL),
-('I58',1.356643761,103.9875269,1,'Private','Stop','Taxi Stop 3B at Changi Airport T3 Arrival Drive (T3 North)',NULL),
-('I59',1.355278088,103.98691,1,'Private','Stop','Taxi Stop 3A at Changi Airport T3 Arrival Drive (T3 South)',NULL),
-('I60',1.338923313,103.9831195,1,'Private','Stop','Taxi Stop 4B at Changi Airport T4 Link (T4 North)',NULL),
-('I61',1.337565301,103.9825397,1,'Private','Stop','Taxi Stop 4A at Changi Airport T4 Link (T4 South)',NULL),
-('I62',1.34579,103.9464283,1,'CCS','Stand','Tampines St 11 near Blk 114',NULL),
-('J01',1.358821047,103.7515,1,'LTA','Stand','Bukit Batok West Ave 5 opposite Bukit Gombak MRT Station (outside Blk 372)','NS3'),
-('J03',1.397176098,103.7475142,1,'LTA','Stand','Choa Chu Kang Dr outside Yew Tee MRT Station','NS5'),
-('J04',1.28376027,103.7812063,1,'LTA','Stand','Pasir Panjang Rd outside Haw Par Villa',NULL),
-('J05',1.311569631,103.7779283,1,'LTA','Stand','Commonwealth Ave West outside Dover MRT Station (Ent A)','EW22'),
-('J06',1.311302029,103.779308,1,'LTA','Stand','Commonwealth Ave West outside Dover MRT Station (Ent B)','EW22'),
-('J07',1.313697769,103.7656452,1,'LTA','Stand','Commonwealth Ave West outside Clementi MRT Station (towards Jurong East)','EW23'),
-('J08',1.332333119,103.74267,1,'LTA','Stand','Summit Lane outside Jurong East MRT Station','EW24'),
-('J09',1.333573076,103.7405862,1,'LTA','Stand','Jurong Gateway Rd at JCube',NULL),
-('J10',1.350169801,103.7250506,1,'LTA','Stand','Jurong West Ave 1 outside Blk 492',NULL),
-('J11',1.342952414,103.732047,1,'LTA','Stand','Boon Lay Way outside Chinese Garden MRT Station','EW25'),
-('J12',1.344548958,103.7207867,1,'LTA','Stand','Boon Lay Way outside Lakeside MRT Station','EW26'),
-('J13',1.338106832,103.706546,1,'LTA','Stand','Boon Lay Way outside Boon Lay MRT Station (towards Jurong East)','EW27'),
-('J14',1.338186768,103.7071111,1,'LTA','Stand','Boon Lay Way outside Boon Lay MRT Station (towards Tuas)','EW27'),
-('J15',1.338995805,103.7069825,1,'Private','Stand','Boon Lay Way outside Jurong Point Shopping Mall',NULL),
-('J16',1.337774924,103.69767,1,'LTA','Stand','Jurong West St 63 outside Pioneer MRT Station (Ent B)','EW28'),
-('J19',1.283306206,103.78169,1,'LTA','Stand','Pasir Panjang Rd outside Haw Par Villa CCL Station','CC25'),
-('J21',1.319421548,103.6608667,1,'LTA','Stand','Tuas Rd outside Gul Circle MRT Station (Ent A)','EW30'),
-('J22',1.32149,103.649021,1,'LTA','Stand','Pioneer Rd outside Tuas Crescent MRT Station (Ent B)','EW31'),
-('J23',1.329977199,103.6392144,1,'LTA','Stand','Pioneer Rd outside Tuas West Road MRT Station (Ent A)','EW32'),
-('J24',1.33043,103.6394942,1,'LTA','Stand','Pioneer Rd outside Tuas West Road MRT Station (Ent B)','EW32'),
-('J25',1.340728759,103.6372527,1,'LTA','Stand','Tuas West Dr outside Tuas Link MRT Station (Ent A)','EW33'),
-('J26',1.34039,103.6368153,1,'LTA','Stand','Tuas West Dr outside Tuas Link MRT Station (Ent B)','EW33');
+INSERT INTO MRT_Station(StnCode,MRTStation,MRTLine) VALUES 
+('NS1','Jurong East','North-South Line'),
+('NS2','Bukit Batok','North-South Line'),
+('NS3','Bukit Gombak','North-South Line'),
+('NS4','Choa Chu Kang','North-South Line'),
+('NS5','Yew Tee','North-South Line'),
+('NS7','Kranji','North-South Line'),
+('NS8','Marsiling','North-South Line'),
+('NS9','Woodlands','North-South Line'),
+('NS10','Admiralty','North-South Line'),
+('NS11','Sembawang','North-South Line'),
+('NS12','Canberra','North-South Line'),
+('NS13','Yishun','North-South Line'),
+('NS14','Khatib','North-South Line'),
+('NS15','Yio Chu Kang','North-South Line'),
+('NS16','Ang Mo Kio','North-South Line'),
+('NS17','Bishan','North-South Line'),
+('NS18','Braddell','North-South Line'),
+('NS19','Toa Payoh','North-South Line'),
+('NS20','Novena','North-South Line'),
+('NS21','Newton','North-South Line'),
+('NS22','Orchard','North-South Line'),
+('NS23','Somerset','North-South Line'),
+('NS24','Dhoby Ghaut','North-South Line'),
+('NS25','City Hall','North-South Line'),
+('NS26','Raffles Place','North-South Line'),
+('NS27','Marina Bay','North-South Line'),
+('NS28','Marina South Pier','North-South Line'),
+('EW1','Pasir Ris','East-West Line'),
+('EW2','Tampines','East-West Line'),
+('EW3','Simei','East-West Line'),
+('EW4','Tanah Merah','East-West Line'),
+('EW5','Bedok','East-West Line'),
+('EW6','Kembangan','East-West Line'),
+('EW7','Eunos','East-West Line'),
+('EW8','Paya Lebar','East-West Line'),
+('EW9','Aljunied','East-West Line'),
+('EW10','Kallang','East-West Line'),
+('EW11','Lavender','East-West Line'),
+('EW12','Bugis','East-West Line'),
+('EW13','City Hall','East-West Line'),
+('EW14','Raffles Place','East-West Line'),
+('EW15','Tanjong Pagar','East-West Line'),
+('EW16','Outram Park','East-West Line'),
+('EW17','Tiong Bahru','East-West Line'),
+('EW18','Redhill','East-West Line'),
+('EW19','Queenstown','East-West Line'),
+('EW20','Commonwealth','East-West Line'),
+('EW21','Buona Vista','East-West Line'),
+('EW22','Dover','East-West Line'),
+('EW23','Clementi','East-West Line'),
+('EW24','Jurong East','East-West Line'),
+('EW25','Chinese Garden','East-West Line'),
+('EW26','Lakeside','East-West Line'),
+('EW27','Boon Lay','East-West Line'),
+('EW28','Pioneer','East-West Line'),
+('EW29','Joo Koon','East-West Line'),
+('EW30','Gul Circle','East-West Line'),
+('EW31','Tuas Crescent','East-West Line'),
+('EW32','Tuas West Road','East-West Line'),
+('EW33','Tuas Link','East-West Line'),
+('CG1','Expo','Changi Airport Branch Line'),
+('CG2','Changi Airport','Changi Airport Branch Line'),
+('NE1','HarbourFront','North East Line'),
+('NE3','Outram Park','North East Line'),
+('NE4','Chinatown','North East Line'),
+('NE5','Clarke Quay','North East Line'),
+('NE6','Dhoby Ghaut','North East Line'),
+('NE7','Little India','North East Line'),
+('NE8','Farrer Park','North East Line'),
+('NE9','Boon Keng','North East Line'),
+('NE10','Potong Pasir','North East Line'),
+('NE11','Woodleigh','North East Line'),
+('NE12','Serangoon','North East Line'),
+('NE13','Kovan','North East Line'),
+('NE14','Hougang','North East Line'),
+('NE15','Buangkok','North East Line'),
+('NE16','Sengkang','North East Line'),
+('NE17','Punggol','North East Line'),
+('CC1','Dhoby Ghaut','Circle Line'),
+('CC2','Bras Basah','Circle Line'),
+('CC3','Esplanade','Circle Line'),
+('CC4','Promenade','Circle Line'),
+('CC5','Nicoll Highway','Circle Line'),
+('CC6','Stadium','Circle Line'),
+('CC7','Mountbatten','Circle Line'),
+('CC8','Dakota','Circle Line'),
+('CC9','Paya Lebar','Circle Line'),
+('CC10','MacPherson','Circle Line'),
+('CC11','Tai Seng','Circle Line'),
+('CC12','Bartley','Circle Line'),
+('CC13','Serangoon','Circle Line'),
+('CC14','Lorong Chuan','Circle Line'),
+('CC15','Bishan','Circle Line'),
+('CC16','Marymount','Circle Line'),
+('CC17','Caldecott','Circle Line'),
+('CC19','Botanic Gardens','Circle Line'),
+('CC20','Farrer Road','Circle Line'),
+('CC21','Holland Village','Circle Line'),
+('CC22','Buona Vista','Circle Line'),
+('CC23','one-north','Circle Line'),
+('CC24','Kent Ridge','Circle Line'),
+('CC25','Haw Par Villa','Circle Line'),
+('CC26','Pasir Panjang','Circle Line'),
+('CC27','Labrador Park','Circle Line'),
+('CC28','Telok Blangah','Circle Line'),
+('CC29','HarbourFront','Circle Line'),
+('CE1','Bayfront','Circle Line Extension'),
+('CE2','Marina Bay','Circle Line Extension'),
+('DT1','Bukit Panjang','Downtown Line'),
+('DT2','Cashew','Downtown Line'),
+('DT3','Hillview','Downtown Line'),
+('DT5','Beauty World','Downtown Line'),
+('DT6','King Albert Park','Downtown Line'),
+('DT7','Sixth Avenue','Downtown Line'),
+('DT8','Tan Kah Kee','Downtown Line'),
+('DT9','Botanic Gardens','Downtown Line'),
+('DT10','Stevens','Downtown Line'),
+('DT11','Newton','Downtown Line'),
+('DT12','Little India','Downtown Line'),
+('DT13','Rochor','Downtown Line'),
+('DT14','Bugis','Downtown Line'),
+('DT15','Promenade','Downtown Line'),
+('DT16','Bayfront','Downtown Line'),
+('DT17','Downtown','Downtown Line'),
+('DT18','Telok Ayer','Downtown Line'),
+('DT19','Chinatown','Downtown Line'),
+('DT20','Fort Canning','Downtown Line'),
+('DT21','Bencoolen','Downtown Line'),
+('DT22','Jalan Besar','Downtown Line'),
+('DT23','Bendemeer','Downtown Line'),
+('DT24','Geylang Bahru','Downtown Line'),
+('DT25','Mattar','Downtown Line'),
+('DT26','MacPherson','Downtown Line'),
+('DT27','Ubi','Downtown Line'),
+('DT28','Kaki Bukit','Downtown Line'),
+('DT29','Bedok North','Downtown Line'),
+('DT30','Bedok Reservoir','Downtown Line'),
+('DT31','Tampines West','Downtown Line'),
+('DT32','Tampines','Downtown Line'),
+('DT33','Tampines East','Downtown Line'),
+('DT34','Upper Changi','Downtown Line'),
+('DT35','Expo','Downtown Line'),
+('BP1','Choa Chu Kang','Bukit Panjang LRT'),
+('BP2','South View','Bukit Panjang LRT'),
+('BP3','Keat Hong','Bukit Panjang LRT'),
+('BP4','Teck Whye','Bukit Panjang LRT'),
+('BP5','Phoenix','Bukit Panjang LRT'),
+('BP6','Bukit Panjang','Bukit Panjang LRT'),
+('BP7','Petir','Bukit Panjang LRT'),
+('BP8','Pending','Bukit Panjang LRT'),
+('BP9','Bangkit','Bukit Panjang LRT'),
+('BP10','Fajar','Bukit Panjang LRT'),
+('BP11','Segar','Bukit Panjang LRT'),
+('BP12','Jelapang','Bukit Panjang LRT'),
+('BP13','Senja','Bukit Panjang LRT'),
+('STC','Sengkang','Sengkang LRT'),
+('SE1','Compassvale','Sengkang LRT'),
+('SE2','Rumbia','Sengkang LRT'),
+('SE3','Bakau','Sengkang LRT'),
+('SE4','Kangkar','Sengkang LRT'),
+('SE5','Ranggung','Sengkang LRT'),
+('SW1','Cheng Lim','Sengkang LRT'),
+('SW2','Farmway','Sengkang LRT'),
+('SW3','Kupang','Sengkang LRT'),
+('SW4','Thanggam','Sengkang LRT'),
+('SW5','Fernvale','Sengkang LRT'),
+('SW6','Layar','Sengkang LRT'),
+('SW7','Tongkang','Sengkang LRT'),
+('SW8','Renjong','Sengkang LRT'),
+('PTC','Punggol','Punggol LRT'),
+('PE1','Cove','Punggol LRT'),
+('PE2','Meridian','Punggol LRT'),
+('PE3','Coral Edge','Punggol LRT'),
+('PE4','Riviera','Punggol LRT'),
+('PE5','Kadaloor','Punggol LRT'),
+('PE6','Oasis','Punggol LRT'),
+('PE7','Damai','Punggol LRT'),
+('PW1','Sam Kee','Punggol LRT'),
+('PW2','Teck Lee','Punggol LRT'),
+('PW3','Punggol Point','Punggol LRT'),
+('PW4','Samudera','Punggol LRT'),
+('PW5','Nibong','Punggol LRT'),
+('PW6','Sumang','Punggol LRT'),
+('PW7','Soo Teck','Punggol LRT'),
+('TE1','Woodlands North','Thomson-East Coast Line'),
+('TE2','Woodlands','Thomson-East Coast Line'),
+('TE3','Woodlands South','Thomson-East Coast Line'),
+('TE4','Springleaf','Thomson-East Coast Line'),
+('TE5','Lentor','Thomson-East Coast Line'),
+('TE6','Mayflower','Thomson-East Coast Line'),
+('TE7','Bright Hill','Thomson-East Coast Line'),
+('TE8','Upper Thomson','Thomson-East Coast Line'),
+('TE9','Caldecott','Thomson-East Coast Line');
+
+/* Update query */
+UPDATE MRT_Station SET BusStopCode = 54009
+WHERE StnCode = "NS16";
+UPDATE MRT_Station SET BusStopCode = 84009
+WHERE StnCode = "EW5";
+UPDATE MRT_Station SET BusStopCode = 53009
+WHERE StnCode = "CC15";
+UPDATE MRT_Station SET BusStopCode = 53009
+WHERE StnCode = "NS17";
+UPDATE MRT_Station SET BusStopCode = 22009
+WHERE StnCode = "EW27";
+UPDATE MRT_Station SET BusStopCode = 43009
+WHERE StnCode = "NS2";
+UPDATE MRT_Station SET BusStopCode = 17009
+WHERE StnCode = "EW23";
+UPDATE MRT_Station SET BusStopCode = 82009
+WHERE StnCode = "EW7";
+UPDATE MRT_Station SET BusStopCode = 14009
+WHERE StnCode = "CC29";
+UPDATE MRT_Station SET BusStopCode = 14009
+WHERE StnCode = "NE1";
+UPDATE MRT_Station SET BusStopCode = 64009
+WHERE StnCode = "NE14";
+UPDATE MRT_Station SET BusStopCode = 24009
+WHERE StnCode = "EW29";
+UPDATE MRT_Station SET BusStopCode = 28009
+WHERE StnCode = "NS1";
+UPDATE MRT_Station SET BusStopCode = 28009
+WHERE StnCode = "EW24";
+UPDATE MRT_Station SET BusStopCode = 77009
+WHERE StnCode = "EW1";
+UPDATE MRT_Station SET BusStopCode = 65009
+WHERE StnCode = "NE17";
+UPDATE MRT_Station SET BusStopCode = 65009
+WHERE StnCode = "PTC";
+UPDATE MRT_Station SET BusStopCode = 66009
+WHERE StnCode = "CC13";
+UPDATE MRT_Station SET BusStopCode = 66009
+WHERE StnCode = "NE12";
+UPDATE MRT_Station SET BusStopCode = 58009
+WHERE StnCode = "NS11";
+UPDATE MRT_Station SET BusStopCode = 67009
+WHERE StnCode = "NE16";
+UPDATE MRT_Station SET BusStopCode = 67009
+WHERE StnCode = "STC";
+UPDATE MRT_Station SET BusStopCode = 75009
+WHERE StnCode = "DT32";
+UPDATE MRT_Station SET BusStopCode = 75009
+WHERE StnCode = "EW2";
+UPDATE MRT_Station SET BusStopCode = 52009
+WHERE StnCode = "NS19";
+UPDATE MRT_Station SET BusStopCode = 46009
+WHERE StnCode = "NS9";
+UPDATE MRT_Station SET BusStopCode = 46009
+WHERE StnCode = "TE2";
+UPDATE MRT_Station SET BusStopCode = 55509
+WHERE StnCode = "NS15";
+UPDATE MRT_Station SET BusStopCode = 59009
+WHERE StnCode = "NS13";
+UPDATE MRT_Station SET BusStopCode = 45009
+WHERE StnCode = "BP6";
+UPDATE MRT_Station SET BusStopCode = 45009
+WHERE StnCode = "DT1";
+UPDATE MRT_Station SET BusStopCode = 44009
+WHERE StnCode = "BP1";
+UPDATE MRT_Station SET BusStopCode = 44009
+WHERE StnCode = "NS4";
+
+UPDATE Taxi_Stand SET StnCode = "TE5" WHERE TaxiCode = "F78";
+UPDATE Taxi_Stand SET StnCode = "TE6" WHERE TaxiCode = "F79" or TaxiCode = "F80";
+UPDATE Taxi_Stand SET StnCode = "NS15" WHERE TaxiCode = "F01";
+UPDATE Taxi_Stand SET StnCode = "NS16" WHERE TaxiCode = "F02";
+UPDATE Taxi_Stand SET StnCode = "CC12" WHERE TaxiCode = "I26";
+UPDATE Taxi_Stand SET StnCode = "NS27" WHERE TaxiCode = "E40";
+UPDATE Taxi_Stand SET StnCode = "DT30" WHERE TaxiCode = "I44" or TaxiCode = "I43";
+UPDATE Taxi_Stand SET StnCode = "DT29" WHERE TaxiCode = "I40" or TaxiCode = "I41";
+UPDATE Taxi_Stand SET StnCode = "DT21" WHERE TaxiCode = "B17";
+UPDATE Taxi_Stand SET StnCode = "NS17" WHERE TaxiCode = "F04" or TaxiCode = "F05";
+UPDATE Taxi_Stand SET StnCode = "EW27" WHERE TaxiCode = "J13" or TaxiCode = "J14";
+UPDATE Taxi_Stand SET StnCode = "EW25" WHERE TaxiCode = "J11";
+UPDATE Taxi_Stand SET StnCode = "EW26" WHERE TaxiCode = "J12";
+UPDATE Taxi_Stand SET StnCode = "NS3" WHERE TaxiCode = "J01";
+UPDATE Taxi_Stand SET StnCode = "DT9" WHERE TaxiCode = "F65";
+UPDATE Taxi_Stand SET StnCode = "DT6" WHERE TaxiCode = "F69";
+UPDATE Taxi_Stand SET StnCode = "NE7" WHERE TaxiCode = "F26";
+UPDATE Taxi_Stand SET StnCode = "DT11" WHERE TaxiCode = "F63";
+UPDATE Taxi_Stand SET StnCode = "DT7" WHERE TaxiCode = "F68";
+UPDATE Taxi_Stand SET StnCode = "DT8" WHERE TaxiCode = "F66";
+UPDATE Taxi_Stand SET StnCode = "NS12" WHERE TaxiCode = "H27";
+UPDATE Taxi_Stand SET StnCode = "NS5" WHERE TaxiCode = "J03";
+UPDATE Taxi_Stand SET StnCode = "DT26" WHERE TaxiCode = "I35";
+UPDATE Taxi_Stand SET StnCode = "DT20" WHERE TaxiCode = "C28";
+UPDATE Taxi_Stand SET StnCode = "CC19" WHERE TaxiCode = "F57";
+UPDATE Taxi_Stand SET StnCode = "EW20" WHERE TaxiCode = "F41" or TaxiCode = "F42";
+UPDATE Taxi_Stand SET StnCode = "EW19" WHERE TaxiCode = "F44" or TaxiCode = "F43";
+UPDATE Taxi_Stand SET StnCode = "EW23" WHERE TaxiCode = "J07";
+UPDATE Taxi_Stand SET StnCode = "EW22" WHERE TaxiCode = "J05";
+UPDATE Taxi_Stand SET StnCode = "EW22" WHERE TaxiCode = "J06";
+UPDATE Taxi_Stand SET StnCode = "DT18" WHERE TaxiCode = "E39";
+UPDATE Taxi_Stand SET StnCode = "TE8" WHERE TaxiCode = "F83";
+UPDATE Taxi_Stand SET StnCode = "DT8" WHERE TaxiCode = "F67";
+UPDATE Taxi_Stand SET StnCode = "CC20" WHERE TaxiCode = "H05";
+UPDATE Taxi_Stand SET StnCode = "DT24" WHERE TaxiCode = "F76";
+UPDATE Taxi_Stand SET StnCode = "EW9" WHERE TaxiCode = "I25";
+UPDATE Taxi_Stand SET StnCode = "NE14" WHERE TaxiCode = "G12";
+UPDATE Taxi_Stand SET StnCode = "DT22" WHERE TaxiCode = "F74";
+UPDATE Taxi_Stand SET StnCode = "DT28" WHERE TaxiCode = "I39";
+UPDATE Taxi_Stand SET StnCode = "DT34" WHERE TaxiCode = "I48";
+UPDATE Taxi_Stand SET StnCode = "EW28" WHERE TaxiCode = "J16";
+UPDATE Taxi_Stand SET StnCode = "DT28" WHERE TaxiCode = "I38";
+UPDATE Taxi_Stand SET StnCode = "DT23" WHERE TaxiCode = "F75";
+UPDATE Taxi_Stand SET StnCode = "TE5" WHERE TaxiCode = "F72";
+UPDATE Taxi_Stand SET StnCode = "TE5" WHERE TaxiCode = "F73";
+UPDATE Taxi_Stand SET StnCode = "NS18" WHERE TaxiCode = "F07";
+UPDATE Taxi_Stand SET StnCode = "NS28" WHERE TaxiCode = "F61";
+UPDATE Taxi_Stand SET StnCode = "DT25" WHERE TaxiCode = "I34";
+UPDATE Taxi_Stand SET StnCode = "DT25" WHERE TaxiCode = "I33";
+UPDATE Taxi_Stand SET StnCode = "EW5" WHERE TaxiCode = "I08";
+UPDATE Taxi_Stand SET StnCode = "EW4" WHERE TaxiCode = "I05";
+UPDATE Taxi_Stand SET StnCode = "EW4" WHERE TaxiCode = "I06";
+UPDATE Taxi_Stand SET StnCode = "CC22" WHERE TaxiCode = "F46";
+UPDATE Taxi_Stand SET StnCode = "CC8" WHERE TaxiCode = "I27";
+UPDATE Taxi_Stand SET StnCode = "EW16" WHERE TaxiCode = "F34";
+UPDATE Taxi_Stand SET StnCode = "CC25" WHERE TaxiCode = "J19";
+UPDATE Taxi_Stand SET StnCode = "EW1" WHERE TaxiCode = "G22";
+UPDATE Taxi_Stand SET StnCode = "EW8" WHERE TaxiCode = "I22";
+UPDATE Taxi_Stand SET StnCode = "EW31" WHERE TaxiCode = "J22";
+UPDATE Taxi_Stand SET StnCode = "EW32" WHERE TaxiCode = "J23";
+UPDATE Taxi_Stand SET StnCode = "EW32" WHERE TaxiCode = "J24";
+UPDATE Taxi_Stand SET StnCode = "NE10" WHERE TaxiCode = "G01";
+UPDATE Taxi_Stand SET StnCode = "NE17" WHERE TaxiCode = "G20";
+UPDATE Taxi_Stand SET StnCode = "NE8" WHERE TaxiCode = "F29";
+UPDATE Taxi_Stand SET StnCode = "NE8" WHERE TaxiCode = "F28";
+UPDATE Taxi_Stand SET StnCode = "NE7" WHERE TaxiCode = "F27";
+UPDATE Taxi_Stand SET StnCode = "CC5" WHERE TaxiCode = "F21";
+UPDATE Taxi_Stand SET StnCode = "DT20" WHERE TaxiCode = "C29";
+UPDATE Taxi_Stand SET StnCode = "DT10" WHERE TaxiCode = "F64";
+UPDATE Taxi_Stand SET StnCode = "NS21" WHERE TaxiCode = "F54";
+UPDATE Taxi_Stand SET StnCode = "NS21" WHERE TaxiCode = "F53";
+UPDATE Taxi_Stand SET StnCode = "NS11" WHERE TaxiCode = "H13";
+UPDATE Taxi_Stand SET StnCode = "NE15" WHERE TaxiCode = "G14";
+UPDATE Taxi_Stand SET StnCode = "NE15" WHERE TaxiCode = "G13";
+UPDATE Taxi_Stand SET StnCode = "NE16" WHERE TaxiCode = "G16";
+UPDATE Taxi_Stand SET StnCode = "NE16" WHERE TaxiCode = "G17";
+UPDATE Taxi_Stand SET StnCode = "NE16" WHERE TaxiCode = "G18";
+UPDATE Taxi_Stand SET StnCode = "CC14" WHERE TaxiCode = "G08";
+UPDATE Taxi_Stand SET StnCode = "CC13" WHERE TaxiCode = "G05";
+UPDATE Taxi_Stand SET StnCode = "NE12" WHERE TaxiCode = "G07";
+UPDATE Taxi_Stand SET StnCode = "NE9" WHERE TaxiCode = "F16";
+UPDATE Taxi_Stand SET StnCode = "EW6" WHERE TaxiCode = "I17";
+UPDATE Taxi_Stand SET StnCode = "TE7" WHERE TaxiCode = "F81";
+UPDATE Taxi_Stand SET StnCode = "TE7" WHERE TaxiCode = "F82";
+UPDATE Taxi_Stand SET StnCode = "EW24" WHERE TaxiCode = "J08";
+UPDATE Taxi_Stand SET StnCode = "DT31" WHERE TaxiCode = "I46";
+UPDATE Taxi_Stand SET StnCode = "DT31" WHERE TaxiCode = "I45";
+UPDATE Taxi_Stand SET StnCode = "DT33" WHERE TaxiCode = "I47";
+UPDATE Taxi_Stand SET StnCode = "DT14" WHERE TaxiCode = "B12";
+UPDATE Taxi_Stand SET StnCode = "NE1" WHERE TaxiCode = "F32";
+UPDATE Taxi_Stand SET StnCode = "EW18" WHERE TaxiCode = "F40";
+UPDATE Taxi_Stand SET StnCode = "CC17" WHERE TaxiCode = "F58";
+UPDATE Taxi_Stand SET StnCode = "TE9" WHERE TaxiCode = "F59";
+UPDATE Taxi_Stand SET StnCode = "TE9" WHERE TaxiCode = "F85";
+UPDATE Taxi_Stand SET StnCode = "TE9" WHERE TaxiCode = "F86";
+UPDATE Taxi_Stand SET StnCode = "EW30" WHERE TaxiCode = "J21";
+UPDATE Taxi_Stand SET StnCode = "EW33" WHERE TaxiCode = "J25";
+UPDATE Taxi_Stand SET StnCode = "EW33" WHERE TaxiCode = "J26";
+UPDATE Taxi_Stand SET StnCode = "DT27" WHERE TaxiCode = "I37";
+UPDATE Taxi_Stand SET StnCode = "DT27" WHERE TaxiCode = "I36";
+UPDATE Taxi_Stand SET StnCode = "DT15" WHERE TaxiCode = "H22";
+UPDATE Taxi_Stand SET StnCode = "DT1" WHERE TaxiCode = "H25";
+UPDATE Taxi_Stand SET StnCode = "DT2" WHERE TaxiCode = "H24";
+UPDATE Taxi_Stand SET StnCode = "DT3" WHERE TaxiCode = "H21";
+UPDATE Taxi_Stand SET StnCode = "DT34" WHERE TaxiCode = "I49";
+UPDATE Taxi_Stand SET StnCode = "NE13" WHERE TaxiCode = "G11";
+UPDATE Taxi_Stand SET StnCode = "NE13" WHERE TaxiCode = "G10";
+UPDATE Taxi_Stand SET StnCode = "NE10" WHERE TaxiCode = "G02";
+UPDATE Taxi_Stand SET StnCode = "NE12" WHERE TaxiCode = "G06";
+UPDATE Taxi_Stand SET StnCode = "NE11" WHERE TaxiCode = "G03";
+UPDATE Taxi_Stand SET StnCode = "TE4" WHERE TaxiCode = "H34";
+UPDATE Taxi_Stand SET StnCode = "TE4" WHERE TaxiCode = "H35";
+UPDATE Taxi_Stand SET StnCode = "TE8" WHERE TaxiCode = "F84";
+UPDATE Taxi_Stand SET StnCode = "TE3" WHERE TaxiCode = "H30";
+UPDATE Taxi_Stand SET StnCode = "TE3" WHERE TaxiCode = "H31";
+UPDATE Taxi_Stand SET StnCode = "TE3" WHERE TaxiCode = "H32";
+UPDATE Taxi_Stand SET StnCode = "TE3" WHERE TaxiCode = "H33";
+UPDATE Taxi_Stand SET StnCode = "TE2" WHERE TaxiCode = "H29";
+UPDATE Taxi_Stand SET StnCode = "NS8" WHERE TaxiCode = "H18";
+UPDATE Taxi_Stand SET StnCode = "NS10" WHERE TaxiCode = "H14";
+UPDATE Taxi_Stand SET StnCode = "TE1" WHERE TaxiCode = "H28";
+UPDATE Taxi_Stand SET StnCode = "NS7" WHERE TaxiCode = "H19";
+UPDATE Taxi_Stand SET StnCode = "NS9" WHERE TaxiCode = "H15";
+UPDATE Taxi_Stand SET StnCode = "TE5" WHERE TaxiCode = "F77";
+UPDATE Taxi_Stand SET StnCode = "NS14" WHERE TaxiCode = "H07";
+UPDATE Taxi_Stand SET StnCode = "NS13" WHERE TaxiCode = "H08";
+
+ALTER TABLE MRT_Station 
+ADD COLUMN Latitude DOUBLE AFTER BusStopCode,
+ADD COLUMN Longitude DOUBLE AFTER Latitude;
+
+UPDATE MRT_Station SET Latitude = 1.3845, Longitude = 103.7709 WHERE StnCode = 'BP10'; 
+UPDATE MRT_Station SET Latitude = 1.3877, Longitude = 103.7696 WHERE StnCode = 'BP11'; 
+UPDATE MRT_Station SET Latitude = 1.3867, Longitude = 103.7644 WHERE StnCode = 'BP12'; 
+UPDATE MRT_Station SET Latitude = 1.3829, Longitude = 103.7624 WHERE StnCode = 'BP13'; 
+UPDATE MRT_Station SET Latitude = 1.3803, Longitude = 103.7452 WHERE StnCode = 'BP2'; 
+UPDATE MRT_Station SET Latitude = 1.3786, Longitude = 103.7490 WHERE StnCode = 'BP3'; 
+UPDATE MRT_Station SET Latitude = 1.3767, Longitude = 103.7537 WHERE StnCode = 'BP4'; 
+UPDATE MRT_Station SET Latitude = 1.3785, Longitude = 103.7576 WHERE StnCode = 'BP5'; 
+UPDATE MRT_Station SET Latitude = 1.3777, Longitude = 103.7666 WHERE StnCode = 'BP7'; 
+UPDATE MRT_Station SET Latitude = 1.3762, Longitude = 103.7713 WHERE StnCode = 'BP8'; 
+UPDATE MRT_Station SET Latitude = 1.3801, Longitude = 103.7727 WHERE StnCode = 'BP9'; 
+UPDATE MRT_Station SET Latitude = 1.2989, Longitude = 103.8455 WHERE StnCode = 'CC1'; 
+UPDATE MRT_Station SET Latitude = 1.3267, Longitude = 103.8900 WHERE StnCode = 'CC10'; 
+UPDATE MRT_Station SET Latitude = 1.3359, Longitude = 103.8878 WHERE StnCode = 'CC11'; 
+UPDATE MRT_Station SET Latitude = 1.3423, Longitude = 103.8802 WHERE StnCode = 'CC12'; 
+UPDATE MRT_Station SET Latitude = 1.3517, Longitude = 103.8639 WHERE StnCode = 'CC14'; 
+UPDATE MRT_Station SET Latitude = 1.3490, Longitude = 103.8391 WHERE StnCode = 'CC16'; 
+UPDATE MRT_Station SET Latitude = 1.3374, Longitude = 103.8398 WHERE StnCode = 'CC17'; 
+UPDATE MRT_Station SET Latitude = 1.3223, Longitude = 103.8149 WHERE StnCode = 'CC19'; 
+UPDATE MRT_Station SET Latitude = 1.2975, Longitude = 103.8504 WHERE StnCode = 'CC2'; 
+UPDATE MRT_Station SET Latitude = 1.3174, Longitude = 103.8078 WHERE StnCode = 'CC20'; 
+UPDATE MRT_Station SET Latitude = 1.3111, Longitude = 103.7961 WHERE StnCode = 'CC21'; 
+UPDATE MRT_Station SET Latitude = 1.3072, Longitude = 103.7906 WHERE StnCode = 'CC22'; 
+UPDATE MRT_Station SET Latitude = 1.2990, Longitude = 103.7871 WHERE StnCode = 'CC23'; 
+UPDATE MRT_Station SET Latitude = 1.2934, Longitude = 103.7843 WHERE StnCode = 'CC24'; 
+UPDATE MRT_Station SET Latitude = 1.2830, Longitude = 103.7819 WHERE StnCode = 'CC25'; 
+UPDATE MRT_Station SET Latitude = 1.2761, Longitude = 103.7919 WHERE StnCode = 'CC26'; 
+UPDATE MRT_Station SET Latitude = 1.2723, Longitude = 103.8031 WHERE StnCode = 'CC27'; 
+UPDATE MRT_Station SET Latitude = 1.2708, Longitude = 103.8099 WHERE StnCode = 'CC28'; 
+UPDATE MRT_Station SET Latitude = 1.2940, Longitude = 103.8554 WHERE StnCode = 'CC3'; 
+UPDATE MRT_Station SET Latitude = 1.2925, Longitude = 103.8604 WHERE StnCode = 'CC4'; 
+UPDATE MRT_Station SET Latitude = 1.2999, Longitude = 103.8635 WHERE StnCode = 'CC5'; 
+UPDATE MRT_Station SET Latitude = 1.3028, Longitude = 103.8754 WHERE StnCode = 'CC6'; 
+UPDATE MRT_Station SET Latitude = 1.3069, Longitude = 103.8825 WHERE StnCode = 'CC7'; 
+UPDATE MRT_Station SET Latitude = 1.3083, Longitude = 103.8888 WHERE StnCode = 'CC8'; 
+UPDATE MRT_Station SET Latitude = 1.3182, Longitude = 103.8931 WHERE StnCode = 'CC9'; 
+UPDATE MRT_Station SET Latitude = 1.2813, Longitude = 103.8589 WHERE StnCode = 'CE1'; 
+UPDATE MRT_Station SET Latitude = 1.2761, Longitude = 103.8549 WHERE StnCode = 'CE2'; 
+UPDATE MRT_Station SET Latitude = 1.3344, Longitude = 103.9615 WHERE StnCode = 'CG1'; 
+UPDATE MRT_Station SET Latitude = 1.3573, Longitude = 103.9884 WHERE StnCode = 'CG2'; 
+UPDATE MRT_Station SET Latitude = 1.3199, Longitude = 103.8261 WHERE StnCode = 'DT10'; 
+UPDATE MRT_Station SET Latitude = 1.3135, Longitude = 103.8383 WHERE StnCode = 'DT11'; 
+UPDATE MRT_Station SET Latitude = 1.3063, Longitude = 103.8494 WHERE StnCode = 'DT12'; 
+UPDATE MRT_Station SET Latitude = 1.3036, Longitude = 103.8526 WHERE StnCode = 'DT13'; 
+UPDATE MRT_Station SET Latitude = 1.3002, Longitude = 103.8561 WHERE StnCode = 'DT14'; 
+UPDATE MRT_Station SET Latitude = 1.2941, Longitude = 103.8603 WHERE StnCode = 'DT15'; 
+UPDATE MRT_Station SET Latitude = 1.2813, Longitude = 103.8589 WHERE StnCode = 'DT16'; 
+UPDATE MRT_Station SET Latitude = 1.2795, Longitude = 103.8532 WHERE StnCode = 'DT17'; 
+UPDATE MRT_Station SET Latitude = 1.2820, Longitude = 103.8487 WHERE StnCode = 'DT18'; 
+UPDATE MRT_Station SET Latitude = 1.2848, Longitude = 103.8439 WHERE StnCode = 'DT19'; 
+UPDATE MRT_Station SET Latitude = 1.3699, Longitude = 103.7645 WHERE StnCode = 'DT2'; 
+UPDATE MRT_Station SET Latitude = 1.2928, Longitude = 103.8445 WHERE StnCode = 'DT20'; 
+UPDATE MRT_Station SET Latitude = 1.2985, Longitude = 103.8499 WHERE StnCode = 'DT21'; 
+UPDATE MRT_Station SET Latitude = 1.3056, Longitude = 103.8553 WHERE StnCode = 'DT22'; 
+UPDATE MRT_Station SET Latitude = 1.3138, Longitude = 103.8629 WHERE StnCode = 'DT23'; 
+UPDATE MRT_Station SET Latitude = 1.2795, Longitude = 103.8529 WHERE StnCode = 'DT24'; 
+UPDATE MRT_Station SET Latitude = 1.3268, Longitude = 103.8833 WHERE StnCode = 'DT25'; 
+UPDATE MRT_Station SET Latitude = 1.3267, Longitude = 103.8900 WHERE StnCode = 'DT26'; 
+UPDATE MRT_Station SET Latitude = 1.3300, Longitude = 103.8990 WHERE StnCode = 'DT27'; 
+UPDATE MRT_Station SET Latitude = 1.3349, Longitude = 103.9090 WHERE StnCode = 'DT28'; 
+UPDATE MRT_Station SET Latitude = 1.3352, Longitude = 103.9180 WHERE StnCode = 'DT29'; 
+UPDATE MRT_Station SET Latitude = 1.3631, Longitude = 103.7674 WHERE StnCode = 'DT3'; 
+UPDATE MRT_Station SET Latitude = 1.3364, Longitude = 103.9329 WHERE StnCode = 'DT30'; 
+UPDATE MRT_Station SET Latitude = 1.3455, Longitude = 103.9382 WHERE StnCode = 'DT31'; 
+UPDATE MRT_Station SET Latitude = 1.3556, Longitude = 103.9552 WHERE StnCode = 'DT33'; 
+UPDATE MRT_Station SET Latitude = 1.3417, Longitude = 103.9615 WHERE StnCode = 'DT34'; 
+UPDATE MRT_Station SET Latitude = 1.3344, Longitude = 103.9615 WHERE StnCode = 'DT35'; 
+UPDATE MRT_Station SET Latitude = 1.3417, Longitude = 103.7760 WHERE StnCode = 'DT5'; 
+UPDATE MRT_Station SET Latitude = 1.3357, Longitude = 103.7832 WHERE StnCode = 'DT6'; 
+UPDATE MRT_Station SET Latitude = 1.3316, Longitude = 103.7970 WHERE StnCode = 'DT7'; 
+UPDATE MRT_Station SET Latitude = 1.3256, Longitude = 103.8079 WHERE StnCode = 'DT8'; 
+UPDATE MRT_Station SET Latitude = 1.3223, Longitude = 103.8149 WHERE StnCode = 'DT9'; 
+UPDATE MRT_Station SET Latitude = 1.3115, Longitude = 103.8714 WHERE StnCode = 'EW10'; 
+UPDATE MRT_Station SET Latitude = 1.3073, Longitude = 103.8629 WHERE StnCode = 'EW11'; 
+UPDATE MRT_Station SET Latitude = 1.3002, Longitude = 103.8561 WHERE StnCode = 'EW12'; 
+UPDATE MRT_Station SET Latitude = 1.2931, Longitude = 103.8520 WHERE StnCode = 'EW13'; 
+UPDATE MRT_Station SET Latitude = 1.2839, Longitude = 103.8515 WHERE StnCode = 'EW14'; 
+UPDATE MRT_Station SET Latitude = 1.2768, Longitude = 103.8452 WHERE StnCode = 'EW15'; 
+UPDATE MRT_Station SET Latitude = 1.2814, Longitude = 103.8392 WHERE StnCode = 'EW16'; 
+UPDATE MRT_Station SET Latitude = 1.2857, Longitude = 103.8269 WHERE StnCode = 'EW17'; 
+UPDATE MRT_Station SET Latitude = 1.2894, Longitude = 103.8170 WHERE StnCode = 'EW18'; 
+UPDATE MRT_Station SET Latitude = 1.2948, Longitude = 103.8058 WHERE StnCode = 'EW19'; 
+UPDATE MRT_Station SET Latitude = 1.3024, Longitude = 103.7983 WHERE StnCode = 'EW20'; 
+UPDATE MRT_Station SET Latitude = 1.3072, Longitude = 103.7906 WHERE StnCode = 'EW21'; 
+UPDATE MRT_Station SET Latitude = 1.3114, Longitude = 103.7786 WHERE StnCode = 'EW22'; 
+UPDATE MRT_Station SET Latitude = 1.3424, Longitude = 103.7327 WHERE StnCode = 'EW25'; 
+UPDATE MRT_Station SET Latitude = 1.3443, Longitude = 103.7208 WHERE StnCode = 'EW26'; 
+UPDATE MRT_Station SET Latitude = 1.3359, Longitude = 103.6917 WHERE StnCode = 'EW28'; 
+UPDATE MRT_Station SET Latitude = 1.3432, Longitude = 103.9534 WHERE StnCode = 'EW3'; 
+UPDATE MRT_Station SET Latitude = 1.3188, Longitude = 103.6604 WHERE StnCode = 'EW30'; 
+UPDATE MRT_Station SET Latitude = 1.3206, Longitude = 103.6491 WHERE StnCode = 'EW31'; 
+UPDATE MRT_Station SET Latitude = 1.3300, Longitude = 103.6396 WHERE StnCode = 'EW32'; 
+UPDATE MRT_Station SET Latitude = 1.3403, Longitude = 103.6367 WHERE StnCode = 'EW33'; 
+UPDATE MRT_Station SET Latitude = 1.3272, Longitude = 103.9465 WHERE StnCode = 'EW4'; 
+UPDATE MRT_Station SET Latitude = 1.3210, Longitude = 103.9129 WHERE StnCode = 'EW6'; 
+UPDATE MRT_Station SET Latitude = 1.3182, Longitude = 103.8931 WHERE StnCode = 'EW8'; 
+UPDATE MRT_Station SET Latitude = 1.3164, Longitude = 103.8829 WHERE StnCode = 'EW9'; 
+UPDATE MRT_Station SET Latitude = 1.3313, Longitude = 103.8690 WHERE StnCode = 'NE10'; 
+UPDATE MRT_Station SET Latitude = 1.3388, Longitude = 103.8705 WHERE StnCode = 'NE11'; 
+UPDATE MRT_Station SET Latitude = 1.3599, Longitude = 103.8851 WHERE StnCode = 'NE13'; 
+UPDATE MRT_Station SET Latitude = 1.3829, Longitude = 103.8933 WHERE StnCode = 'NE15'; 
+UPDATE MRT_Station SET Latitude = 1.2802, Longitude = 103.8395 WHERE StnCode = 'NE3'; 
+UPDATE MRT_Station SET Latitude = 1.2849, Longitude = 103.8440 WHERE StnCode = 'NE4'; 
+UPDATE MRT_Station SET Latitude = 1.2887, Longitude = 103.8466 WHERE StnCode = 'NE5'; 
+UPDATE MRT_Station SET Latitude = 1.3307, Longitude = 103.7976 WHERE StnCode = 'NE6'; 
+UPDATE MRT_Station SET Latitude = 1.3063, Longitude = 103.8494 WHERE StnCode = 'NE7'; 
+UPDATE MRT_Station SET Latitude = 1.3124, Longitude = 103.8542 WHERE StnCode = 'NE8'; 
+UPDATE MRT_Station SET Latitude = 1.3200, Longitude = 103.8616 WHERE StnCode = 'NE9'; 
+UPDATE MRT_Station SET Latitude = 1.4406, Longitude = 103.8010 WHERE StnCode = 'NS10'; 
+UPDATE MRT_Station SET Latitude = 1.4433, Longitude = 103.8296 WHERE StnCode = 'NS12'; 
+UPDATE MRT_Station SET Latitude = 1.4173, Longitude = 103.8330 WHERE StnCode = 'NS14'; 
+UPDATE MRT_Station SET Latitude = 1.3407, Longitude = 103.8467 WHERE StnCode = 'NS18'; 
+UPDATE MRT_Station SET Latitude = 1.3204, Longitude = 103.8438 WHERE StnCode = 'NS20'; 
+UPDATE MRT_Station SET Latitude = 1.3130, Longitude = 103.8384 WHERE StnCode = 'NS21'; 
+UPDATE MRT_Station SET Latitude = 1.3040, Longitude = 103.8318 WHERE StnCode = 'NS22'; 
+UPDATE MRT_Station SET Latitude = 1.3005, Longitude = 103.8385 WHERE StnCode = 'NS23'; 
+UPDATE MRT_Station SET Latitude = 1.2992, Longitude = 103.8457 WHERE StnCode = 'NS24'; 
+UPDATE MRT_Station SET Latitude = 1.2931, Longitude = 103.8520 WHERE StnCode = 'NS25'; 
+UPDATE MRT_Station SET Latitude = 1.2830, Longitude = 103.8513 WHERE StnCode = 'NS26'; 
+UPDATE MRT_Station SET Latitude = 1.2761, Longitude = 103.8548 WHERE StnCode = 'NS27'; 
+UPDATE MRT_Station SET Latitude = 1.2714, Longitude = 103.8636 WHERE StnCode = 'NS28'; 
+UPDATE MRT_Station SET Latitude = 1.3588, Longitude = 103.7520 WHERE StnCode = 'NS3'; 
+UPDATE MRT_Station SET Latitude = 1.3976, Longitude = 103.7475 WHERE StnCode = 'NS5'; 
+UPDATE MRT_Station SET Latitude = 1.4252, Longitude = 103.7620 WHERE StnCode = 'NS7'; 
+UPDATE MRT_Station SET Latitude = 1.4325, Longitude = 103.7741 WHERE StnCode = 'NS8'; 
+UPDATE MRT_Station SET Latitude = 1.3993, Longitude = 103.9059 WHERE StnCode = 'PE1'; 
+UPDATE MRT_Station SET Latitude = 1.3967, Longitude = 103.9089 WHERE StnCode = 'PE2'; 
+UPDATE MRT_Station SET Latitude = 1.3937, Longitude = 103.9127 WHERE StnCode = 'PE3'; 
+UPDATE MRT_Station SET Latitude = 1.3944, Longitude = 103.9160 WHERE StnCode = 'PE4'; 
+UPDATE MRT_Station SET Latitude = 1.3994, Longitude = 103.9165 WHERE StnCode = 'PE5'; 
+UPDATE MRT_Station SET Latitude = 1.4022, Longitude = 103.9127 WHERE StnCode = 'PE6'; 
+UPDATE MRT_Station SET Latitude = 1.4051, Longitude = 103.9086 WHERE StnCode = 'PE7'; 
+UPDATE MRT_Station SET Latitude = 1.4098, Longitude = 103.9049 WHERE StnCode = 'PW1'; 
+UPDATE MRT_Station SET Latitude = 1.4126, Longitude = 103.9060 WHERE StnCode = 'PW2'; 
+UPDATE MRT_Station SET Latitude = 1.4168, Longitude = 103.9067 WHERE StnCode = 'PW3'; 
+UPDATE MRT_Station SET Latitude = 1.4159, Longitude = 103.9022 WHERE StnCode = 'PW4'; 
+UPDATE MRT_Station SET Latitude = 1.4118, Longitude = 103.9003 WHERE StnCode = 'PW5'; 
+UPDATE MRT_Station SET Latitude = 1.4085, Longitude = 103.8985 WHERE StnCode = 'PW6'; 
+UPDATE MRT_Station SET Latitude = 1.4052, Longitude = 103.8976 WHERE StnCode = 'PW7'; 
+UPDATE MRT_Station SET Latitude = 1.3944, Longitude = 103.9005 WHERE StnCode = 'SE1'; 
+UPDATE MRT_Station SET Latitude = 1.3915, Longitude = 103.9060 WHERE StnCode = 'SE2'; 
+UPDATE MRT_Station SET Latitude = 1.3880, Longitude = 103.9051 WHERE StnCode = 'SE3'; 
+UPDATE MRT_Station SET Latitude = 1.3837, Longitude = 103.9019 WHERE StnCode = 'SE4'; 
+UPDATE MRT_Station SET Latitude = 1.3843, Longitude = 103.8972 WHERE StnCode = 'SE5'; 
+UPDATE MRT_Station SET Latitude = 1.3963, Longitude = 103.8938 WHERE StnCode = 'SW1'; 
+UPDATE MRT_Station SET Latitude = 1.3971, Longitude = 103.8892 WHERE StnCode = 'SW2'; 
+UPDATE MRT_Station SET Latitude = 1.3982, Longitude = 103.8814 WHERE StnCode = 'SW3'; 
+UPDATE MRT_Station SET Latitude = 1.3974, Longitude = 103.8756 WHERE StnCode = 'SW4'; 
+UPDATE MRT_Station SET Latitude = 1.3919, Longitude = 103.8763 WHERE StnCode = 'SW5'; 
+UPDATE MRT_Station SET Latitude = 1.3940, Longitude = 103.8797 WHERE StnCode = 'SW6'; 
+UPDATE MRT_Station SET Latitude = 1.3893, Longitude = 103.8859 WHERE StnCode = 'SW7'; 
+UPDATE MRT_Station SET Latitude = 1.3867, Longitude = 103.8905 WHERE StnCode = 'SW8'; 
+UPDATE MRT_Station SET Latitude = 1.3851, Longitude = 103.7443 WHERE StnCode = 'TE1'; 
+UPDATE MRT_Station SET Latitude = 1.4274, Longitude = 103.7931 WHERE StnCode = 'TE3'; 
+UPDATE MRT_Station SET Latitude = 1.3974, Longitude = 103.8185 WHERE StnCode = 'TE4'; 
+UPDATE MRT_Station SET Latitude = 1.3844, Longitude = 103.8368 WHERE StnCode = 'TE5'; 
+UPDATE MRT_Station SET Latitude = 1.2930, Longitude = 103.8560 WHERE StnCode = 'TE6'; 
+UPDATE MRT_Station SET Latitude = 1.3632, Longitude = 103.8332 WHERE StnCode = 'TE7'; 
+UPDATE MRT_Station SET Latitude = 1.3540, Longitude = 103.8338 WHERE StnCode = 'TE8'; 
+UPDATE MRT_Station SET Latitude = 1.3374, Longitude = 103.8398 WHERE StnCode = 'TE9'; 
+UPDATE MRT_Station SET Latitude = 1.2650, Longitude = 103.8215 WHERE StnCode = 'CC29'; 
+UPDATE MRT_Station SET Latitude = 1.2653, Longitude = 103.8223 WHERE StnCode = 'NE1'; 
+UPDATE MRT_Station SET Latitude = 1.3154, Longitude = 103.7651 WHERE StnCode = 'EW23'; 
+UPDATE MRT_Station SET Latitude = 1.3386, Longitude = 103.7060 WHERE StnCode = 'EW27'; 
+UPDATE MRT_Station SET Latitude = 1.3277, Longitude = 103.6783 WHERE StnCode = 'EW29'; 
+UPDATE MRT_Station SET Latitude = 1.3331, Longitude = 103.7423 WHERE StnCode = 'EW24'; 
+UPDATE MRT_Station SET Latitude = 1.3332, Longitude = 103.7423 WHERE StnCode = 'NS1'; 
+UPDATE MRT_Station SET Latitude = 1.3491, Longitude = 103.7496 WHERE StnCode = 'NS2'; 
+UPDATE MRT_Station SET Latitude = 1.3851, Longitude = 103.7443 WHERE StnCode = 'BP1'; 
+UPDATE MRT_Station SET Latitude = 1.3130, Longitude = 103.8384 WHERE StnCode = 'NS4'; 
+UPDATE MRT_Station SET Latitude = 1.3783, Longitude = 103.7625 WHERE StnCode = 'BP6'; 
+UPDATE MRT_Station SET Latitude = 1.3783, Longitude = 103.7625 WHERE StnCode = 'DT1'; 
+UPDATE MRT_Station SET Latitude = 1.4370, Longitude = 103.7865 WHERE StnCode = 'NS9'; 
+UPDATE MRT_Station SET Latitude = 1.4370, Longitude = 103.7865 WHERE StnCode = 'TE2'; 
+UPDATE MRT_Station SET Latitude = 1.3263, Longitude = 103.8420 WHERE StnCode = 'NS19'; 
+UPDATE MRT_Station SET Latitude = 1.3512, Longitude = 103.8485 WHERE StnCode = 'CC15'; 
+UPDATE MRT_Station SET Latitude = 1.3512, Longitude = 103.8485 WHERE StnCode = 'NS17'; 
+UPDATE MRT_Station SET Latitude = 1.3687, Longitude = 103.8430 WHERE StnCode = 'NS16'; 
+UPDATE MRT_Station SET Latitude = 1.3817, Longitude = 103.8451 WHERE StnCode = 'NS15'; 
+UPDATE MRT_Station SET Latitude = 1.4490, Longitude = 103.8199 WHERE StnCode = 'NS11'; 
+UPDATE MRT_Station SET Latitude = 1.4295, Longitude = 103.8350 WHERE StnCode = 'NS13'; 
+UPDATE MRT_Station SET Latitude = 1.3717, Longitude = 103.8930 WHERE StnCode = 'NE14'; 
+UPDATE MRT_Station SET Latitude = 1.4051, Longitude = 103.9024 WHERE StnCode = 'NE17'; 
+UPDATE MRT_Station SET Latitude = 1.4051, Longitude = 103.9024 WHERE StnCode = 'PTC'; 
+UPDATE MRT_Station SET Latitude = 1.3499, Longitude = 103.8731 WHERE StnCode = 'CC13'; 
+UPDATE MRT_Station SET Latitude = 1.3499, Longitude = 103.8731 WHERE StnCode = 'NE12'; 
+UPDATE MRT_Station SET Latitude = 1.3915, Longitude = 103.8936 WHERE StnCode = 'NE16'; 
+UPDATE MRT_Station SET Latitude = 1.3917, Longitude = 103.8955 WHERE StnCode = 'STC'; 
+UPDATE MRT_Station SET Latitude = 1.3533, Longitude = 103.9452 WHERE StnCode = 'DT32'; 
+UPDATE MRT_Station SET Latitude = 1.3533, Longitude = 103.9452 WHERE StnCode = 'EW2'; 
+UPDATE MRT_Station SET Latitude = 1.3732, Longitude = 103.9493 WHERE StnCode = 'EW1'; 
+UPDATE MRT_Station SET Latitude = 1.3197, Longitude = 103.9029 WHERE StnCode = 'EW7'; 
+UPDATE MRT_Station SET Latitude = 1.3239, Longitude = 103.9296 WHERE StnCode = 'EW5'; 
