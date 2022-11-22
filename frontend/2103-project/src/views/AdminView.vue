@@ -126,7 +126,7 @@
         <b-form @submit="onSubmit7">
           <Header text="Select Taxi Stand"></Header>
           <b-form-select class="mb-2" v-model="selectedTaxiStand">
-            <option v-for="stand in store.taxiStands.data" :key="stand.id" :value="stand.Name">
+            <option v-for="stand in store.taxiStands.data" :key="stand.id" :value="stand.TaxiCode">
               {{stand.Name}} ({{stand.TaxiCode}})
             </option>
           </b-form-select>
@@ -191,7 +191,7 @@
           </b-form-select>
 
           <b-button type="submit" variant="primary" class="w-50">
-            Delete Taxi Stand
+            Delete MRT Station
           </b-button>
         </b-form>
       </b-col>
@@ -330,7 +330,11 @@ export default {
         "topic": "Operator",
         "selectedServiceNo": selectedServiceNo,
         "desiredOperator": desiredOperator 
-      })
+      }).then(
+        req => {
+          alert(req.data)
+        }
+      )
     },
 
     updateCategory: async (selectedServiceNo2, desiredCategory) => {
@@ -341,8 +345,9 @@ export default {
         "topic": "Category",
         "selectedServiceNo": selectedServiceNo2,
         "desiredOperator": desiredCategory 
-      }).then(req => {
-        // console.log(req)
+      }).then(
+        req => {
+          alert(req.data)
       })
     },
 
@@ -451,11 +456,11 @@ export default {
           )
         },
 
-    updateTaxiBFA: async (taxiStand, bfa) => {
+    updateTaxiBFA: async (taxiCode, bfa) => {
       let convertedBfa = "FALSE"
       if (bfa == "Yes")
         convertedBfa = "TRUE"
-      const res = await axios.put(store.BACKEND_API_URL + `taxi-stand-bfa?code=${taxiStand.TaxiCode}&bfa=${convertedBfa}`).then(
+      const res = await axios.put(store.BACKEND_API_URL + `taxi-stand-bfa?code=${taxiCode}&bfa=${convertedBfa}`).then(
         res => {
           alert(res.data)
         }

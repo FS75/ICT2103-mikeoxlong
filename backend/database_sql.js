@@ -38,11 +38,10 @@ const createBusService = (busService, operator, category, res) => {
     var data = []
     const query = ` INSERT INTO bus_services VALUES ('${busService}', '${operator}', '${category}'); `
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
-
-        // data = JSON.parse(JSON.stringify(rows));
-        // res.send(data)
-        res.send(`Successfully created Bus Service with service number ${busService}, operator ${operator}, category ${category}`)
+        if (err)
+            res.send(`Unable to create Bus Service`)
+        else
+            res.send(`Successfully created Bus Service with service number ${busService}, operator ${operator}, category ${category}\nquery: ${query}`)
     })
 }
 
@@ -51,13 +50,11 @@ const createBusStop = (busStopCode, roadName, description, latitude, longitude, 
     var data = []
     const query = ` INSERT INTO bus_stop VALUES ('${busStopCode}', '${roadName}', '${description}', '${latitude}', '${longitude}'); `
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
-
-        // data = JSON.parse(JSON.stringify(rows));
-        // res.send(data)
-
-        res.send(`Successfully created Bus Stop with bus stop code ${busStopCode}, road name ${roadName}, 
-            description ${description}, latitude ${latitude}, longitude ${longitude}`)
+        if (err)
+            res.send("Unable to create Bus stop")
+        else
+            res.send(`Successfully created Bus Stop with bus stop code ${busStopCode}, road name ${roadName}, 
+            description ${description}, latitude ${latitude}, longitude ${longitude}\nquery: ${query}`)
     })
 }
 
@@ -66,13 +63,12 @@ const createMRTStation = (stnCode, mrtStation, mrtLine, latitude, longitude, res
     var data = []
     const query = ` INSERT INTO mrt_station VALUES ('${stnCode}', '${mrtStation}', '${mrtLine}', NULL, '${latitude}', '${longitude}'); `
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
+        if (err) 
+            res.send(`Unable to create MRT Station`)
 
-        // data = JSON.parse(JSON.stringify(rows));
-        // res.send(data)
-
-        res.send(`Successfully created MRT Station with station code ${stnCode}, mrt station ${mrtStation}, 
-            mrt line ${mrtLine}, latitude ${latitude}, longitude ${longitude}`)
+        else
+            res.send(`Successfully created MRT Station with station code ${stnCode}, mrt station ${mrtStation}, 
+            mrt line ${mrtLine}, latitude ${latitude}, longitude ${longitude}\nquery: ${query}`)
     })
 }
 
@@ -82,13 +78,11 @@ const createTaxiStand = (taxiCode, description, latitude, longitude, bfa, taxiOw
     console.log(bfa)
     const query = ` INSERT INTO taxi_stand VALUES ('${taxiCode}', '${latitude}', '${longitude}', ${bfa}, '${taxiOwnership}', '${taxiType}', '${description}', NULL); `
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
-
-        // data = JSON.parse(JSON.stringify(rows));
-        // res.send(data)
-
-        res.send(`Successfully created Taxi Stand with taxi stand code ${taxiCode}, latitude ${latitude}, 
-            longitude ${longitude}, bfa ${bfa}, taxi ownership ${taxiOwnership}, taxi type ${taxiType}, description ${description}`)
+        if (err)
+            res.send(`Unable to create Taxi Stand`)
+        else
+            res.send(`Successfully created Taxi Stand with taxi stand code ${taxiCode}, latitude ${latitude}, 
+            longitude ${longitude}, bfa ${bfa}, taxi ownership ${taxiOwnership}, taxi type ${taxiType}, description ${description} \nquery: ${query}`)
     })
 }
 
@@ -323,47 +317,6 @@ const getTaxiStandLocationFromMRTStation = (station, res) => {
     })  
 }
 
-// Update Bus Service Details (Operator / Category)
-const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
-    var rawData = []
-    var data = []
-    const query = ` UPDATE bus_services 
-                    SET ${topicValue} = '${updateValue}' 
-                    WHERE ServiceNo = '${selectedServiceNo}'; `
-    connection.query(query, (err, rows, fields) => {
-        if (err) throw err
-
-        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        // res.send(rawData)
-        res.send(`Successfully updated bus service ${selectedServiceNo}'s ${topicValue} with ${updateValue}`)
-    })
-}
-
-// Delete Bus Route while also Updating Sequences for all affected Bus Routes
-const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
-    var query = ""
-
-    // console.log(routes)
-
-    query += ` DELETE FROM bus_route
-               WHERE BusStopCode = '${busStopCode}'; `
-
-    for (let i = 0; i < routes.length; i++) {
-        query += ` UPDATE bus_route 
-                   SET StopSequence = StopSequence - 1 
-                   WHERE ServiceNo = '${routes[i].ServiceNo}' 
-                   AND Direction = '${routes[i].Direction}'
-                   AND StopSequence > ${routes[i].StopSequence}; `
-    }
-    
-    connection.query(query, (err, rows, fields) => {
-        if (err)
-            res.send("Could not run query")
-        else
-            res.send("Deleted bus route for all affected bus services and updated all stop sequences")
-    })
-}
-
 // Get all MRT Stations
 const getMRTStationName = (res) => {
     var rawData = []
@@ -509,19 +462,56 @@ const getServiceWithMostStops = (res) => {
     })  
 }
 
-// Update Taxi BFA
-const updateTaxiBFA = (code, bfa, res) => {
+// Update Bus Service Details (Operator / Category)
+const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     var rawData = []
     var data = []
+    const query = ` UPDATE bus_services 
+                    SET ${topicValue} = '${updateValue}' 
+                    WHERE ServiceNo = '${selectedServiceNo}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err)
+            res.send("Cannot update bus service details")
+        else
+            res.send(`Successfully updated bus service ${selectedServiceNo}'s ${topicValue} with ${updateValue}\n query: ${query}`)
+    })
+}
+
+// Update Taxi BFA
+const updateTaxiBFA = (code, bfa, res) => {
     const query = ` UPDATE taxi_stand 
                     SET bfa = ${bfa} 
                     WHERE TaxiCode='${code}'; `
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
+        if (err)
+            res.send(`Cannot update Taxi Stand's BFA`)
+        else
+            res.send(`Successfully updated Taxi Stand ${code} with BFA ${bfa}\n query: ${query}`)
+    })
+}
 
-        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        // res.send(rawData)
-        res.send(`Successfully updated Taxi Stand ${code} with BFA ${bfa}`)
+// Delete Bus Route while also Updating Sequences for all affected Bus Routes
+const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
+    var query = ""
+
+    // console.log(routes)
+
+    query += ` DELETE FROM bus_route
+               WHERE BusStopCode = '${busStopCode}'; `
+
+    for (let i = 0; i < routes.length; i++) {
+        query += ` UPDATE bus_route 
+                   SET StopSequence = StopSequence - 1 
+                   WHERE ServiceNo = '${routes[i].ServiceNo}' 
+                   AND Direction = '${routes[i].Direction}'
+                   AND StopSequence > ${routes[i].StopSequence}; `
+    }
+    
+    connection.query(query, (err, rows, fields) => {
+        if (err)
+            res.send("Could not delete bus route")
+        else
+            res.send(`Deleted bus route for all affected bus services and updated all stop sequences\nquery: ${query}`)
     })
 }
 
@@ -535,7 +525,7 @@ const deleteTaxiStand = (code, res) => {
         }
 
         else
-            res.send(`Successfully deleted Taxi Stand ${code} with query: ${query}`)
+            res.send(`Successfully deleted Taxi Stand ${code} \nquery: ${query}`)
     })
 }
 
@@ -549,7 +539,7 @@ const deleteMRTStation = (name, res) => {
         }
 
         else
-            res.send(`Successfully deleted MRT Station ${name}`)
+            res.send(`Successfully deleted MRT Station ${name} \nquery:${query}`)
     })
 }
 

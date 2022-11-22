@@ -2,7 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require("body-parser");
- 
+
 const app = express();
 const PORT = 3000;
 let { connection, createBusService, createBusStop, createMRTStation, createTaxiStand, getBusServices, 
@@ -302,7 +302,7 @@ app.delete('/api/bus-routes/', (req, res) => {
     routes = Object.values(Object.values(newData)[0])[0]
     const busStopCode = Object.values(newData)[1]
 
-    console.log(routes)
+    // console.log(routes)
 
     deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
 })
@@ -313,7 +313,7 @@ app.delete('/api/bus-routes/', (req, res) => {
 app.delete('/api/taxi-stand/', (req, res) => {
     const newData = req.body
     const code = Object.values(newData)[0]
-    console.log(code)
+    // console.log(code)
 
     deleteTaxiStand(code, res)
 })
@@ -323,7 +323,7 @@ app.delete('/api/taxi-stand/', (req, res) => {
 */
 app.delete('/api/mrt-station/', (req, res) => {
     const newData = req.body
-    const name = Object.values(Object.values(newData)[0])[0]
+    const name = Object.values(newData)[0]
 
     deleteMRTStation(name, res)
 })
