@@ -95,14 +95,19 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })
 }
 
-const updateBusOperator = (busService, operator, res) => {
-    console.log(busService, operator)
-        const dbo = connection.db("ICT2103")
-        let bus_directory = dbo.collection("bus_directory")
-        const filter = { "ServiceNo": busService }
-        const newValues = { $set: { "Operator": operator } }
-        bus_directory.updateMany(filter, newValues)
-        res.send("OK")
+const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
+    const dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const filter = { "ServiceNo": selectedServiceNo }
+    let newValue = {}
+    if (topicValue == "Operator") {
+        newValue = { $set: { "Operator": updateValue } }
+    } else {
+        newValue = { $set: { "Category": updateValue } }
+    }
+    bus_directory.updateMany(filter, newValue)
+    res.send("OK")
+
 }
 
 // Create bus service
@@ -299,5 +304,5 @@ const checkBusStopCode = (busStopCode, res) => {
     })           
 }
 
-module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator, createBusService, createBusStop, 
+module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
     createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode }

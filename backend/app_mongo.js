@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 
-let { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator, createBusService, createBusStop, 
+let { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
     createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode } = require("./database_mongo");
 
 app.use(cors());
@@ -51,9 +51,14 @@ app.get('/api/bus-stops', (req, res) => {
     getBusStopsOfServiceNo(busService, res)
 })
 
-app.put('/api/change-operator', (req, res) => {
-    const { busService, operator } = req.query
-    updateBusOperator(busService, operator, res)
+app.put('/api/bus-services/', (req, res) => {
+    // const { busService } = req.query
+    const newData = req.body
+    const topicValue = Object.values(newData)[0]
+    const selectedServiceNo = Object.values(newData)[1]
+    const updateValue = Object.values(newData)[2]
+
+    updateBusService(topicValue, selectedServiceNo, updateValue, res)
 })
 
 /* ---------- CREATE END POINTS ----------*/ 
@@ -127,4 +132,19 @@ app.get('/api/check-station-code', (req, res) => {
 app.get('/api/check-taxi-stand', (req, res) => {
     const { taxiStandCode } = req.query
     checkTaxiStandCode(taxiStandCode, res)
+})
+
+/*  
+    PUT: Update operator/category
+    Body: JSON of topic, service number, operator/category
+    Eg: [api/bus-services]
+*/
+app.put('/api/bus-services/', (req, res) => {
+    // const { busService } = req.query
+    const newData = req.body
+    const topicValue = Object.values(newData)[0]
+    const selectedServiceNo = Object.values(newData)[1]
+    const updateValue = Object.values(newData)[2]
+
+    updateBusService(topicValue, selectedServiceNo, updateValue, res)
 })
