@@ -126,7 +126,7 @@ app.get('/api/check-taxi-stand', (req, res) => {
 })
 
 /*  
-    GET: All Taxi Stand Details
+    GET: All Taxi Stand Detail
 */
 app.get('/api/taxi-stand', (req, res) => {
     getTaxiStands(res)
@@ -293,29 +293,33 @@ app.put('/api/taxi-stand-bfa/', (req, res) => {
 
 /* ---------- DELETE END POINTS ----------*/ 
 /* 
-    DELETE: One single bus route
+    DELETE: All affected bus routes
 */
 app.delete('/api/bus-routes/', (req, res) => {
     const newData = req.body
-    const routes = Object.values(Object.values(newData)[0])[0]
+    // console.log(newData)
+    var routes = []
+    routes = Object.values(Object.values(newData)[0])[0]
     const busStopCode = Object.values(newData)[1]
-    // const direction = Object.values(newData)[2]
+
+    console.log(routes)
 
     deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
 })
 
 /* 
-    DELETE: One taxi stand
+    DELETE: One Taxi Stand
 */
 app.delete('/api/taxi-stand/', (req, res) => {
     const newData = req.body
-    const code = Object.values(Object.values(newData)[0])[0]
+    const code = Object.values(newData)[0]
+    console.log(code)
 
     deleteTaxiStand(code, res)
 })
 
 /* 
-    DELETE: One taxi stand
+    DELETE: One MRT Station
 */
 app.delete('/api/mrt-station/', (req, res) => {
     const newData = req.body
