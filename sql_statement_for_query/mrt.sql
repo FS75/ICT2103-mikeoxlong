@@ -1,3 +1,11 @@
+
+/*
+Use to Insert new mrt station
+VALUES (VARCHAR(5), VARCHAR(30), VARCHAR(30), DOUBLE, DOUBLE)
+*/
+INSERT INTO MRT_Station(StnCode,MRTStation,MRTLine,Latitude,Longitude) VALUES
+('','','',0.0,0.0)
+
 /*
 Use to find mrt based on description
 Example:WHERE MRTStation LIKE '%Bedok%';

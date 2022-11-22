@@ -1,4 +1,25 @@
 /*
+Use to Insert new bus services
+VALUES (VARCHAR(5), VARCHAR(10), VARCHAR(10))
+*/
+INSERT INTO Bus_Services(ServiceNo,Operator,Category) 
+VALUES ('','',''),
+
+/*
+Use to Insert new bus stop
+VALUES (INT, VARCHAR(50), VARCHAR(50), DOUBLE, DOUBLE)
+*/
+INSERT INTO Bus_Stop(BusStopCode,RoadName,Description,Latitude,Longitude)
+VALUES (0,'','',0.0,0.0)
+
+/*
+Use to Insert new taxi stand
+VALUES (VARCHAR(3), DOUBLE, DOUBLE, BIT(1), VARCHAR(10), VARCHAR(5), VARCHAR(90))
+*/
+INSERT INTO Taxi_Stand(TaxiCode,Latitude,Longitude,Bfa,Ownership,Type,Name) VALUES
+('',0.0,0.0,0,'','','')
+
+/*
 Use to find bus stop based on roadname or description
 Example:WHERE RoadName LIKE '%Bedok%' OR Description LIKE '%Bedok%';
 */
@@ -14,14 +35,14 @@ WHERE BusStopCode = '';
  
  /* 
 Find bus services with their to and from
-Example: WHERE BD.ServiceNo LIKE '%168%';
+Example: WHERE BD.ServiceNo = '168';
 */
 SELECT BD.ServiceNo, 
 BD.Direction,BD.OriginCode, CONCAT(BS2.RoadName,', ',BS2.Description) AS OriginName,
 BD.DestinationCode, CONCAT(BS.RoadName,', ',BS.Description) AS DestName
 FROM  bus_direction BD JOIN bus_stop BS ON BD.DestinationCode = BS.BusStopCode JOIN
 bus_stop BS2 ON BD.OriginCode = BS2.BusStopCode
-WHERE BD.ServiceNo LIKE '%%';
+WHERE BD.ServiceNo = '';
 
  /* 
 Find bus route of SELECTED bus service
