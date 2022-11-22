@@ -6,7 +6,8 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 
-let { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator } = require("./database_mongo");
+let { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator, createBusService, createBusStop, 
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode } = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -53,4 +54,67 @@ app.get('/api/bus-stops', (req, res) => {
 app.put('/api/change-operator', (req, res) => {
     const { busService, operator } = req.query
     updateBusOperator(busService, operator, res)
+})
+
+/* ---------- CREATE END POINTS ----------*/ 
+/*
+    CREATE: One bus service
+*/
+app.post('/api/bus-service', (req, res) => {
+    const { busService, operator, category } = req.query
+    createBusService(busService, operator, category, res)
+})
+
+/*
+    CREATE: One bus stop
+*/
+app.post('/api/bus-stop', (req, res) => {
+    const { busStopCode, roadName, description, latitude, longitude } = req.query
+    createBusStop(busStopCode, roadName, description, latitude, longitude, res)
+})
+
+/*
+    CREATE: One MRT station
+*/
+app.post('/api/mrt-station', (req, res) => {
+    const { stnCode, mrtStation, mrtLine, latitude, longitude } = req.query
+    createMRTStation(stnCode, mrtStation, mrtLine, latitude, longitude, res)
+})
+
+/*  
+    CREATE: One Taxi Stand
+*/
+app.post('/api/taxi-stand', (req, res) => {
+    const { taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType } = req.query
+    createTaxiStand(taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType, res)
+})
+
+/*  
+    GET: Check if Bus Service No. exists in DB
+    Params: Bus Service No.
+    Eg: [api/check-bus-service?busService=10]
+*/
+app.get('/api/check-bus-service', (req, res) => {
+    const { busService } = req.query
+    checkBusServiceNo(busService, res)
+})
+
+/*  
+    GET: Check if MRT Stn Code exists in DB
+    Params: MRT Station Code
+    Eg: [api/check-station-code?stnCode=EW10]
+*/
+app.get('/api/check-station-code', (req, res) => {
+    const { stnCode } = req.query
+    checkStnCode(stnCode, res)
+})
+
+/*  
+    GET: Check if Taxi Stand Code exists in DB
+    Params: Taxi Stand Code
+    Eg: [api/check-taxi-stand?taxiStandCode=A01]
+*/
+app.get('/api/check-taxi-stand', (req, res) => {
+    const { taxiStandCode } = req.query
+    checkTaxiStandCode(taxiStandCode, res)
 })

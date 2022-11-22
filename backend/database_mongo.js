@@ -105,4 +105,171 @@ const updateBusOperator = (busService, operator, res) => {
         res.send("OK")
 }
 
-module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator }
+// Create bus service
+const createBusService = (busService, operator, category, res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+
+    // create a document to insert
+    const doc = {
+        ServiceNo: busService,
+        Operator: operator,
+        Category: category
+    }
+
+    bus_directory.insertOne(doc)
+
+    res.send(`Successfully created Bus Service with service number ${busService}, 
+        operator ${operator}, category ${category}`)
+}
+
+// Create bus stop
+const createBusStop = (busStopCode, roadName, description, latitude, longitude, res) => {
+    dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+
+    // create a document to insert
+    const doc = {
+        BusStopCode: busStopCode,
+        RoadName: roadName,
+        Description: description,
+        Latitude: latitude,
+        Longitude: longitude
+    }
+
+    locations.insertOne(doc)
+
+    res.send(`Successfully created Bus Stop with bus stop code ${busStopCode}, road name ${roadName}, 
+        description ${description}, latitude ${latitude}, longitude ${longitude}`)
+}
+
+// Create MRT Station
+const createMRTStation = (stnCode, mrtStation, mrtLine, latitude, longitude, res) => {
+    dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+
+    // create a document to insert
+    const doc = {
+        StnCode: stnCode,
+        MRTStation: mrtStation,
+        MRTLine: mrtLine,
+        Latitude: latitude,
+        Longitude: longitude
+    }
+
+    locations.insertOne(doc)
+
+    res.send(`Successfully created MRT Station with station code ${stnCode}, mrt station ${mrtStation}, 
+            mrt line ${mrtLine}, latitude ${latitude}, longitude ${longitude}`)
+}
+
+// Create Taxi Stand
+const createTaxiStand = (taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType, res) => {
+    dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+
+    // create a document to insert
+    const doc = {
+        TaxiCode: taxiCode,
+        Latitude: latitude,
+        Bfa: bfa,
+        Ownership: taxiOwnership,
+        Type: taxiType,
+        Name: description
+    }
+
+    locations.insertOne(doc)
+
+    res.send(`Successfully created Taxi Stand with taxi stand code ${taxiCode}, latitude ${latitude}, 
+    longitude ${longitude}, bfa ${bfa}, taxi ownership ${taxiOwnership}, taxi type ${taxiType}, description ${description}`)
+}
+
+// Check if Bus Service No. exists in DB
+const checkBusServiceNo = (busService, res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    pipeline = [
+        {
+            '$match': {
+                $and:[
+                    {'ServiceNo': busService},
+                    {'Direction': 1}
+                ]
+            }
+        }, {
+            '$project': {
+                'ServiceNo': 1,
+                '_id': 0
+            }
+        }
+    ]
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                ServiceNo: result[i].ServiceNo,
+            })
+        }
+        res.send(data)
+    })
+}
+
+// Check if MRT Station Code exists in DB
+const checkStnCode = (stnCode, res) => {
+    dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    pipeline = [
+        {
+            '$match': {
+                'StnCode': stnCode
+            }
+        }, {
+            '$project': {
+                'StnCode': 1,
+                '_id': 0
+            }
+        }
+    ]
+    locations.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                StnCode: result[i].StnCode,
+            })
+        }
+        res.send(data)
+    })
+}
+
+// Check if Taxi Stand Code exists in DB
+const checkTaxiStandCode = (taxiStandCode, res) => {
+    dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    pipeline = [
+        {
+            '$match': {
+                'TaxiCode': taxiStandCode
+            }
+        }, {
+            '$project': {
+                'TaxiCode': 1,
+                '_id': 0
+            }
+        }
+    ]
+    locations.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                TaxiCode: result[i].TaxiCode,
+            })
+        }
+        res.send(data)
+    })
+}
+
+module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator, createBusService, createBusStop, 
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode }
