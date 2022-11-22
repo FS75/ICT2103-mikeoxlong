@@ -72,34 +72,26 @@ const getBusStopsOfServiceNo = (busService, res) => {
         dbo = db.db("ICT2103")
         let bus_directory = dbo.collection("bus_directory")
 
-        console.log(bus_directory.aggregate(pipeline))
+        // console.log(bus_directory.aggregate(pipeline))
         
-
-        var data = []
         // var query = { $or: [ { ServiceNo: busService, Direction: 1 }, { ServiceNo: busService, Direction: 2 } ] }
-        // bus_directory.aggregate(pipeline).toArray(function(err, result) {
-        //     if (err) throw err
+        bus_directory.aggregate(pipeline).toArray(function(err, result) {
+            if (err) throw err
 
-        //     var data = []
+            var data = []
 
-        //     for (let i = 0; i < result.length; i++) {
-        //         data.push({
-        //             ServiceNo: result[i].ServiceNo,
-        //             Direction: result[i].Direction,
-        //             BusStopCode: result[i].Route.BusStopCode,
-        //             StopSequence: result[i].Route.StopSequence,
-        //             RoadName: result[i].BusStopDesc.RoadName,
-        //             Description: result[i].BusStopDesc.Description,
-        //         })
-        //     }
-            
-        //     // console.log(typeof(busService))
-        //     // const set = new Set(data)
-        //     // console.log(set)
-        //     // const newArray = new Array(set)
-        //     // console.log(data)
-        //     res.send(result)
-        // })
+            for (let i = 0; i < result.length; i++) {
+                data.push({
+                    ServiceNo: result[i].ServiceNo,
+                    Direction: result[i].Direction,
+                    BusStopCode: result[i].Route.BusStopCode,
+                    StopSequence: result[i].Route.StopSequence,
+                    RoadName: result[i].BusStopDesc.RoadName,
+                    Description: result[i].BusStopDesc.Description,
+                })
+            }
+            res.send(data)
+        })
     })
 }
 

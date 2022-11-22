@@ -7,13 +7,21 @@
                 <Header text="Select Line:"></Header>
                 <b-form-select v-model="selectedLine" :options="store.mrtLines.data" text-field="MRTLine"></b-form-select>
                 <Header text="Select Station:"></Header>
-                <b-form-select v-model="selectedStation" :options="store.mrtStations.data" text-field="MRTStation"></b-form-select>
+                <b-form-select class="mb-2" v-model="selectedStation">
+                    <option v-for="stn in store.cutMrtStations.data" :key="stn.id" :value="stn.MRTStation">
+                    {{stn.MRTStation}} ({{stn.StnCode}})
+                    </option>
+                </b-form-select>
+            
             </b-col>
             <b-col cols="4">
                 <div class="mb-3"><u>Find Taxi Stand</u></div>
                 <Header text="Select Taxi Stand:"></Header>
-                <v-select :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
-                    v-model="selectedTaxiStandName" :options="store.taxiStands.data" label="Name"></v-select>
+                <b-form-select class="mb-2" v-model="selectedTaxiStandName">
+                    <option v-for="stand in store.taxiStands.data" :key="stand.id" :value="stand.Name">
+                    {{stand.Name}} ({{stand.TaxiCode}})
+                    </option>
+                </b-form-select>
                 <div class="mt-3">Wheelchair Friendly: {{bfa}}</div>
                 <!-- <b-form-select v-model="selectedTaxiStandName" :options="store.taxiStandNames.data" text-field="Name"></b-form-select> -->
             </b-col>
@@ -100,6 +108,7 @@ export default {
         }
     },
     async mounted() {
+        store.mrtStations = await axios.get(store.BACKEND_API_URL + "MRTStation")
         store.mrtLines = await axios.get(store.BACKEND_API_URL + "MRTLines")
         store.mrtStnCodes = await axios.get(store.BACKEND_API_URL + "MRTStnCodes")
         store.taxiStands = await axios.get(store.BACKEND_API_URL + "taxi-stand")
@@ -107,7 +116,7 @@ export default {
     },
     watch: {
         async selectedLine() {
-            store.mrtStations = await axios.get(store.BACKEND_API_URL + `MRTStation-Line?mrtLine=${this.selectedLine}`)
+            store.cutMrtStations = await axios.get(store.BACKEND_API_URL + `MRTStation-Line?mrtLine=${this.selectedLine}`)
         },
 
         async selectedStation() {
@@ -143,7 +152,7 @@ export default {
         },
 
         async selectedTaxiStandName() {
-            var replacedName = this.selectedTaxiStandName.Name
+            var replacedName = this.selectedTaxiStandName
             let ampersandIndex = replacedName.indexOf("&")
             if (ampersandIndex != -1) {
                 replacedName = this.setCharAt(replacedName, ampersandIndex, "%26")

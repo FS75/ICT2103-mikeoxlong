@@ -125,8 +125,11 @@
         <div class="mb-3"><u>Update Taxi BFA Status</u></div>
         <b-form @submit="onSubmit7">
           <Header text="Select Taxi Stand"></Header>
-          <v-select :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
-                    v-model="selectedTaxiStand" :options="store.taxiStands.data" label="Name"></v-select>
+          <b-form-select class="mb-2" v-model="selectedTaxiStand">
+            <option v-for="stand in store.taxiStands.data" :key="stand.id" :value="stand.Name">
+              {{stand.Name}} ({{stand.TaxiCode}})
+            </option>
+          </b-form-select>
           <Header text="Select BFA (wheelchair friendly) Status:"></Header>
           <b-form-select class="mb-2" v-model="selectedBFA" required>
             <option>Yes</option>
@@ -166,9 +169,11 @@
         <div class="mb-3"><u>Delete Taxi Stand</u></div>
         <b-form @submit="onSubmit9">
           <Header text="Select Taxi Stand"></Header>
-          <v-select class="mb-2" :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
-                    v-model="selectedTaxiStand" :options="store.taxiStands.data" label="Name"></v-select>
-
+          <b-form-select class="mb-2" v-model="selectedTaxiStand">
+            <option v-for="stand in store.taxiStands.data" :key="stand.id" :value="stand.Name">
+              {{stand.Name}} ({{stand.TaxiCode}})
+            </option>
+          </b-form-select>
           <b-button type="submit" variant="primary" class="w-50">
             Delete Taxi Stand
           </b-button>
@@ -179,8 +184,11 @@
         <div class="mb-3"><u>Delete MRT Station</u></div>
         <b-form @submit="onSubmit10">
           <Header text="Select MRT Station"></Header>
-          <v-select class="mb-2" :style="{ 'background-color': 'white', 'border-radius': '5px' }" 
-                    v-model="selectedMRTStation" :options="store.mrtStations.data" label="MRTStation"></v-select>
+          <b-form-select class="mb-2" v-model="selectedMRTStation">
+            <option v-for="stn in store.mrtStations.data" :key="stn.id" :value="stn.MRTStation">
+              {{stn.MRTStation}} ({{stn.StnCode}})
+            </option>
+          </b-form-select>
 
           <b-button type="submit" variant="primary" class="w-50">
             Delete Taxi Stand

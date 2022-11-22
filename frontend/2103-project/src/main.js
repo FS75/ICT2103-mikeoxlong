@@ -28,6 +28,7 @@ export const store = reactive({
     destinationBusRoutes: [],
     mrtLines: [],
     mrtStations: [],
+    cutMrtStations: [],
     mrtStnCodes: [],
     mrtLocation: [],
     taxiStands: [],

@@ -59,17 +59,31 @@
           map-type-id="terrain"
           style="width: 30vw; height: 200px"
           >
-          <GMapMarker v-for="(m, index) in busMarkers" 
+          <GMapMarker v-for="(m, index) in busMarkers1" 
               :key="index"
               :position="m.position" 
               :visible="m.visibility"
-              :icon='
-              {
-                url: "https://cdn-icons-png.flaticon.com/512/635/635705.png",
-                scaledSize: {width: 30, height: 30},
+              :icon='{
+                url: require("../../images/start-bus.svg"),
+                scaledSize: {width: 40, height: 40},
                 labelOrigin: {x: 16, y: -10}
-              }' />
+              }'
+               />
+
+          <GMapMarker v-for="(m, index) in busMarkers2" 
+            :key="index"
+            :position="m.position" 
+            :visible="m.visibility"
+            :icon='{
+                url: require("../../images/end-bus.svg"),
+                scaledSize: {width: 40, height: 40},
+                labelOrigin: {x: 16, y: -10}
+              }'
+              />
         </GMapMap>
+
+        <div class="mt-2">Green Bus: Starting Route</div>
+        <div>Red Bus: Destination Route</div>
       </b-col>
     </b-row>
 
@@ -151,7 +165,17 @@
               lat: 1.3521, 
               lng: 103.8198
           },
-          busMarkers: [
+          busMarkers1: [
+              {
+                  position: 
+                  {
+                      lat: 0,
+                      lng: 0
+                  },
+              },
+          ],
+
+          busMarkers2: [
               {
                   position: 
                   {
@@ -163,6 +187,7 @@
         }
     },
     async mounted() {
+      store.taxiStandNearby = []
       this.selectedServiceNo = ""
       this.selectedStartingRoute = ""
       this.selectedDestinationRoute = ""
@@ -306,22 +331,23 @@
         this.checkBus = true
         this.busMarkers = []
         this.distance = (Math.round((this.selectedDestinationRoute.Distance - this.selectedStartingRoute.Distance) * 100) / 100).toFixed(2);
-        this.busMarkers.push(
+        this.busMarkers1[0] = 
+        {
+            position: 
             {
-                position: 
-                {
-                    lat: this.selectedStartingRoute.Latitude,
-                    lng: this.selectedStartingRoute.Longitude,
-                }
+                lat: this.selectedStartingRoute.Latitude,
+                lng: this.selectedStartingRoute.Longitude,
             },
+        }
+
+        this.busMarkers2[0] = 
+        {
+            position: 
             {
-                position: 
-                {
-                    lat: this.selectedDestinationRoute.Latitude,
-                    lng: this.selectedDestinationRoute.Longitude,
-                }
+                lat: this.selectedDestinationRoute.Latitude,
+                lng: this.selectedDestinationRoute.Longitude,
             }
-        )
+        }
         this.center2.lat = this.selectedStartingRoute.Latitude
         this.center2.lng = this.selectedStartingRoute.Longitude
         this.mapZoom2 = 13

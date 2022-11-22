@@ -13,10 +13,17 @@ var mysql = require('mysql')
 
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'admin',
-    database: '2103',
+    user: 'Juleus',
+    password: 'somepassword',
+    database: 'projectdb',
 });
+
+// var connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'admin',
+//     database: '2103',
+// });
 
 // var connection = mysql.createConnection({
 //     host: 'localhost',
@@ -360,7 +367,7 @@ const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
 const getMRTStationName = (res) => {
     var rawData = []
     var data = []
-    const query = 'SELECT MRTStation FROM mrt_station;'
+    const query = 'SELECT StnCode, MRTStation FROM mrt_station;'
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
     
@@ -399,7 +406,7 @@ const getMRTStnCodes = (res) => {
 const getMRTStationsFromLine = (mrtLine, res) => {
     var rawData = []
     var data = []
-    const query = ` SELECT MRTStation 
+    const query = ` SELECT StnCode, MRTStation 
                     FROM mrt_station
                     WHERE MRTLine = '${mrtLine}'; `
     connection.query(query, (err, rows, fields) => {
@@ -534,16 +541,15 @@ const deleteTaxiStand = (code, res) => {
 
 // Delete MRT Station
 const deleteMRTStation = (name, res) => {
-    var rawData = []
-    var data = []
     const query = ` DELETE FROM mrt_station 
                     WHERE MRTStation='${name}' `
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
+        if (err) {
+            res.send(`Cannot delete MRT Station ${name}`)
+        }
 
-        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        // res.send(rawData)
-        res.send(`Successfully deleted MRT Station ${name}`)
+        else
+            res.send(`Successfully deleted MRT Station ${name}`)
     })
 }
 
