@@ -18,7 +18,7 @@ STEP 3: Run 'npm update'
 
 -----TO RUN-----
 STEP 1: Open Command Line
-STEP 2: Run 'frontend\2103-project'
+STEP 2: Run 'cd frontend\2103-project'
 STEP 3.1: Run 'npm run dev' (SQL variation)
 Step 3.2: Run 'npm run build' (MongoDB variation)
 
