@@ -10,5 +10,14 @@ use ICT2103
 
 Create Collections:
 db.createCollection("bus_directory")
-db.createCollection("other_transportation")
-db.createCollection("bus_stops")
+db.createCollection("locations")
+
+Perform insert query in  mongosh:
+
+1. insert_bus_directory.txt for "bus_directory" collection
+2. insert the following txt files for "locations" collection
+	a. insert_bus_stops.txt
+	b. insert_MRT.txt
+	c. insert_Taxi.txt	
+
+Set up is now completed, you may perform the no sql queries
