@@ -95,4 +95,14 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })
 }
 
-module.exports = { connection, getBusServices, getBusStopsOfServiceNo }
+const updateBusOperator = (busService, operator, res) => {
+    console.log(busService, operator)
+        const dbo = connection.db("ICT2103")
+        let bus_directory = dbo.collection("bus_directory")
+        const filter = { "ServiceNo": busService }
+        const newValues = { $set: { "Operator": operator } }
+        bus_directory.updateMany(filter, newValues)
+        res.send("OK")
+}
+
+module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator }

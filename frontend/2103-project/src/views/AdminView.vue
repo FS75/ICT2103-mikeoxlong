@@ -169,8 +169,8 @@
         <div class="mb-3"><u>Delete Taxi Stand</u></div>
         <b-form @submit="onSubmit9">
           <Header text="Select Taxi Stand"></Header>
-          <b-form-select class="mb-2" v-model="selectedTaxiStand">
-            <option v-for="stand in store.taxiStands.data" :key="stand.id" :value="stand.Name">
+          <b-form-select class="mb-2" v-model="selectedTaxiStand2">
+            <option v-for="stand in store.taxiStands.data" :key="stand.id" :value="stand.TaxiCode">
               {{stand.Name}} ({{stand.TaxiCode}})
             </option>
           </b-form-select>
@@ -250,6 +250,7 @@ export default {
       inputtedTiming1: "",
       inputtedTiming2: "",
       selectedTaxiStand: "",
+      selectedTaxiStand2: "",
       selectedBFA: "",
       selectedMRTStation: "",
       busRoute: {},
@@ -307,12 +308,12 @@ export default {
 
     onSubmit8(event) {
       event.preventDefault()
-      this.deleteBusRoute(this.selectedServiceNo3, this.busRoute)
+      this.deleteBusRoute(this.busRoute)
     },
 
     onSubmit9(event) {
       event.preventDefault()
-      this.deleteTaxiStand(this.selectedTaxiStand)
+      this.deleteTaxiStand(this.selectedTaxiStand2)
     },
 
     onSubmit10(event) {
@@ -345,33 +346,27 @@ export default {
       })
     },
 
-    deleteBusRoute: async (selectedServiceNo3, busRoute) => {
-      // console.log("selected service no: " + selectedServiceNo3)
-      // console.log("selected bus route's direction: " + busRoute.Direction)
-      // console.log("selected bus route's stop sequence: " + busRoute.StopSequence)
-
-      if (busRoute.StopSequence === Object.keys(store.busRoutes.data).length || busRoute.StopSequence === 1) {
+    deleteBusRoute: async (busRoute) => {
+      if (busRoute.StopSequence === Object.keys(store.busRoutes.data).length || busRoute.StopSequence === 1)
         alert("Cannot delete start or end points of bus routes")
-      }
 
       else {
         // need a request that sends back serviceno, direction and stop sequence
         // given bus stop code
 
-        const res = await axios.get(store.BACKEND_API_URL + "bus-routes?busStopCode=" + busRoute.BusStopCode)
-          // .then(req => {
-          //   console.log(req)
-          // })
-
-        const req = await axios.delete(store.BACKEND_API_URL + "bus-routes", 
-        {
-          data: {
-            "routes": res,
-            "busStopCode": busRoute.BusStopCode
-          }
-        }).then(
-          req => {
-            alert(req.data)
+        const res = await axios.get(store.BACKEND_API_URL + "bus-routes?busStopCode=" + busRoute.BusStopCode).then(
+          async res => {
+            const req = await axios.delete(store.BACKEND_API_URL + "bus-routes", 
+            {
+              data: {
+                "routes": res.data,
+                "busStopCode": busRoute.BusStopCode
+              }
+            })
+            .then(
+              req => {
+                alert(req.data)
+            }) 
           }
         )
       }
@@ -467,11 +462,12 @@ export default {
       )
     },
 
-    deleteTaxiStand: async (taxiStand) => {
+    deleteTaxiStand: async (taxiStandCode) => {
+      // console.log(taxiStandCode)
       const req = await axios.delete(store.BACKEND_API_URL + "taxi-stand", 
         {
           data: {
-            "code": taxiStand
+            "code": taxiStandCode
           }
         }).then(
           req => {

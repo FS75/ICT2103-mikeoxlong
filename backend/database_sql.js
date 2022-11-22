@@ -1,5 +1,6 @@
 // establishing connection to database (replace with your own)
 
+const e = require('express');
 const { response } = require('express');
 var mysql = require('mysql')
 
@@ -249,6 +250,7 @@ const checkBusStopCode = (busStopCode, res) => {
 
 // Get all Bus Routes from Bus Stop Code
 const getRoutesOfBusStopCode = (busStopCode, res) => {
+    console.log(busStopCode)
     var rawData = []
     var data = []
     const query = ` SELECT *
@@ -258,11 +260,11 @@ const getRoutesOfBusStopCode = (busStopCode, res) => {
         if (err) throw err
 
         rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        //console.log(rawData)
-        for(let row of rawData){
-            data.push(row.MRTStation); 
-        }
-        res.send(data)
+        // //console.log(rawData)
+        // for(let row of rawData){
+        //     data.push(row.MRTStation); 
+        // }
+        res.send(rawData)
     })
 }
 
@@ -339,9 +341,9 @@ const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
 
 // Delete Bus Route while also Updating Sequences for all affected Bus Routes
 const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
-    var rawData = []
-    var data = []
     var query = ""
+
+    // console.log(routes)
 
     query += ` DELETE FROM bus_route
                WHERE BusStopCode = '${busStopCode}'; `
@@ -355,11 +357,10 @@ const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
     }
     
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
-
-        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        // res.send(rawData)
-        res.send("Deleted bus route for all affected bus services and updated stop sequences")
+        if (err)
+            res.send("Could not run query")
+        else
+            res.send("Deleted bus route for all affected bus services and updated all stop sequences")
     })
 }
 
@@ -526,16 +527,15 @@ const updateTaxiBFA = (code, bfa, res) => {
 
 // Delete Taxi Stand
 const deleteTaxiStand = (code, res) => {
-    var rawData = []
-    var data = []
     const query = ` DELETE FROM taxi_stand 
                     WHERE taxicode='${code}' `
     connection.query(query, (err, rows, fields) => {
-        if (err) throw err
+        if (err) {
+            res.send(`Cannot delete Taxi Stand ${code}`)
+        }
 
-        // rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        // res.send(rawData)
-        res.send(`Successfully deleted Taxi Stand ${code}`)
+        else
+            res.send(`Successfully deleted Taxi Stand ${code} with query: ${query}`)
     })
 }
 
