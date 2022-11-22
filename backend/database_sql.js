@@ -13,9 +13,9 @@ var mysql = require('mysql')
 
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: 'Juleus',
-    password: 'somepassword',
-    database: 'projectdb',
+    user: 'root',
+    password: 'admin',
+    database: '2103',
 });
 
 // var connection = mysql.createConnection({
@@ -97,15 +97,11 @@ const getBusInterchange = (res) => {
 }
 
 // Get All Bus Services ran by Bus Interchange
-const getServicesFromBusInterchange = (interchange, res) => {
+const getServicesFromBusInterchange = (busstopcode, res) => {
     var data = []
     const query = ` select distinct serviceno 
-                    from bus_route route 
-                    where route.busstopcode=
-                    (select inter.busstopcode 
-                        from businterchange_services inter 
-                        where route.busstopcode=inter.busstopcode 
-                        and inter.description='${interchange}'); `
+    from businterchange_busservices 
+    where busstopcode='${busstopcode}'; `
     connection.query(query, (err, rows, fields) => {
         if (err) throw err
 

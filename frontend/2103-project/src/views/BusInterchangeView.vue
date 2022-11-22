@@ -113,7 +113,7 @@ export default {
 
     watch: {
         async selectedInterchange() {
-            const res = await axios.get(store.BACKEND_API_URL + `bus-interchange-services?interchange=${this.selectedInterchange.Description}`)
+            const res = await axios.get(store.BACKEND_API_URL + `bus-interchange-services?interchange=${this.selectedInterchange.BusStopCode}`)
                 .then(
                 res => {
                     store.busInterchangeServices = res.data

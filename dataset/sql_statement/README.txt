@@ -1,14 +1,17 @@
---VERSION 4--
+--VERSION 5--
+STEP 1: MasterCreate_v4.sql
+
+--VERSION 4 OUTDATED--
 STEP 1: MasterCreate_v3.2.sql
 
---VERSION 3--
+--VERSION 3 OUTDATED--
 
 STEP 1: MasterCreate_v2.sql
 STEP 2: createIndex.sql
 STEP 3: createView.sql
 STEP 4: updateMRTLatLong.sql
 
---VERSION 2--
+--VERSION 2 OUTDATED--
 
 STEP 1: MasterCreate_v1.sql
 STEP 2: updateMRTStation.sql
@@ -17,7 +20,7 @@ STEP 4: createIndex.sql
 STEP 5: createView.sql
 STEP 6: updateMRTLatLong.sql
 
---VERSION 1--
+--VERSION 1 OUTDATED--
 
 STEP 1: CreateTable.sql
 STEP 2: InsertALL.sql
