@@ -7,7 +7,7 @@ const app = express();
 const PORT = 3000;
 
 let { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode } = require("./database_mongo");
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode } = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -97,6 +97,16 @@ app.post('/api/taxi-stand', (req, res) => {
 app.get('/api/check-bus-service', (req, res) => {
     const { busService } = req.query
     checkBusServiceNo(busService, res)
+})
+
+/*  
+    GET: Check if Bus Stop Code exists in DB
+    Params: Bus Stop Code
+    Eg: [api/check-bus-stop-code?busStopCode=640901]
+*/
+app.get('/api/check-bus-stop-code', (req, res) => {
+    const { busStopCode } = req.query
+    checkBusStopCode(busStopCode, res)
 })
 
 /*  

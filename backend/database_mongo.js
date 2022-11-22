@@ -271,5 +271,33 @@ const checkTaxiStandCode = (taxiStandCode, res) => {
     })
 }
 
+// Check if Bus Stop Code exists in DB
+const checkBusStopCode = (busStopCode, res) => {
+    dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    pipeline = [
+        {
+            '$match': {
+                'BusStopCode': busStopCode
+            }
+        }, {
+            '$project': {
+                'BusStopCode': 1,
+                '_id': 0
+            }
+        }
+    ]
+    locations.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                BusStopCode: result[i].BusStopCode,
+            })
+        }
+        res.send(data)
+    })           
+}
+
 module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode }
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode }
