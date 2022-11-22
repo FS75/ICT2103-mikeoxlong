@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 
-let { connection, getBusServices, getBusStopsOfServiceNo } = require("./database_mongo");
+let { connection, getBusServices, getBusStopsOfServiceNo, updateBusOperator } = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -48,4 +48,9 @@ app.get('/api/bus-services', (req, res) => {
 app.get('/api/bus-stops', (req, res) => {
     const { busService } = req.query
     getBusStopsOfServiceNo(busService, res)
+})
+
+app.put('/api/change-operator', (req, res) => {
+    const { busService, operator } = req.query
+    updateBusOperator(busService, operator, res)
 })
