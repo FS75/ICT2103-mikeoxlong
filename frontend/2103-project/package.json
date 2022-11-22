@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "concurrently \"cd ../../backend && npx nodemon app_mongo.js\" \"npm run serve\"",
     "update-fe": "npm install && npm update",
     "update-be": "cd ../../backend && npm install && npm update",
     "update-all": "npm run update-fe && npm run update-be",

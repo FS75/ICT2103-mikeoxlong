@@ -329,11 +329,11 @@ app.delete('/api/mrt-station/', (req, res) => {
 app.listen(PORT, (error) =>{
     // listening to port just fine
     if(!error) {
-        console.log("Server is Successfully Running, App is listening on port "+ PORT)
+        console.log("Server is Successfully Running, App is listening on port " + PORT)
 
         connection.connect((err) => {
             if (err) throw err;
-            console.log("DB Connected!!!");
+            console.log("SQL DB Connected!!!");
         });
     } // cant listen to port for some reason
     else
