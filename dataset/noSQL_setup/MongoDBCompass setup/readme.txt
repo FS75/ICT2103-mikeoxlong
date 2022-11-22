@@ -12,16 +12,15 @@ Create database -> any db name, any collection name
 
 After successfully creating DB:
 
-add 3 collections:
+add 2 collections:
 
 1. bus_directory
-2. bus_stops
-3. other_transportation
+2. locations
 
 Add the json files into the collection:
+Located at: \2103\ICT2103-mikeoxlong\dataset\noSQL_setup\MongoDBCompass setup\noSQLDB
 
 1. bus_directory -> import bus_directory.json from noSQLDB folder
-2. bus_stops -> import bus_stop.json from noSQLfolder
-2. other_transportation -> import other_transportation.json from noSQLfolder
+2. locations -> import locations.json from noSQLDB folder
 
-Set up is all done can proceed to query
+Set up is all done can proceed to perform queries

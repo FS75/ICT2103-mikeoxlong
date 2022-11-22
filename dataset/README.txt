@@ -6,10 +6,14 @@ and also the raw JSON files that we have accquired through LTA Datamall or Data 
 >> due to the limitation of 500 routes per call. By running this script, we can retrieve all the routes quickly
 
 [folder] - noSQL
->> 
+>> This folder contains all raw JSOn files used to create our 2 collections, bus_directory and location. 
+>> We also utilised the ExtractBusRoute python script to combine json files efficiently
+>> The ExtractOtherTransport python script is used to extract either MRT/TAXI data efficient from the .xls files exported from MYSQL
 
 [folder] - noSQL_setup
->> 
+>> This folder contains 2 folders, MongoDBCompass setup and MongoSH setup
+>> MongoDBCompass will have all the necessary files to set up our DB using the Mongo compass GUI
+>> MongoSH will have all the queries needed to set up our DB using the Mongo command shell
 
 [folder] - raw_static_dataset
 >> This folders contain the raw JSON files that we have accquired through LTA Datamall or Data GOV

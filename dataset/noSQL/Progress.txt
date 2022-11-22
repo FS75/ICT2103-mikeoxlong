@@ -1,7 +1,0 @@
-Based on bus_services:
-
-stop at "ServiceNo": "47"
-
-
-
-Other transport: not started
