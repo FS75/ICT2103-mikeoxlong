@@ -7,8 +7,7 @@ const app = express();
 const PORT = 3000;
 
 let { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
-    deleteBusRouteAndUpdateSequences, deleteMRTStation, deleteTaxiStand} = require("./database_mongo");
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, getTaxiStands, updateTaxiBFA } = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -50,6 +49,11 @@ app.get('/api/bus-services', (req, res) => {
 app.get('/api/bus-stops', (req, res) => {
     const { busService } = req.query
     getBusStopsOfServiceNo(busService, res)
+})
+
+app.get('/api/taxi-stands', (req, res) => {
+    // const { busService } = req.query
+    getTaxiStands(res)
 })
 
 app.put('/api/bus-services/', (req, res) => {
@@ -150,37 +154,7 @@ app.put('/api/bus-services/', (req, res) => {
     updateBusService(topicValue, selectedServiceNo, updateValue, res)
 })
 
-/* ---------- DELETE END POINTS ----------*/ 
-/* 
-    DELETE: One single bus route
-*/
-app.delete('/api/bus-routes/', (req, res) => {
-    const newData = req.body
-    // console.log(newData)
-    var routes = []
-    routes = Object.values(Object.values(newData)[0])[0]
-    const busStopCode = Object.values(newData)[1]
-
-    // console.log(routes)
-
-    deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
-})
-/* 
-    DELETE: One taxi stand
-*/
-app.delete('/api/taxi-stand/', (req, res) => {
-    const newData = req.body
-    const code = Object.values(newData)[0]
-    // console.log(code)
-
-    deleteTaxiStand(code, res)
-})
-/* 
-    DELETE: One mrt station
-*/
-app.delete('/api/mrt-station/', (req, res) => {
-    const newData = req.body
-    const name = Object.values(newData)[0]
-
-    deleteMRTStation(name, res)
+app.put('/api/taxi-stand-bfa/', (req, res) => {
+    const { code, bfa } = req.query
+    updateTaxiBFA(code, bfa, res)
 })

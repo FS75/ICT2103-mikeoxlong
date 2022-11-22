@@ -6,12 +6,12 @@ const connection = new MongoClient(URL)
 
 // // Connect to the db
 // MongoClient.connect(URL, function (err, db) {
-   
+
 //      if(err) throw err;
 
 //      //Write database Insert/Update/Query code here..
 //      console.log("Successfully connected to MongoDB")
-                
+
 // });
 
 // Get All Bus Services
@@ -23,7 +23,24 @@ const getBusServices = (res) => {
         let bus_directory = dbo.collection("bus_directory")
 
         var query = { ServiceNo: { $exists: true }, Direction: 1 }
-        bus_directory.find(query).toArray(function(err, result) {
+        bus_directory.find(query).toArray(function (err, result) {
+            if (err) throw err
+
+            res.send(result)
+        })
+    })
+}
+
+//Get All Taxi Stands
+const getTaxiStands = (res) => {
+    MongoClient.connect(URL, function (err, db) {
+        if (err) throw err
+
+        const dbo = connection.db("ICT2103")
+        let locations = dbo.collection("locations")
+
+        var query = { TaxiCode: { $exists: true } }
+        locations.find(query).toArray(function (err, result) {
             if (err) throw err
 
             res.send(result)
@@ -35,7 +52,7 @@ const getBusServices = (res) => {
 const getBusStopsOfServiceNo = (busService, res) => {
     MongoClient.connect(URL, function (err, db) {
         if (err) throw err
-        
+
         const pipeline = [
             {
                 '$match': {
@@ -47,9 +64,9 @@ const getBusStopsOfServiceNo = (busService, res) => {
                 }
             }, {
                 '$lookup': {
-                    'from': 'locations', 
-                    'localField': 'Route.BusStopCode', 
-                    'foreignField': 'BusStopCode', 
+                    'from': 'locations',
+                    'localField': 'Route.BusStopCode',
+                    'foreignField': 'BusStopCode',
                     'as': 'BusStopDesc'
                 }
             }, {
@@ -58,12 +75,12 @@ const getBusStopsOfServiceNo = (busService, res) => {
                 }
             }, {
                 '$project': {
-                    '_id': 0, 
-                    'ServiceNo': 1, 
-                    'Direction': 1, 
-                    'Route.BusStopCode': 1, 
-                    'Route.StopSequence': 1, 
-                    'BusStopDesc.RoadName': 1, 
+                    '_id': 0,
+                    'ServiceNo': 1,
+                    'Direction': 1,
+                    'Route.BusStopCode': 1,
+                    'Route.StopSequence': 1,
+                    'BusStopDesc.RoadName': 1,
                     'BusStopDesc.Description': 1
                 }
             }
@@ -73,9 +90,9 @@ const getBusStopsOfServiceNo = (busService, res) => {
         let bus_directory = dbo.collection("bus_directory")
 
         // console.log(bus_directory.aggregate(pipeline))
-        
+
         // var query = { $or: [ { ServiceNo: busService, Direction: 1 }, { ServiceNo: busService, Direction: 2 } ] }
-        bus_directory.aggregate(pipeline).toArray(function(err, result) {
+        bus_directory.aggregate(pipeline).toArray(function (err, result) {
             if (err) throw err
 
             var data = []
@@ -107,8 +124,26 @@ const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     }
     bus_directory.updateMany(filter, newValue)
     res.send("OK")
-
 }
+
+// Update Taxi BFA
+const updateTaxiBFA = (code, bfa, res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    // console.log(locations)
+    const projection = { "TaxiCode": code }
+    let newBfa = ""
+    if (bfa === "TRUE") {
+        newBfa = "1"
+    } else {
+        newBfa = "0"
+    }
+    const newValue = { $set: { "Bfa": newBfa } }
+    console.log(projection, newValue)
+    locations.updateOne(projection, newValue)
+    res.send("OK")
+}
+
 
 // Create bus service
 const createBusService = (busService, operator, category, res) => {
@@ -196,9 +231,9 @@ const checkBusServiceNo = (busService, res) => {
     pipeline = [
         {
             '$match': {
-                $and:[
-                    {'ServiceNo': busService},
-                    {'Direction': 1}
+                $and: [
+                    { 'ServiceNo': busService },
+                    { 'Direction': 1 }
                 ]
             }
         }, {
@@ -301,49 +336,11 @@ const checkBusStopCode = (busStopCode, res) => {
             })
         }
         res.send(data)
-    })           
+    })
 }
 
-const deleteTaxiStand = (code,res) => {
-    const dbo = connection.db("ICT2103")
-        let bus_directory = dbo.collection("locations")
-
-        var query = { TaxiCode : code }
-        bus_directory.deleteOne(query)
-        if (err) throw err
-            res.send(`Successfully deleted Taxi Stand ${code}`)
+module.exports = {
+    connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop,
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, getTaxiStands,
+    updateTaxiBFA
 }
-
-const deleteMRTStation = (name,res) => {
-    const dbo = connection.db("ICT2103")
-        let bus_directory = dbo.collection("locations")
-
-        var query = { MRTStation : name }
-        bus_directory.deleteOne(query)
-        if (err) {
-            res.send(`Cannot delete MRT Station ${name}`)
-        }
-        else
-            res.send(`Successfully deleted MRT Station ${name}`)
-}
-
-const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
-        const dbo = connection.db("ICT2103")
-        let bus_directory = dbo.collection("bus_directory")
-        console.log("test")
-        var query = { "Route.BusStopCode" : busStopCode }
-        bus_directory.deleteOne(query)
-        for (let i = 0; i < routes.length; i++) {
-            var filter = { ServiceNo : routes[i].ServiceNo, Direction : routes[i].Direction, 
-                            "Route.StopSequence" : {$gt : routes[i].StopSequence}}
-            var newValues = {$inc : {"Route.$.StopSequence":-1}} 
-            bus_directory.updateMany(filter,newValues)
-        }
-        if (err) throw err
-
-        res.send("Deleted bus route for all affected bus services and updated stop sequences")
-}
-
-module.exports = { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, deleteBusRouteAndUpdateSequences, 
-    deleteMRTStation, deleteTaxiStand}

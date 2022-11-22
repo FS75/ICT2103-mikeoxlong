@@ -263,10 +263,13 @@ export default {
   },
   async mounted() {
       store.busServices = await axios.get(store.BACKEND_API_URL + "bus-services")
-      store.mrtStations = await axios.get(store.BACKEND_API_URL + "MRTStation")
-      store.mrtLines = await axios.get(store.BACKEND_API_URL + `MRTLines`)
-      store.taxiStands = await axios.get(store.BACKEND_API_URL + `taxi-stand`)
+      store.taxiStands = await axios.get(store.BACKEND_API_URL + "taxi-stands")
+      // store.mrtStations = await axios.get(store.BACKEND_API_URL + "MRTStation")
+      // store.mrtLines = await axios.get(store.BACKEND_API_URL + "MRTLines")
   },
+  // created() {
+  //   console.log(this.store)
+  // },
   methods: {
     onSubmit1(event) {
       event.preventDefault()
