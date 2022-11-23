@@ -1,4 +1,4 @@
-db.other_transportation.insertMany([
+db.locations.insertMany([
 	{
 		"TaxiCode": "A01",
 		"Latitude": 1.304294727,

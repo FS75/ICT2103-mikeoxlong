@@ -1,4 +1,4 @@
-db.other_transportation.insertMany([
+db.locations.insertMany([
   {
     "StnCode": "BP1",
     "MRTStation": "Choa Chu Kang",

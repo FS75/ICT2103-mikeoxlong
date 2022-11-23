@@ -1,4 +1,4 @@
-db.bus_stops.insertMany([
+db.locations.insertMany([
   {
     "BusStopCode": "01012",
     "RoadName": "Victoria St",
