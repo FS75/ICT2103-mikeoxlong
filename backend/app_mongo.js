@@ -7,7 +7,8 @@ const app = express();
 const PORT = 3000;
 
 let { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, getTaxiStands, updateTaxiBFA } = require("./database_mongo");
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
+    getTaxiStands, updateTaxiBFA, getBusInterchange } = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -137,6 +138,13 @@ app.get('/api/check-station-code', (req, res) => {
 app.get('/api/check-taxi-stand', (req, res) => {
     const { taxiStandCode } = req.query
     checkTaxiStandCode(taxiStandCode, res)
+})
+
+/*  
+    GET: All Bus Interchange Details
+*/
+app.get('/api/bus-interchange', (req, res) => {
+    getBusInterchange(res)
 })
 
 /*  

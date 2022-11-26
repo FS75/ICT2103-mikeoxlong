@@ -5,19 +5,19 @@ const { response } = require('express');
 var mysql = require('mysql')
 
 //----------------------- USE YOUR OWN CONNECTION HERE -----------------------
-// var connection = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: 'password',
-//     database: 'ict2103',
-// });
-
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: 'Juleus',
-    password: 'somepassword',
-    database: 'projectdb',
+    user: 'root',
+    password: 'password',
+    database: 'ict2103',
 });
+
+// var connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'Juleus',
+//     password: 'somepassword',
+//     database: 'projectdb',
+// });
 
 // var connection = mysql.createConnection({
 //     host: 'localhost',
@@ -91,6 +91,7 @@ const getBusInterchange = (res) => {
     var data = []
     const query = 'SELECT * FROM businterchange_services;'
     connection.query(query, (err, rows, fields) => {
+        console.log(query)
         if (err) throw err
 
         data = JSON.parse(JSON.stringify(rows));

@@ -1,7 +1,7 @@
 const { response } = require('express');
 
 var MongoClient = require('mongodb').MongoClient;
-const URL = "mongodb://localhost:27017/db"
+const URL = "mongodb://localhost:27017/"
 const connection = new MongoClient(URL)
 
 // // Connect to the db
@@ -339,8 +339,18 @@ const checkBusStopCode = (busStopCode, res) => {
     })
 }
 
+// Get All Bus Interchange details
+const getBusInterchange = (res) => {
+    const dbo = connection.db("ICT2103")
+    let businterchange_services = dbo.collection("businterchange_services")
+    businterchange_services.find().toArray(function (err, result) {
+        if (err) throw err
+        res.send(result)
+    })
+}
+
 module.exports = {
     connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop,
     createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, getTaxiStands,
-    updateTaxiBFA
+    updateTaxiBFA, getBusInterchange
 }
