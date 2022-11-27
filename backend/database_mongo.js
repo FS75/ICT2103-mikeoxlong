@@ -349,8 +349,56 @@ const getBusInterchange = (res) => {
     })
 }
 
+// Delete Taxi Stand
+const deleteTaxiStand = (code,res) => {
+    const dbo = connection.db("ICT2103")
+        let bus_directory = dbo.collection("locations")
+
+        var query = { TaxiCode : code }
+        bus_directory.deleteOne(query)
+        if (err) {
+            res.send(`Cannot delete Taxi Stand ${code}`)
+        }
+
+        else
+            res.send(`Successfully deleted Taxi Stand ${code} `)
+}
+
+// Delete Mrt Station
+const deleteMRTStation = (name,res) => {
+    const dbo = connection.db("ICT2103")
+        let bus_directory = dbo.collection("locations")
+
+        var query = { MRTStation : name }
+        bus_directory.deleteOne(query)
+        if (err) {
+            res.send(`Cannot delete MRT Station ${name}`)
+        }
+        else
+            res.send(`Successfully deleted MRT Station ${name}`)
+}
+
+// Delete Bus Route while also Updating Sequences for all affected Bus Routes
+const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
+        const dbo = connection.db("ICT2103")
+        let bus_directory = dbo.collection("bus_directory")
+
+        var query = { "Route.BusStopCode" : busStopCode }
+        bus_directory.deleteOne(query)
+        for (let i = 0; i < routes.length; i++) {
+            var filter = { ServiceNo : routes[i].ServiceNo, Direction : routes[i].Direction, 
+                            "Route.StopSequence" : {$gt : routes[i].StopSequence}}
+            var newValues = {$inc : {"Route.$.StopSequence":-1}} 
+            bus_directory.updateMany(filter,newValues)
+        }
+        if (err)
+            res.send("Could not delete bus route")
+        else
+            res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
+}
+
 module.exports = {
     connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop,
     createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, getTaxiStands,
-    updateTaxiBFA, getBusInterchange
+    updateTaxiBFA, getBusInterchange, deleteTaxiStand, deleteMRTStation, deleteBusRouteAndUpdateSequences
 }
