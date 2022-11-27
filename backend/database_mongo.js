@@ -50,65 +50,76 @@ const getTaxiStands = (res) => {
 
 // Get Bus Stops of Bus Service
 const getBusStopsOfServiceNo = (busService, res) => {
-    MongoClient.connect(URL, function (err, db) {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const pipeline = [
+        {
+            '$match': {
+                'ServiceNo': busService
+            }
+        }, {
+            '$unwind': {
+                'path': '$Route'
+            }
+        }, {
+            '$lookup': {
+                'from': 'locations',
+                'localField': 'Route.BusStopCode',
+                'foreignField': 'BusStopCode',
+                'as': 'BusStopDesc'
+            }
+        }, {
+            '$unwind': {
+                'path': '$BusStopDesc'
+            }
+        }, {
+            '$project': {
+                _id: 0,
+                ServiceNo: 1,
+                Direction: 1,
+                "Route.BusStopCode": 1,
+                "Route.StopSequence": 1,
+                "Route.Distance": 1,
+                "Route.SAT_FirstBus": 1,
+                "Route.SAT_LastBus": 1,
+                "Route.SUN_FirstBus": 1,
+                "Route.SUN_LastBus": 1,
+                "Route.WD_LastBus": 1,
+                "Route.WD_FirstBus": 1,
+                "BusStopDesc.RoadName": 1,
+                "BusStopDesc.Description": 1,
+                "BusStopDesc.Latitude": 1,
+                "BusStopDesc.Longitude": 1,
+            }
+        }
+    ]
+    // console.log(bus_directory.aggregate(pipeline))
+    // var query = { $or: [ { ServiceNo: busService, Direction: 1 }, { ServiceNo: busService, Direction: 2 } ] }
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
         if (err) throw err
 
-        const pipeline = [
-            {
-                '$match': {
-                    'ServiceNo': busService
-                }
-            }, {
-                '$unwind': {
-                    'path': '$Route'
-                }
-            }, {
-                '$lookup': {
-                    'from': 'locations',
-                    'localField': 'Route.BusStopCode',
-                    'foreignField': 'BusStopCode',
-                    'as': 'BusStopDesc'
-                }
-            }, {
-                '$unwind': {
-                    'path': '$BusStopDesc'
-                }
-            }, {
-                '$project': {
-                    '_id': 0,
-                    'ServiceNo': 1,
-                    'Direction': 1,
-                    'Route.BusStopCode': 1,
-                    'Route.StopSequence': 1,
-                    'BusStopDesc.RoadName': 1,
-                    'BusStopDesc.Description': 1
-                }
-            }
-        ]
+        var data = []
 
-        dbo = db.db("ICT2103")
-        let bus_directory = dbo.collection("bus_directory")
-
-        // console.log(bus_directory.aggregate(pipeline))
-
-        // var query = { $or: [ { ServiceNo: busService, Direction: 1 }, { ServiceNo: busService, Direction: 2 } ] }
-        bus_directory.aggregate(pipeline).toArray(function (err, result) {
-            if (err) throw err
-
-            var data = []
-
-            for (let i = 0; i < result.length; i++) {
-                data.push({
-                    ServiceNo: result[i].ServiceNo,
-                    Direction: result[i].Direction,
-                    BusStopCode: result[i].Route.BusStopCode,
-                    StopSequence: result[i].Route.StopSequence,
-                    RoadName: result[i].BusStopDesc.RoadName,
-                    Description: result[i].BusStopDesc.Description,
-                })
-            }
-            res.send(data)
-        })
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                ServiceNo: result[i].ServiceNo,
+                Direction: result[i].Direction,
+                Distance: parseFloat(result[i].Route.Distance),
+                BusStopCode: result[i].Route.BusStopCode,
+                StopSequence: result[i].Route.StopSequence,
+                RoadName: result[i].BusStopDesc.RoadName,
+                Description: result[i].BusStopDesc.Description,
+                SATFirstBus: parseInt(result[i].Route.SAT_FirstBus),
+                SATLastBus: parseInt(result[i].Route.SAT_LastBus),
+                SUNFirstBus: parseInt(result[i].Route.SUN_FirstBus),
+                SUNLastBus: parseInt(result[i].Route.SUN_LastBus),
+                WDFirstBus: parseInt(result[i].Route.WD_FirstBus),
+                WDLastBus: parseInt(result[i].Route.WD_LastBus),
+                Latitude: result[i].BusStopDesc.Latitude,
+                Longitude: result[i].BusStopDesc.Longitude,
+            })
+        }
+        res.send(data)
     })
 }
 
@@ -350,51 +361,53 @@ const getBusInterchange = (res) => {
 }
 
 // Delete Taxi Stand
-const deleteTaxiStand = (code,res) => {
+const deleteTaxiStand = (code, res) => {
     const dbo = connection.db("ICT2103")
-        let bus_directory = dbo.collection("locations")
+    let bus_directory = dbo.collection("locations")
 
-        var query = { TaxiCode : code }
-        bus_directory.deleteOne(query)
-        if (err) {
-            res.send(`Cannot delete Taxi Stand ${code}`)
-        }
+    var query = { TaxiCode: code }
+    bus_directory.deleteOne(query)
+    if (err) {
+        res.send(`Cannot delete Taxi Stand ${code}`)
+    }
 
-        else
-            res.send(`Successfully deleted Taxi Stand ${code} `)
+    else
+        res.send(`Successfully deleted Taxi Stand ${code} `)
 }
 
 // Delete Mrt Station
-const deleteMRTStation = (name,res) => {
+const deleteMRTStation = (name, res) => {
     const dbo = connection.db("ICT2103")
-        let bus_directory = dbo.collection("locations")
+    let bus_directory = dbo.collection("locations")
 
-        var query = { MRTStation : name }
-        bus_directory.deleteOne(query)
-        if (err) {
-            res.send(`Cannot delete MRT Station ${name}`)
-        }
-        else
-            res.send(`Successfully deleted MRT Station ${name}`)
+    var query = { MRTStation: name }
+    bus_directory.deleteOne(query)
+    if (err) {
+        res.send(`Cannot delete MRT Station ${name}`)
+    }
+    else
+        res.send(`Successfully deleted MRT Station ${name}`)
 }
 
 // Delete Bus Route while also Updating Sequences for all affected Bus Routes
 const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
-        const dbo = connection.db("ICT2103")
-        let bus_directory = dbo.collection("bus_directory")
+    const dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
 
-        var query = { "Route.BusStopCode" : busStopCode }
-        bus_directory.deleteOne(query)
-        for (let i = 0; i < routes.length; i++) {
-            var filter = { ServiceNo : routes[i].ServiceNo, Direction : routes[i].Direction, 
-                            "Route.StopSequence" : {$gt : routes[i].StopSequence}}
-            var newValues = {$inc : {"Route.$.StopSequence":-1}} 
-            bus_directory.updateMany(filter,newValues)
+    var query = { "Route.BusStopCode": busStopCode }
+    bus_directory.deleteOne(query)
+    for (let i = 0; i < routes.length; i++) {
+        var filter = {
+            ServiceNo: routes[i].ServiceNo, Direction: routes[i].Direction,
+            "Route.StopSequence": { $gt: routes[i].StopSequence }
         }
-        if (err)
-            res.send("Could not delete bus route")
-        else
-            res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
+        var newValues = { $inc: { "Route.$.StopSequence": -1 } }
+        bus_directory.updateMany(filter, newValues)
+    }
+    if (err)
+        res.send("Could not delete bus route")
+    else
+        res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
 }
 
 module.exports = {
