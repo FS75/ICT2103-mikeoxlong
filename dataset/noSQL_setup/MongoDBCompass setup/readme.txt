@@ -23,4 +23,15 @@ Located at: \2103\ICT2103-mikeoxlong\dataset\noSQL_setup\MongoDBCompass setup\no
 1. bus_directory -> import bus_directory.json from noSQLDB folder
 2. locations -> import locations.json from noSQLDB folder
 
+Add indexes to speed up search when selecting certain field
+Open MONGOSH in MongoDBCompass and insert the following:
+
+To use MongoSH, please enter
+use ICT2103 -> this will switch the database used
+
+db.bus_directory.createIndex( { ServiceNo:1 } )
+db.bus_directory.createIndex( { "Route.BusStopCode":1 } )
+db.locations.createIndex( { BusStopCode:1 } )
+db.locations.createIndex( { Description:1 } )
+
 Set up is all done can proceed to perform queries

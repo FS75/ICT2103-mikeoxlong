@@ -1,0 +1,7 @@
+Indexes will help speed up the search when selecting certain field
+
+
+db.bus_directory.createIndex( { ServiceNo:1 } )
+db.bus_directory.createIndex( { "Route.BusStopCode":1 } )
+db.locations.createIndex( { BusStopCode:1 } )
+db.locations.createIndex( { Description:1 } )
