@@ -35,7 +35,7 @@ ON query1_table.BusStopCode =  query2_table.BusStopCode AND
 query1_table.ServiceNo =  query2_table.ServiceNo AND
 query1_table.Direction =  query2_table.Direction AND
 query1_table.StopSequence =  query2_table.StopSequence
-/*---LEFT OUTER JOIN CONDITION---*/
+/*---EXCEPT CONDITION---*/
 WHERE query2_table.ServiceNo IS NULL
 /*---This is to filter out bus stop that is not a origin ---*/
 AND query1_table.BusStopCode IN
