@@ -16,38 +16,74 @@ const connection = new MongoClient(URL)
 
 // Get All Bus Services
 const getBusServices = (res) => {
-    MongoClient.connect(URL, function (err, db) {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+
+    bus_directory.distinct('ServiceNo',function (err, result) {
         if (err) throw err
-
-        dbo = db.db("ICT2103")
-        let bus_directory = dbo.collection("bus_directory")
-
-        var query = { ServiceNo: { $exists: true }, Direction: 1 }
-        bus_directory.find(query).toArray(function (err, result) {
-            if (err) throw err
-
-            res.send(result)
-        })
+        res.send(result)
     })
 }
 
-//Get All Taxi Stands
-const getTaxiStands = (res) => {
-    MongoClient.connect(URL, function (err, db) {
+// Get All Bus Services No.
+const getBusServicesNo = (res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const match = { ServiceNo:{$exists:true} }
+    const project = { _id: 0, ServiceNo: 1}
+    bus_directory.find(match,project).toArray(function (err, result) {
         if (err) throw err
 
-        const dbo = connection.db("ICT2103")
-        let locations = dbo.collection("locations")
-
-        var query = { TaxiCode: { $exists: true } }
-        locations.find(query).toArray(function (err, result) {
-            if (err) throw err
-
-            res.send(result)
-        })
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                ServiceNo: result[i].ServiceNo,
+            })
+        }
+        res.send(data)
     })
 }
 
+// Get All Bus Stop names in one direction
+const getBusStopNameInOneDirection = (busService, res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const pipeline = [
+        {
+            '$match': {
+                'ServiceNo': busService
+            }
+        },{
+            '$lookup': {
+                'from': 'locations',
+                'localField': 'DestinationCode',
+                'foreignField': 'BusStopCode',
+                'as': 'Destination'
+            }
+        }, {
+            '$unwind': {
+                'path': '$Destination'
+            }
+        }, {
+            '$project': {
+                _id: 0,
+                'Destination.Description': 1
+                //'Destination':{$first:'$Destination.Description'} Another way without unwind
+            }
+        }
+    ]
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                Description: result[i].Destination.Description,
+            })
+        }
+        res.send(data)
+    })
+}
 // Get Bus Stops of Bus Service
 const getBusStopsOfServiceNo = (busService, res) => {
     dbo = connection.db("ICT2103")
@@ -71,6 +107,10 @@ const getBusStopsOfServiceNo = (busService, res) => {
         }, {
             '$unwind': {
                 'path': '$BusStopDesc'
+            }
+        },{
+            '$match': {
+                'BusStopDesc.MRTStation': {$exists:false}
             }
         }, {
             '$project': {
@@ -123,6 +163,516 @@ const getBusStopsOfServiceNo = (busService, res) => {
     })
 }
 
+//Get All Taxi Stands
+const getTaxiStands = (res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+        
+    var query = { TaxiCode: { $exists: true } }
+    locations.find(query).toArray(function (err, result) {
+        if (err) throw err
+        res.send(result)
+    })
+}
+
+// Get Location of Taxi Stand with inputted Name
+const getTaxiStandLocationFromName = (name, res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const match = { Name: name }
+    const project = { _id: 0, Latitude: 1, Longitude: 1}
+    locations.find(match,project).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                Latitude: parseFloat(result[i].Latitude),
+                Longitude: parseFloat(result[i].Longitude),
+            })
+        }
+        res.send(data)
+    })
+}
+
+// Get BFA of Taxi Stand with inputted Name 
+//        **Only problem with output**
+const getTaxiStandBFAFromName = (name, res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const match = { Name: name }
+    const project = { _id: 0, Bfa: 1}
+    locations.find(match,project).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                Bfa: result[i].Bfa
+            })
+        }
+        res.send(data)
+    })
+}
+
+// Get all MRT Station Codes
+const getMRTStnCodes = (res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const pipeline = [
+        {
+            '$match': {
+                $and: [
+                    {StnCode:{$exists:true}},
+                    {TaxiCode:{$exists:false}}
+                ]
+            }
+        },{
+            '$project': {
+                _id: 0,
+                StnCode: 1,
+            }
+        }
+    ]
+    locations.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                StnCode: result[i].StnCode,
+            })
+        }
+        res.send(data)
+    })
+}
+
+// Get all MRT Stations
+const getMRTStationName = (res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const pipeline = [
+        {
+            '$match': {
+                $and: [
+                    {StnCode:{$exists:true}},
+                    {MRTStation:{$exists:true}}
+                ]
+            }
+        }, {
+            '$project': {
+                _id: 0,
+                StnCode: 1,
+                MRTStation: 1,
+            }
+        }
+    ]
+    locations.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                StnCode: result[i].StnCode,
+                MRTStation: result[i].MRTStation,
+            })
+        }
+        res.send(data)
+    })  
+}
+
+// Get all MRT Lines
+const getMRTLines = (res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const pipeline = [
+        {
+            '$group': {
+                _id: null,
+                MRTLine: {$addToSet: '$MRTLine'}
+            }
+        },{
+            '$unwind':{
+                'path': '$MRTLine'
+            }
+        },{
+            '$project':{
+                _id: 0,
+                MRTLine: 1
+            }
+        }
+    ]
+    locations.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                MRTLine: result[i].MRTLine,
+            })
+        }
+        res.send(data)
+    })
+}
+
+// Get all MRT Stations from MRT Line
+const getMRTStationsFromLine = (mrtLine, res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const match = { MRTLine: mrtLine }
+    const project = { _id: 0, StnCode: 1, MRTStation: 1}
+    locations.find(match,project).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                StnCode: result[i].StnCode,
+                MRTStation: result[i].MRTStation,
+            })
+        }
+        res.send(data)
+    })  
+}
+//SKIPPPPPP
+//Get MRT Station Name from Bus Service No.
+const getMRTStationNameFromServiceNo = (busService, res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const query = `SELECT DISTINCT mrt.MRTStation
+        FROM MRT_Station mrt
+        LEFT JOIN bus_route br ON mrt.busStopCode = br.busStopCode
+        WHERE ServiceNo = '${busService}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+    
+        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
+        res.send(rawData)
+    })  
+}
+
+// Get Location from MRT Station
+const getLocationFromMRTStation = (station, res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const match = { MRTStation: station }
+    const project = { _id: 0, Latitude: 1, Longitude: 1}
+    locations.find(match,project).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                Latitude: result[i].Latitude,
+                Longitude: result[i].Longitude,
+            })
+        }
+        res.send(data)
+    })
+}
+//SKIPPPPP
+// Get Taxi Stand Location from Bus Service No.
+const getTaxiStandLocationFromServiceNo = (busService, res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const pipeline = [
+        {
+            '$match': {
+                'ServiceNo': busService
+            }
+        }, {
+            '$unwind': {
+                'path': '$Route'
+            }
+        }, {
+            '$lookup': {
+                'from': 'locations', 
+                'localField': 'Route.BusStopCode', 
+                'foreignField': 'BusStopCode', 
+                'as': 'MRTWithBus'
+            }
+        }, {
+            '$unwind': {
+                'path': '$MRTWithBus'
+            }
+        }, {
+            '$match': {
+                'MRTWithBus.StnCode': {'$exists': true}, 
+                'Direction': 1
+            }
+        }, {
+            '$lookup': {
+                'from': 'locations', 
+                'localField': 'MRTWithBus.StnCode', 
+                'foreignField': 'StnCode', 
+                'as': 'TaxiNearBus'
+            }
+        }, {
+            '$unwind': {
+                'path': '$TaxiNearBus'
+            }
+        }, {
+            '$match': {
+                'TaxiNearBus.TaxiCode': {'$exists': true}
+            }
+        }, {
+            '$project': {
+                '_id': 0, 
+                'TaxiNearBus.Latitude': 1, 
+                'TaxiNearBus.Longitude': 1
+            }
+        }
+    ]
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                Latitude: parseFloat(result[i].TaxiNearBus.Latitude),
+                Longitude: parseFloat(result[i].TaxiNearBus.Longitude),
+            })
+        }
+        res.send(data)
+    })  
+}
+
+// Get Taxi Stand Location from MRT Station
+const getTaxiStandLocationFromMRTStation = (station, res) => {
+    const dbo = connection.db("ICT2103")
+    let locations = dbo.collection("locations")
+    const pipeline = [
+        {
+            '$match': {
+                'MRTStation': station
+            }
+        }, {
+            '$lookup': {
+                'from': 'locations', 
+                'localField': 'StnCode', 
+                'foreignField': 'StnCode', 
+                'as': 'TaxiLocation'
+            }
+        }, {
+            '$unwind': {
+                'path': '$TaxiLocation'
+            }
+        }, {
+            '$match': {
+                'TaxiLocation.TaxiCode': {
+                    '$exists': true
+                }
+            }
+        }, {
+            '$project': {
+                '_id': 0, 
+                'TaxiLocation.Latitude': 1, 
+                'TaxiLocation.Longitude': 1
+            }
+        }
+    ]
+    locations.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                latitude: parseFloat(result[i].TaxiLocation.Latitude),
+                longitude: parseFloat(result[i].TaxiLocation.Longitude),
+            })
+        }
+        res.send(data)
+    })  
+}
+
+// Get all Bus Routes from Bus Stop Code
+const getRoutesOfBusStopCode = (busStopCode, res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const pipeline = [
+        {
+            '$match': {
+                'Route.BusStopCode': busStopCode
+            }
+        }, {
+            '$unwind': {
+                'path': '$Route'
+            }
+        }, {
+            '$project': {
+                _id: 0,
+                ServiceNo: 1,
+                Direction: 1,
+                "Route.BusStopCode": 1,
+                "Route.StopSequence": 1,
+                "Route.Distance": 1,
+                "Route.SAT_FirstBus": 1,
+                "Route.SAT_LastBus": 1,
+                "Route.SUN_FirstBus": 1,
+                "Route.SUN_LastBus": 1,
+                "Route.WD_LastBus": 1,
+                "Route.WD_FirstBus": 1,
+            }
+        }
+    ]
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                ServiceNo: result[i].ServiceNo,
+                Direction: result[i].Direction,
+                Distance: parseFloat(result[i].Route.Distance),
+                BusStopCode: result[i].Route.BusStopCode,
+                StopSequence: result[i].Route.StopSequence,
+                SATFirstBus: parseInt(result[i].Route.SAT_FirstBus),
+                SATLastBus: parseInt(result[i].Route.SAT_LastBus),
+                SUNFirstBus: parseInt(result[i].Route.SUN_FirstBus),
+                SUNLastBus: parseInt(result[i].Route.SUN_LastBus),
+                WDFirstBus: parseInt(result[i].Route.WD_FirstBus),
+                WDLastBus: parseInt(result[i].Route.WD_LastBus),
+            })
+        }
+        res.send(data)
+    })
+}
+
+// Get All Bus Interchange details
+const getBusInterchange = (res) => {
+    const dbo = connection.db("ICT2103")
+    let businterchange_services = dbo.collection("businterchange_services")
+    businterchange_services.find().toArray(function (err, result) {
+        if (err) throw err
+        res.send(result)
+    })
+}
+//NEED NEW VIEW
+// Get All Bus Services ran by Bus Interchange
+const getServicesFromBusInterchange = (busstopcode, res) => {
+    var data = []
+    const query = ` select distinct serviceno 
+    from businterchange_busservices 
+    where busstopcode='${busstopcode}'; `
+    connection.query(query, (err, rows, fields) => {
+        if (err) throw err
+
+        data = JSON.parse(JSON.stringify(rows));
+        res.send(data)
+    })
+}
+
+// Get Bus Service with most stops in 1 direction
+const getServiceWithMostStops = (res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const pipeline = [
+        {
+            '$unwind': {
+                'path': '$Route'
+            }
+        }, {
+            '$sort': {
+                'id': 1, 
+                'Route.StopSequence': -1
+            }
+        }, {
+            '$group': {
+                '_id': '$id', 
+                'maxval': {
+                    '$first': '$$ROOT'
+                }
+            }
+        }, {
+            '$replaceWith': {
+                'max': '$maxval'
+            }
+        }, {
+            '$sort': {
+                'id': 1, 
+                'max.Route.StopSequence': -1
+            }
+        }, {
+            '$limit': 1
+        }, {
+            '$project': {
+                _id: 0, 
+                'max.ServiceNo': 1, 
+                'max.Route.StopSequence': 1, 
+                'max.Route.Distance': 1
+            }
+        }
+    ]
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                serviceno: result[i].max.ServiceNo,
+                stopsequence: result[i].max.Route.StopSequence,
+                distance: result[i].max.Route.Distance,
+            })
+        }
+        res.send(data)
+    })  
+}
+
+// Get Bus Service with highest distance in 1 direction
+const getServiceWithHighestDistance = (res) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const pipeline = [
+        {
+            '$unwind': {
+                'path': '$Route'
+            }
+        }, {
+            '$sort': {
+                'id': 1, 
+                'Route.Distance': -1
+            }
+        }, {
+            '$group': {
+                '_id': '$id', 
+                'maxval': {
+                    '$first': '$$ROOT'
+                }
+            }
+        }, {
+            '$replaceWith': {
+                'max': '$maxval'
+            }
+        }, {
+            '$sort': {
+                'id': 1, 
+                'max.Route.Distance': -1
+            }
+        }, {
+            '$limit': 1
+        }, {
+            '$project': {
+                _id: 0, 
+                'max.ServiceNo': 1, 
+                'max.Route.StopSequence': 1, 
+                'max.Route.Distance': 1
+            }
+        }
+    ]
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
+        if (err) throw err
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                serviceno: result[i].max.ServiceNo,
+                stopsequence: result[i].max.Route.StopSequence,
+                distance: result[i].max.Route.Distance,
+            })
+        }
+        res.send(data)
+    })  
+}
+
+// Update Bus Service Details
 const updateBusService = (topicValue, selectedServiceNo, updateValue, res) => {
     const dbo = connection.db("ICT2103")
     let bus_directory = dbo.collection("bus_directory")
@@ -160,18 +710,16 @@ const updateTaxiBFA = (code, bfa, res) => {
 const createBusService = (busService, operator, category, res) => {
     dbo = connection.db("ICT2103")
     let bus_directory = dbo.collection("bus_directory")
-
     // create a document to insert
     const doc = {
-        ServiceNo: busService,
+        ServiceNo: busService.trim(),
         Operator: operator,
         Category: category
     }
 
     bus_directory.insertOne(doc)
 
-    res.send(`Successfully created Bus Service with service number ${busService}, 
-        operator ${operator}, category ${category}`)
+    res.send(`Successfully created Bus Service with service number ${busService}, operator ${operator}, category ${category}`)
 }
 
 // Create bus stop
@@ -350,16 +898,6 @@ const checkBusStopCode = (busStopCode, res) => {
     })
 }
 
-// Get All Bus Interchange details
-const getBusInterchange = (res) => {
-    const dbo = connection.db("ICT2103")
-    let businterchange_services = dbo.collection("businterchange_services")
-    businterchange_services.find().toArray(function (err, result) {
-        if (err) throw err
-        res.send(result)
-    })
-}
-
 // Delete Taxi Stand
 const deleteTaxiStand = (code, res) => {
     const dbo = connection.db("ICT2103")
@@ -367,11 +905,6 @@ const deleteTaxiStand = (code, res) => {
 
     var query = { TaxiCode: code }
     bus_directory.deleteOne(query)
-    if (err) {
-        res.send(`Cannot delete Taxi Stand ${code}`)
-    }
-
-    else
         res.send(`Successfully deleted Taxi Stand ${code} `)
 }
 
@@ -382,10 +915,6 @@ const deleteMRTStation = (name, res) => {
 
     var query = { MRTStation: name }
     bus_directory.deleteOne(query)
-    if (err) {
-        res.send(`Cannot delete MRT Station ${name}`)
-    }
-    else
         res.send(`Successfully deleted MRT Station ${name}`)
 }
 
@@ -404,14 +933,14 @@ const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
         var newValues = { $inc: { "Route.$.StopSequence": -1 } }
         bus_directory.updateMany(filter, newValues)
     }
-    if (err)
-        res.send("Could not delete bus route")
-    else
         res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
 }
 
 module.exports = {
-    connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop,
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, getTaxiStands,
-    updateTaxiBFA, getBusInterchange, deleteTaxiStand, deleteMRTStation, deleteBusRouteAndUpdateSequences
+    connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getTaxiStands, 
+    getTaxiStandLocationFromName, getTaxiStandBFAFromName, getMRTStnCodes, getMRTStationName, getMRTLines, getMRTStationsFromLine,
+    getLocationFromMRTStation, getTaxiStandLocationFromServiceNo, getTaxiStandLocationFromMRTStation, getRoutesOfBusStopCode, getBusInterchange,
+    getServiceWithMostStops, getServiceWithHighestDistance, updateBusService, updateTaxiBFA, createBusService, createBusStop,
+    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
+    deleteTaxiStand, deleteMRTStation, deleteBusRouteAndUpdateSequences
 }

@@ -35600,7 +35600,7 @@
     "StnCode": "CC13",
     "MRTStation": "Serangoon",
     "MRTLine": "Circle Line",
-    "BusStopCode": 66009,
+    "BusStopCode": "66009",
     "Latitude": 1.3498999999999999,
     "Longitude": 103.8731
   },
@@ -36300,7 +36300,7 @@
     "StnCode": "NE12",
     "MRTStation": "Serangoon",
     "MRTLine": "North East Line",
-    "BusStopCode": 66009,
+    "BusStopCode": "66009",
     "Latitude": 1.3498999999999999,
     "Longitude": 103.8731
   },

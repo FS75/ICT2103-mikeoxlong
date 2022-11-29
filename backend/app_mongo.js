@@ -6,10 +6,12 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 
-let { connection, getBusServices, getBusStopsOfServiceNo, updateBusService, createBusService, createBusStop, 
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
-    getTaxiStands, updateTaxiBFA, getBusInterchange, deleteBusRouteAndUpdateSequences, deleteTaxiStand,
-    deleteMRTStation } = require("./database_mongo");
+let { connection, createBusService, createBusStop, createMRTStation, createTaxiStand, getBusServices, getBusServicesNo,
+    getBusStopsOfServiceNo, getBusStopNameInOneDirection, getTaxiStands, getTaxiStandLocationFromName, getTaxiStandBFAFromName, 
+    getMRTStnCodes, getMRTStationName, getMRTLines, getMRTStationsFromLine, getLocationFromMRTStation, getTaxiStandLocationFromServiceNo,
+    getTaxiStandLocationFromMRTStation, getRoutesOfBusStopCode, getBusInterchange, getServiceWithMostStops, getServiceWithHighestDistance,
+    checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
+    updateBusService, updateTaxiBFA, deleteBusRouteAndUpdateSequences, deleteTaxiStand, deleteMRTStation } = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -38,35 +40,6 @@ app.listen(PORT, (error) =>{
 //     const { busService, operator, category } = req.query
 //     createBusService(busService, operator, category, res)
 // })
-
-app.get('/api/bus-services', (req, res) => {
-    getBusServices(res)
-})
-
-/*  
-    GET: All bus stops of a bus service
-    Params: Bus Service No.
-    Eg: [api/bus-stops?busService=10]
-*/
-app.get('/api/bus-stops', (req, res) => {
-    const { busService } = req.query
-    getBusStopsOfServiceNo(busService, res)
-})
-
-app.get('/api/taxi-stands', (req, res) => {
-    // const { busService } = req.query
-    getTaxiStands(res)
-})
-
-app.put('/api/bus-services/', (req, res) => {
-    // const { busService } = req.query
-    const newData = req.body
-    const topicValue = Object.values(newData)[0]
-    const selectedServiceNo = Object.values(newData)[1]
-    const updateValue = Object.values(newData)[2]
-
-    updateBusService(topicValue, selectedServiceNo, updateValue, res)
-})
 
 /* ---------- CREATE END POINTS ----------*/ 
 /*
@@ -99,6 +72,183 @@ app.post('/api/mrt-station', (req, res) => {
 app.post('/api/taxi-stand', (req, res) => {
     const { taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType } = req.query
     createTaxiStand(taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType, res)
+})
+
+/* ---------- READ END POINTS ----------*/ 
+
+/*
+    GET: All bus service details
+*/
+app.get('/api/bus-services', (req, res) => {
+    getBusServices(res)
+})
+
+/*  
+    GET: All bus service numbers 
+*/
+app.get('/api/bus-services-no', (req, res) => {
+    getBusServicesNo(res)
+})
+
+/*  
+    GET: Direction of bus service
+    Params: Bus Service No.
+    Eg: [api/bus-direction?busService=10]
+*/
+app.get('/api/bus-direction', (req, res) => {
+    const { busService } = req.query
+    getBusStopNameInOneDirection(busService, res)
+})
+
+/*  
+    GET: All bus stops of a bus service
+    Params: Bus Service No.
+    Eg: [api/bus-stops?busService=10]
+*/
+app.get('/api/bus-stops', (req, res) => {
+    const { busService } = req.query
+    getBusStopsOfServiceNo(busService, res)
+})
+
+/*  
+    GET: All Taxi Stand Detail
+*/
+app.get('/api/taxi-stand', (req, res) => {
+    // const { busService } = req.query
+    getTaxiStands(res)
+})
+
+/*  
+    GET: Taxi Stand Location from Name
+    Params: Taxi Stand Name
+    Eg: [api/taxi-location-from-name?name=]
+*/
+app.get('/api/taxi-location-from-name', (req, res) => {
+    const { name } = req.query
+    getTaxiStandLocationFromName(name, res)
+})
+
+/*  
+    Need Rework either frontend input or backend output
+    GET: Taxi Stand BFA from Name
+    Params: Taxi Stand Name
+    Eg: [api/taxi-bfa-from-name?name=]
+*/
+app.get('/api/taxi-bfa-from-name', (req, res) => {
+    const { name } = req.query
+    getTaxiStandBFAFromName(name, res)
+})
+
+/*  
+    GET: All MRT Station Codes
+*/
+app.get('/api/MRTStnCodes', (req, res) => {
+    getMRTStnCodes(res)
+})
+
+/*  
+    GET: All MRT Station Names
+*/
+app.get('/api/MRTStation', (req, res) => {
+    getMRTStationName(res)
+})
+
+/*  
+    GET: All MRT Lines
+*/
+app.get('/api/MRTLines', (req, res) => {
+    getMRTLines(res)
+})
+
+/*  
+    GET: All MRT Stations from MRT Line inputted
+    Params: MRT Line
+    Eg: [api/MRTStation-Line?mrtLine=Circle%20Line]
+*/
+app.get('/api/MRTStation-Line', (req, res) => {
+    const { mrtLine } = req.query
+    getMRTStationsFromLine(mrtLine, res)
+})
+
+/*  NOT DONE Not used
+    GET: MRT Station Name from Bus Service No inputted
+    Params: Bus Service No
+    Eg: [api/MRTStation-ServiceNo?serviceNo=10]
+*/
+app.get('/api/MRTStation-ServiceNo', (req, res) => {
+    const { busService } = req.query
+    getMRTStationNameFromServiceNo(busService, res)
+})
+
+/*  
+    GET: Location from MRT Station inputted
+    Params: MRT Station
+    Eg: [api/Location-MRTStation?station=Tampines]
+*/
+app.get('/api/Location-MRTStation', (req, res) => {
+    const { station } = req.query
+    getLocationFromMRTStation(station, res)
+})
+
+/*  
+    GET: Taxi Stand from Bus Service inputted
+    Params: Bus Service No.
+    Eg: [api/Location-MRTStation?busService=10]
+*/
+app.get('/api/TaxiStand-ServiceNo', (req, res) => {
+    const { busService } = req.query
+    getTaxiStandLocationFromServiceNo(busService, res)
+})
+
+/*  
+    GET: Taxi Stand Location from MRT Station inputted
+    Params: MRT Station
+    Eg: [api/TaxiStand-MRTStation?station=Tampines]
+*/
+app.get('/api/TaxiStand-MRTStation', (req, res) => {
+    const { station } = req.query
+    getTaxiStandLocationFromMRTStation(station, res)
+})
+
+/*  
+    GET: All routes of bus services from a bus stop code
+    Params: Bus Service No.
+    Eg: [api/bus-stops?busService=10]
+*/
+app.get('/api/bus-routes', (req, res) => {
+    const { busStopCode } = req.query
+    getRoutesOfBusStopCode(busStopCode, res)
+})
+
+/*  
+    GET: All Bus Interchange Details
+*/
+app.get('/api/bus-interchange', (req, res) => {
+    getBusInterchange(res)
+})
+
+/*  NOT DONE Need View
+    GET: All Bus Service from Bus Interchange inputted
+    Params: Bus Interchange
+    Eg: [api/bus-interchange-services?interchange=Sengkang Int]
+*/
+app.get('/api/bus-interchange-services', (req, res) => {
+    const { interchange } = req.query
+    getServicesFromBusInterchange(interchange, res)
+})
+
+/*  
+    GET: Bus Service with most no. of bus stops in 1 direction
+*/
+app.get('/api/bus-service-most-stops', (req, res) => {
+    getServiceWithMostStops(res)
+})
+
+/*  
+    GET: Bus Service with highest distance in 1 direction
+*/
+app.get('/api/bus-service-highest-distance', (req, res) => {
+    getServiceWithHighestDistance(res)
 })
 
 /*  
@@ -141,13 +291,7 @@ app.get('/api/check-taxi-stand', (req, res) => {
     checkTaxiStandCode(taxiStandCode, res)
 })
 
-/*  
-    GET: All Bus Interchange Details
-*/
-app.get('/api/bus-interchange', (req, res) => {
-    getBusInterchange(res)
-})
-
+/* ---------- UPDATE END POINTS ----------*/ 
 /*  
     PUT: Update operator/category
     Body: JSON of topic, service number, operator/category
@@ -167,6 +311,7 @@ app.put('/api/taxi-stand-bfa/', (req, res) => {
     const { code, bfa } = req.query
     updateTaxiBFA(code, bfa, res)
 })
+
 
 /* ---------- DELETE END POINTS ----------*/ 
 /* 

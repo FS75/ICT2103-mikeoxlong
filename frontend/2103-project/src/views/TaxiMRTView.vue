@@ -182,7 +182,7 @@ export default {
             // query for bfa based on name
             const res2 = await axios.get(store.BACKEND_API_URL + `taxi-bfa-from-name?name=${replacedName}`).then(
                 res2 => {
-                    if ((Object.values(res2.data[0])[0].data[0]) == 1)
+                    if ((Object.values(res2.data[0])[0]) == 1 || (Object.values(res2.data[0])[0].data[0]) == 1)
                         this.bfa = "Yes"
                     else
                         this.bfa = "No"
