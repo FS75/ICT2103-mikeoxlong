@@ -13,12 +13,13 @@
 ![image](https://user-images.githubusercontent.com/93301912/204802911-1227507a-2525-422f-a4f4-9b9babf33690.png)
 
 ## PRE-REQUISITE MongoDB
-### Version 1: MongoDB Compass
+### Version 1: MongoDB Compass (Recommended)
 ### STEP 1: Open CMD to connect to dbpath (dbpath -> where is saved on ur local computer)
 e.g mongod --dbpath=C:\mongodb-win32-x86_64-windows-5.0.13\bin\data\db
 ### STEP 2: Create database -> dbname: ICT2103, collection name: bus_directory
 ### STEP 3: Add another collection name: locations
-### STEP 4: Insert collection data using json files located in ICT2103-mikeoxlong\dataset\noSQL_setup\MongoDBCompass setup\noSQLDB
+### STEP 4: Insert collection data using json files 
+located in ICT2103-mikeoxlong\dataset\noSQL_setup\MongoDBCompass setup\noSQLDB
 ### STEP 4.1:Insert bus_directory.json into bus_directory collection
 ### STEP 4.2: Insert locations.json into locations collection
 ### STEP 5: Create Indexes using mongosh provided in mongoDB Compass (rmb to "use ICT2103" <- DB name)
@@ -47,11 +48,11 @@ Copy and paste each txt file into mongosh:
 a. insert_bus_stops.txt
 b. insert_MRT.txt
 c. insert_Taxi.txt
-### STEP 7: Create indexes
+### STEP 7: Create indexes (refresh compass)
 Copy and paste create_indexes.txt
 Required files for this section is located here:
 ![image](https://user-images.githubusercontent.com/90229655/204810759-cc617edd-d7f8-4077-b52b-359cd49c0564.png)
-### STEP 8: Create views in this sequence View1 -> View 2
+### STEP 8: Create views in this sequence View1 -> View 2 (refresh compass)
 Copy and paste View1.txt in mongosh -> Copy and paste View2.txt in mongosh
 
 -- Set Up Complete--
