@@ -333,20 +333,64 @@ const getMRTStationsFromLine = (mrtLine, res) => {
         res.send(data)
     })  
 }
-//SKIPPPPPP
 //Get MRT Station Name from Bus Service No.
 const getMRTStationNameFromServiceNo = (busService, res) => {
-    const dbo = connection.db("ICT2103")
-    let locations = dbo.collection("locations")
-    const query = `SELECT DISTINCT mrt.MRTStation
-        FROM MRT_Station mrt
-        LEFT JOIN bus_route br ON mrt.busStopCode = br.busStopCode
-        WHERE ServiceNo = '${busService}'; `
-    connection.query(query, (err, rows, fields) => {
+    dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    const pipeline = [
+        {
+            '$match': {
+                'ServiceNo': '172'
+            }
+        }, {
+            '$unwind': {
+                'path': '$Route'
+            }
+        }, {
+            '$lookup': {
+                'from': 'locations', 
+                'localField': 'Route.BusStopCode', 
+                'foreignField': 'BusStopCode', 
+                'as': 'result'
+            }
+        }, {
+            '$unwind': {
+                'path': '$result'
+            }
+        }, {
+            '$match': {
+                'result.MRTStation': {
+                    '$exists': true
+                }
+            }
+        }, {
+            '$group': {
+                '_id': null, 
+                'MrtStation': {
+                    '$addToSet': '$result.MRTStation'
+                }
+            }
+        }, {
+            '$unwind': {
+                'path': '$MrtStation'
+            }
+        }, {
+            '$project': {
+                '_id': 0, 
+                'MrtStation': 1
+            }
+        }
+    ]
+    bus_directory.aggregate(pipeline).toArray(function (err, result) {
         if (err) throw err
-    
-        rawData = JSON.parse(JSON.stringify(Object.values(rows)));
-        res.send(rawData)
+
+        var data = []
+        for (let i = 0; i < result.length; i++) {
+            data.push({
+                MRTStation: result[i].MRTStation,
+            })
+        }
+        res.send(data)
     })  
 }
 
@@ -369,7 +413,6 @@ const getLocationFromMRTStation = (station, res) => {
         res.send(data)
     })
 }
-//SKIPPPPP
 // Get Taxi Stand Location from Bus Service No.
 const getTaxiStandLocationFromServiceNo = (busService, res) => {
     dbo = connection.db("ICT2103")
@@ -545,18 +588,21 @@ const getBusInterchange = (res) => {
         res.send(result)
     })
 }
-//NEED NEW VIEW
 // Get All Bus Services ran by Bus Interchange
 const getServicesFromBusInterchange = (busstopcode, res) => {
-    var data = []
-    const query = ` select distinct serviceno 
-    from businterchange_busservices 
-    where busstopcode='${busstopcode}'; `
-    connection.query(query, (err, rows, fields) => {
-        if (err) throw err
+    const dbo = connection.db("ICT2103")
+    let businterchange_busservices = dbo.collection("businterchange_busservices")
 
-        data = JSON.parse(JSON.stringify(rows));
-        res.send(data)
+    businterchange_busservices.distinct('Buses.ServiceNo',{BusStopCode: busstopcode}).then((ans) => {
+        var data = []
+        for (let i = 0; i < ans.length; i++) {
+            data.push({
+                ServiceNo: ans[i]
+            })
+        }
+        res.send(data);
+    }).catch((err) => {
+        console.log(err.Message);
     })
 }
 
@@ -941,9 +987,9 @@ const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
 
 module.exports = {
     connection, getBusServices, getBusServicesNo, getBusStopNameInOneDirection, getBusStopsOfServiceNo, getTaxiStands, 
-    getTaxiStandLocationFromName, getTaxiStandBFAFromName, getMRTStnCodes, getMRTStationName, getMRTLines, getMRTStationsFromLine,
-    getLocationFromMRTStation, getTaxiStandLocationFromServiceNo, getTaxiStandLocationFromMRTStation, getRoutesOfBusStopCode, getBusInterchange,
-    getServiceWithMostStops, getServiceWithHighestDistance, updateBusService, updateTaxiBFA, createBusService, createBusStop,
-    createMRTStation, createTaxiStand, checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
-    deleteTaxiStand, deleteMRTStation, deleteBusRouteAndUpdateSequences
+    getTaxiStandLocationFromName, getTaxiStandBFAFromName, getMRTStnCodes, getMRTStationName, getMRTLines, getMRTStationsFromLine, 
+    getMRTStationNameFromServiceNo, getLocationFromMRTStation, getTaxiStandLocationFromServiceNo, getTaxiStandLocationFromMRTStation, 
+    getRoutesOfBusStopCode, getBusInterchange, getServicesFromBusInterchange, getServiceWithMostStops, getServiceWithHighestDistance, 
+    updateBusService, updateTaxiBFA, createBusService, createBusStop, createMRTStation, createTaxiStand, checkBusServiceNo, 
+    checkStnCode, checkTaxiStandCode, checkBusStopCode, deleteTaxiStand, deleteMRTStation, deleteBusRouteAndUpdateSequences
 }

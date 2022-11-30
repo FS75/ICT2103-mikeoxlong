@@ -8,10 +8,11 @@ const PORT = 3000;
 
 let { connection, createBusService, createBusStop, createMRTStation, createTaxiStand, getBusServices, getBusServicesNo,
     getBusStopsOfServiceNo, getBusStopNameInOneDirection, getTaxiStands, getTaxiStandLocationFromName, getTaxiStandBFAFromName, 
-    getMRTStnCodes, getMRTStationName, getMRTLines, getMRTStationsFromLine, getLocationFromMRTStation, getTaxiStandLocationFromServiceNo,
-    getTaxiStandLocationFromMRTStation, getRoutesOfBusStopCode, getBusInterchange, getServiceWithMostStops, getServiceWithHighestDistance,
-    checkBusServiceNo, checkStnCode, checkTaxiStandCode, checkBusStopCode, 
-    updateBusService, updateTaxiBFA, deleteBusRouteAndUpdateSequences, deleteTaxiStand, deleteMRTStation } = require("./database_mongo");
+    getMRTStnCodes, getMRTStationName, getMRTLines, getMRTStationsFromLine, getMRTStationNameFromServiceNo, getLocationFromMRTStation, 
+    getTaxiStandLocationFromServiceNo, getTaxiStandLocationFromMRTStation, getRoutesOfBusStopCode, getBusInterchange, 
+    getServicesFromBusInterchange, getServiceWithMostStops, getServiceWithHighestDistance, checkBusServiceNo, 
+    checkStnCode, checkTaxiStandCode, checkBusStopCode, updateBusService, updateTaxiBFA, 
+    deleteBusRouteAndUpdateSequences, deleteTaxiStand, deleteMRTStation } = require("./database_mongo");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -129,7 +130,6 @@ app.get('/api/taxi-location-from-name', (req, res) => {
 })
 
 /*  
-    Need Rework either frontend input or backend output
     GET: Taxi Stand BFA from Name
     Params: Taxi Stand Name
     Eg: [api/taxi-bfa-from-name?name=]
@@ -170,7 +170,7 @@ app.get('/api/MRTStation-Line', (req, res) => {
     getMRTStationsFromLine(mrtLine, res)
 })
 
-/*  NOT DONE Not used
+/*  
     GET: MRT Station Name from Bus Service No inputted
     Params: Bus Service No
     Eg: [api/MRTStation-ServiceNo?serviceNo=10]
@@ -227,7 +227,7 @@ app.get('/api/bus-interchange', (req, res) => {
     getBusInterchange(res)
 })
 
-/*  NOT DONE Need View
+/*  
     GET: All Bus Service from Bus Interchange inputted
     Params: Bus Interchange
     Eg: [api/bus-interchange-services?interchange=Sengkang Int]
