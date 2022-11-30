@@ -766,12 +766,15 @@ const createMRTStation = (stnCode, mrtStation, mrtLine, latitude, longitude, res
 const createTaxiStand = (taxiCode, description, latitude, longitude, bfa, taxiOwnership, taxiType, res) => {
     dbo = connection.db("ICT2103")
     let locations = dbo.collection("locations")
-
+    if (bfa == "TRUE")
+        bfa2 = "1"
+    else
+        bfa2 = "0"
     // create a document to insert
     const doc = {
         TaxiCode: taxiCode,
         Latitude: latitude,
-        Bfa: bfa,
+        Bfa: bfa2,
         Ownership: taxiOwnership,
         Type: taxiType,
         Name: description
