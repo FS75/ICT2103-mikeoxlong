@@ -4,8 +4,13 @@ A project for ICT 2103 done by Group mikeoxlong
 
 -----PRE-REQUISITE-----
 STEP 1: Ensure you have Node.js install https://nodejs.org/en/download/
-STEP 2: Open backend/database.js
-STEP 3: Edit "Your Own Connection Here" with your own DB connection
+
+-----PRE-REQUISITE SQL-----
+STEP 1: Open backend/database_sql.js
+STEP 2: Edit "Your Own Connection Here" with your own DB connection
+
+-----PRE-REQUISITE MongoDB-----
+
 
 -----FIRST TIME WINDOWS(IF DOESN'T WORK, TRY FIRST TIME MAC)-----
 STEP 1: Run setup.sh
