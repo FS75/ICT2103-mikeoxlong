@@ -36146,7 +36146,7 @@
     "StnCode": "EW23",
     "MRTStation": "Clementi",
     "MRTLine": "East-West Line",
-    "BusStopCode": 17009,
+    "BusStopCode": "17009",
     "Latitude": 1.3154,
     "Longitude": 103.7651
   },
