@@ -22,14 +22,17 @@ e.g mongod --dbpath=C:\mongodb-win32-x86_64-windows-5.0.13\bin\data\db
 located in ICT2103-mikeoxlong\dataset\noSQL_setup\MongoDBCompass setup\noSQLDB
 ### STEP 4.1: Insert bus_directory.json into bus_directory collection
 ### STEP 4.2: Insert locations.json into locations collection
-### STEP 5: Create Indexes using mongosh provided in mongoDB Compass (rmb to "use ICT2103" <- DB name)
-### STEP 5.1: insert the following command:
+### STEP 5: Click on mongosh (bottom row of MongoDB Compass)
+### STEP 5.1: Run "use ICT2103"
+### STEP 5.2: Run the following commands 1 by 1:
 #### db.bus_directory.createIndex( { ServiceNo:1 } )
 #### db.bus_directory.createIndex( { "Route.BusStopCode":1 } )
 #### db.locations.createIndex( { BusStopCode:1 } )
 #### db.locations.createIndex( { Description:1 } )
-### STEP 6: create views located in ICT2103-mikeoxlong\dataset\noSQL_setup
-### Create views in this sequence View1 -> View 2
+### STEP 6: Create views located in ICT2103-mikeoxlong\dataset\noSQL_setup
+### Copy paste the contents of View1.txt and run it in mongosh
+### Copy paste the contents of View2.txt and run it in mongosh
+### Do note that the sequence View1 -> View2 is crucial, do not run the commands in reverse order
 
 ## Version 2: Mongosh
 ### All required files for this section is located here:
@@ -54,7 +57,9 @@ located in ICT2103-mikeoxlong\dataset\noSQL_setup\MongoDBCompass setup\noSQLDB
 #### Required files for this section is located here:
 ![image](https://user-images.githubusercontent.com/90229655/204810759-cc617edd-d7f8-4077-b52b-359cd49c0564.png)
 ### STEP 8: Create views in this sequence View1 -> View 2 (refresh compass)
-#### Copy and paste View1.txt in mongosh -> Copy and paste View2.txt in mongosh
+### Copy paste the contents of View1.txt and run it in mongosh
+### Copy paste the contents of View2.txt and run it in mongosh
+### Do note that the sequence View1 -> View2 is crucial, do not run the commands in reverse order
 
 ## Setup Complete
 ### STEP 1: Ensure that cmd Mongo connection is on
