@@ -1,0 +1,60 @@
+/*
+Create View Table to showcase number of bus services that start at the interchange or terminal
+To see the view output on mongosh: db."Insert View Name".find()
+Views:
+last Stop Sequence
+
+To see the view on mongoDB compass: after inserting .createView -> refresh mongoDBCompass
+
+*/
+
+
+db.createView(
+	"Last Stop Sequence",
+	"bus_directory",
+	[
+    {
+        '$unwind': {
+            'path': '$Route'
+        }
+    }, {
+        '$group': {
+            '_id': '$ServiceNo', 
+            'StopSequenceDir1': {
+                '$push': {
+                    '$cond': {
+                        'if': {
+                            '$eq': [
+                                '$Direction', 1
+                            ]
+                        }, 
+                        'then': '$Route.StopSequence', 
+                        'else': '$$REMOVE'
+                    }
+                }
+            }, 
+            'StopSequenceDir2': {
+                '$push': {
+                    '$cond': {
+                        'if': {
+                            '$eq': [
+                                '$Direction', 2
+                            ]
+                        }, 
+                        'then': '$Route.StopSequence', 
+                        'else': '$$REMOVE'
+                    }
+                }
+            }
+        }
+    }, {
+        '$addFields': {
+            'StopSequenceDir1': {
+                '$max': '$StopSequenceDir1'
+            }, 
+            'StopSequenceDir2': {
+                '$max': '$StopSequenceDir2'
+            }
+        }
+    }
+])

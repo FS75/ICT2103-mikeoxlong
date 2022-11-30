@@ -34,4 +34,10 @@ db.bus_directory.createIndex( { "Route.BusStopCode":1 } )
 db.locations.createIndex( { BusStopCode:1 } )
 db.locations.createIndex( { Description:1 } )
 
+Lastly add in the views in this sequence:
+(found in noSQL_setup)
+
+View1.txt -> View2.txt
+
+
 Set up is all done can proceed to perform queries

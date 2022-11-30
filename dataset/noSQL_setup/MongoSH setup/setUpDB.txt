@@ -18,6 +18,12 @@ Perform insert query in  mongosh:
 2. insert the following txt files for "locations" collection
 	a. insert_bus_stops.txt
 	b. insert_MRT.txt
-	c. insert_Taxi.txt	
+	c. insert_Taxi.txt
+3. create indexes by using create_indexes.txt
+
+4. create views in the following sequence:
+(found in noSQl_setup)
+	a. View1.txt
+	b. View2.txt
 
 Set up is now completed, you may perform the no sql queries

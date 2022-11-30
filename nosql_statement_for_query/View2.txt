@@ -4,6 +4,7 @@ To see the view output on mongosh: db."Insert View Name".find()
 Views:
 businterchange_services_startonly
 businterchange_services
+businterchange_busservices
 
 To see the view on mongoDB compass: after inserting .createView -> refresh mongoDBCompass
 
@@ -240,4 +241,104 @@ db.createView(
       _id: 0,
     },
   },
+])
+
+db.createView(
+	"businterchange_busservices",
+	"locations",
+[
+    {
+        '$match': {
+            $or: [
+        {
+          Description: /.* Int/i,
+        },
+        {
+          Description: /Ter$/i,
+        },
+        {
+          Description: /.*Terminal/i,
+        },
+      	]
+       }
+    }, {
+        '$lookup': {
+            'from': 'bus_directory', 
+            'localField': 'BusStopCode', 
+            'foreignField': 'OriginCode', 
+            'as': 'Interchange'
+        }
+    }, {
+        '$match': {
+            'Interchange.ServiceNo': {
+                '$exists': true, 
+                '$ne': null
+            }
+        }
+    }, {
+        '$lookup': {
+            'from': 'bus_directory', 
+            'localField': 'BusStopCode', 
+            'foreignField': 'Route.BusStopCode', 
+            'as': 'Buses'
+        }
+    }, {
+        '$unwind': {
+            'path': '$Buses'
+        }
+    }, {
+        '$unwind': {
+            'path': '$Buses.Route'
+        }
+    }, {
+        '$match': {
+            '$expr': {
+                '$eq': [
+                    '$Buses.Route.BusStopCode', '$BusStopCode'
+                ]
+            }
+        }
+    }, {
+        '$lookup': {
+            'from': 'Last Stop Sequence', 
+            'localField': 'Buses.ServiceNo', 
+            'foreignField': '_id', 
+            'as': 'LastStop'
+        }
+    }, {
+        '$unwind': {
+            'path': '$LastStop'
+        }
+    }, {
+        '$match': {
+            '$expr': {
+                '$and': [
+                    {
+                        '$ne': [
+                            '$Buses.Route.StopSequence', '$LastStop.StopSequenceDir1'
+                        ]
+                    }, {
+                        '$ne': [
+                            '$Buses.Route.StopSequence', '$LastStop.StopSequenceDir2'
+                        ]
+                    }
+                ]
+            }
+        }
+    }, {
+        '$sort': {
+            'Buses.ServiceNo': 1
+        }
+    }, {
+        '$project': {
+            'Buses.ServiceNo': 1, 
+            'Buses.Direction': 1, 
+            'BusStopCode': 1, 
+            'Buses.Route.StopSequence': 1, 
+            'RoadName': 1, 
+            'Description': 1, 
+            'Buses.DestinationCode': 1, 
+            'Buses.Route.BusStopCode': 1
+        }
+    }
 ])
