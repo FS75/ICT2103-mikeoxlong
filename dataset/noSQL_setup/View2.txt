@@ -271,8 +271,8 @@ db.createView(
     }, {
         '$match': {
             'Interchange.ServiceNo': {
-                '$exists': True, 
-                '$ne': None
+                '$exists': true, 
+                '$ne': null
             }
         }
     }, {
