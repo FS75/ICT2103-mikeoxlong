@@ -967,21 +967,22 @@ const deleteMRTStation = (name, res) => {
 }
 
 // Delete Bus Route while also Updating Sequences for all affected Bus Routes
+// Deprecated Function (for mongo)
 const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
-    const dbo = connection.db("ICT2103")
-    let bus_directory = dbo.collection("bus_directory")
+    // const dbo = connection.db("ICT2103")
+    // let bus_directory = dbo.collection("bus_directory")
 
-    var query = { "Route.BusStopCode": busStopCode }
-    bus_directory.deleteOne(query)
-    for (let i = 0; i < routes.length; i++) {
-        var filter = {
-            ServiceNo: routes[i].ServiceNo, Direction: routes[i].Direction,
-            "Route.StopSequence": { $gt: routes[i].StopSequence }
-        }
-        var newValues = { $inc: { "Route.$.StopSequence": -1 } }
-        bus_directory.updateMany(filter, newValues)
-    }
-        res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
+    // var query = { "Route.BusStopCode": busStopCode }
+    // bus_directory.deleteOne(query)
+    // for (let i = 0; i < routes.length; i++) {
+    //     var filter = {
+    //         ServiceNo: routes[i].ServiceNo, Direction: routes[i].Direction,
+    //         "Route.StopSequence": { $gt: routes[i].StopSequence }
+    //     }
+    //     var newValues = { $inc: { "Route.$.StopSequence": -1 } }
+    //     bus_directory.updateMany(filter, newValues)
+    // }
+    //     res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
 }
 
 module.exports = {
