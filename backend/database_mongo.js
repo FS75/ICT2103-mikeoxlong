@@ -208,7 +208,7 @@ const getTaxiStandBFAFromName = (name, res) => {
         var data = []
         for (let i = 0; i < result.length; i++) {
             data.push({
-                Bfa: result[i].Bfa
+                Bfa: {type:'Buffer',data:[parseInt(result[i].Bfa)]}
             })
         }
         res.send(data)
