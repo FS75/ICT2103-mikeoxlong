@@ -19,7 +19,7 @@ The files are there for references only
 
 Pre-requisite
 1. Do ensure you have already set up SQL on your PC
-2. Create a new schema called "bus_directory"
+2. Create a new schema
 3. Ensure that you are on the schema you have just created
 
 To install/set up the Database, you may choose to run
