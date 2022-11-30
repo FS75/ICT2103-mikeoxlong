@@ -68,7 +68,6 @@ const getBusStopNameInOneDirection = (busService, res) => {
             '$project': {
                 _id: 0,
                 'Destination.Description': 1
-                //'Destination':{$first:'$Destination.Description'} Another way without unwind
             }
         }
     ]
