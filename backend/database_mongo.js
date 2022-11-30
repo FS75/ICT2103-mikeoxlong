@@ -969,20 +969,37 @@ const deleteMRTStation = (name, res) => {
 // Delete Bus Route while also Updating Sequences for all affected Bus Routes
 // Deprecated Function (for mongo)
 const deleteBusRouteAndUpdateSequences = (routes, busStopCode, res) => {
-    // const dbo = connection.db("ICT2103")
-    // let bus_directory = dbo.collection("bus_directory")
-
-    // var query = { "Route.BusStopCode": busStopCode }
-    // bus_directory.deleteOne(query)
-    // for (let i = 0; i < routes.length; i++) {
-    //     var filter = {
-    //         ServiceNo: routes[i].ServiceNo, Direction: routes[i].Direction,
-    //         "Route.StopSequence": { $gt: routes[i].StopSequence }
-    //     }
-    //     var newValues = { $inc: { "Route.$.StopSequence": -1 } }
-    //     bus_directory.updateMany(filter, newValues)
-    // }
-    //     res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
+    const dbo = connection.db("ICT2103")
+    let bus_directory = dbo.collection("bus_directory")
+    var updateservice = []
+    var updatasequence = []
+    var updatedirection = []
+    //Remove element of busstopcode from array of routes
+    for (let i = 0; i < routes.length; i++) {
+        var filter1 = {
+            ServiceNo: routes[i].ServiceNo
+        }
+        var newValues1 = { $pull: { "Route": {BusStopCode: busStopCode } }}
+        bus_directory.updateOne(filter1, newValues1)
+    }
+    //get distinct various stop sequence and direction of affected by busstopcodes
+    for (let i = 0; i < routes.length; i++) {
+        if(routes[i].BusStopCode==busStopCode){
+            updateservice.push(routes[i].ServiceNo)
+            updatasequence.push(routes[i].StopSequence)
+            updatedirection.push(routes[i].Direction)
+        }
+    }
+    //update stop sequence
+    for (let j = 0; j < updatasequence.length; j++){
+        var query = {
+            ServiceNo: updateservice[j], Direction: updatedirection[j]
+        }
+        var newValues = { $inc: { "Route.$[elem].StopSequence": -1 } }
+        var filter = {arrayFilters:[{"elem.StopSequence":{ $gt: updatasequence[j] }}]}
+        bus_directory.updateOne(query, newValues,filter)
+    }   
+    res.send(`Deleted bus route for all affected bus services and updated all stop sequences`)
 }
 
 module.exports = {

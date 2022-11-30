@@ -319,14 +319,14 @@ app.put('/api/taxi-stand-bfa/', (req, res) => {
     DELETE: One single bus route
 */
 app.delete('/api/bus-routes/', (req, res) => {
-    // const newData = req.body
-    // var routes = []
-    // routes = Object.values(Object.values(newData)[0])[0]
-    // const busStopCode = Object.values(newData)[1]
+    const newData = req.body
+    var routes = []
+    routes = Object.values(Object.values(newData)[0])
+    const busStopCode = Object.values(newData)[1]
 
-    res.send("This feature only works in our SQL version")
+    //res.send("This feature only works in our SQL version")
 
-    // deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
+    deleteBusRouteAndUpdateSequences(routes, busStopCode, res)
 })
 /* 
     DELETE: One taxi stand
